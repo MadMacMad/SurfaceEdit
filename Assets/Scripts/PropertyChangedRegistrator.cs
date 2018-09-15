@@ -6,13 +6,15 @@ using Tilify.Commands;
 
 namespace Tilify
 {
-    public abstract class PropertyChangedRegistrator : INotifyPropertyChanged
+    public delegate void NeedUpdateEventHandler(object sender);
+    public abstract class ObjectChangedRegistrator : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event NeedUpdateEventHandler OnNeedUpdate;
 
         protected readonly UndoRedoRegister undoRedoRegister;
 
-        public PropertyChangedRegistrator(UndoRedoRegister undoRedoRegister)
+        public ObjectChangedRegistrator(UndoRedoRegister undoRedoRegister)
         {
             if ( undoRedoRegister is null )
                 throw new ArgumentNullException (nameof (undoRedoRegister) + " is null");
@@ -20,9 +22,10 @@ namespace Tilify
         }
 
         /// <summary>
-        /// Sets the property to a new value. Creates and registers a new SetPropertyCommand in UndoRedoRegister.
+        /// Validates and sets the property to a new value. Creates and registers a new SetPropertyCommand in UndoRedoRegister.
         /// </summary>
         protected void SetProperty<T> (Action<T> setter, Func<T> getter, T newValue,
+                                       bool needUpdateAfterFieldChange = false,
                                        Func<T, T> validator = null,
                                        [CallerFilePath] string pathName = "",
                                        [CallerMemberName] string propertyName = "")
@@ -32,9 +35,12 @@ namespace Tilify
            
             if ( !EqualityComparer<T>.Default.Equals (getter(), newValue) )
             {
-                var command = new SetPropertyCommand<T> (new Ref<T>(setter, getter), newValue,
-                                                        () => PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName)),
-                                                        pathName, propertyName);
+                Action callback = () => PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
+
+                if (needUpdateAfterFieldChange)
+                    callback += () => OnNeedUpdate?.Invoke (this);
+
+                var command = new SetPropertyCommand<T> (new Ref<T>(setter, getter), newValue, callback, pathName, propertyName);
                 undoRedoRegister.Do (command as ICommand);
             }
         }

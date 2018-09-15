@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class MaterialVisualizer : PropertyChangedRegistrator, IDisposable
+    public class MaterialVisualizer : ObjectChangedRegistrator, IDisposable
     {
         private static Dictionary<TextureChannel, string> channelPropertyPair = new Dictionary<TextureChannel, string> ()
         {
@@ -22,21 +22,21 @@ namespace Tilify
         public float DisplacementIntensity
         {
             get => displacementIntensity;
-            set => SetProperty (v => displacementIntensity = v, () => displacementIntensity, value, v => Mathf.Clamp01 (v));
+            set => SetProperty (v => displacementIntensity = v, () => displacementIntensity, value, true, v => Mathf.Clamp01 (v));
         }
         private float displacementIntensity;
 
         public float TesselationMultiplier
         {
             get => tesselationMultiplier;
-            set => SetProperty (v => tesselationMultiplier = v, () => tesselationMultiplier, value, v => Mathf.Clamp (v, 1, 64));
+            set => SetProperty (v => tesselationMultiplier = v, () => tesselationMultiplier, value, true, v => Mathf.Clamp (v, 1, 64));
         }
         private float tesselationMultiplier;
 
         private GameObject go;
         private Renderer goRenderer;
 
-        public MaterialVisualizer (UndoRedoRegister undoRedoRegister, TextureStack textureStack,
+        public MaterialVisualizer (UndoRedoRegister undoRedoRegister, Surface textureStack,
                                   float displacementIntensity, float tesselationMultiplier, bool invertNormal = false) : base (undoRedoRegister)
         {
             go = new GameObject ("Material Visualzation Plane");

@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class TextureStack : PropertyChangedRegistrator
+    public class Surface : ObjectChangedRegistrator
     {
         public Vector2 WorldSize
         {
             get => worldSize;
-            set => SetProperty (v => worldSize = v, () => worldSize, value, t => t.ClampBoth (.1f));
+            set => SetProperty (v => worldSize = v, () => worldSize, value, true, t => t.ClampBoth (.1f));
         }
         private Vector2 worldSize;
 
@@ -22,7 +22,7 @@ namespace Tilify
 
         private Dictionary<TextureChannel, TextureProvider> providers;
 
-        public TextureStack(UndoRedoRegister undoRedoRegister, Dictionary<TextureChannel, TextureProvider> textureProviders, Vector2 worldSize) : base(undoRedoRegister)
+        public Surface(UndoRedoRegister undoRedoRegister, Dictionary<TextureChannel, TextureProvider> textureProviders, Vector2 worldSize) : base(undoRedoRegister)
         {
             providers = textureProviders;
             foreach(var pair in providers )

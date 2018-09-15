@@ -40,7 +40,7 @@ namespace Tilify
                 { TextureChannel.Roughness, new ResourcesTextureProvider ("Textures/ogio2_4K_Roughness") },
                 { TextureChannel.HeightDisplacement, new ResourcesTextureProvider ("Textures/ogio2_4K_Displacement") }
             };
-            var textureStack = new TextureStack (UndoRedoRegister.Instance, dict, new Vector2(2, 2));
+            var textureStack = new Surface (UndoRedoRegister.Instance, dict, new Vector2(2, 2));
 
             var layer = new Layer (UndoRedoRegister.Instance);
 

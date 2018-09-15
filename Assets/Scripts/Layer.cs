@@ -8,11 +8,17 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class Layer : PropertyChangedRegistrator
+    public class Layer : ObjectChangedRegistrator
     {
+        private List<ISurfaceAffector> surfaceAffectors;
+
         public Layer (UndoRedoRegister undoRedoRegister ) : base (undoRedoRegister)
         {
 
+        }
+
+        public void AddSurfaceAffector<T>(SurfaceAffector<T> affector) where T : TextureAffector
+        {
         }
     }
 }

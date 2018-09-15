@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 
 namespace Tilify.TextureAffectors
 {
-    public class TextureStackAffector<Affector> where Affector : TextureAffector
+    public interface ISurfaceAffector
+    {
+        void Affect (Surface surface);
+    }
+    public class SurfaceAffector<Affector> : ISurfaceAffector where Affector : TextureAffector
     {
         public List<TextureChannel> AffectList { get; private set; } = new List<TextureChannel> ();
         private Affector textureAffector;
 
-        public TextureStackAffector(Affector textureAffector, List<TextureChannel> affectList)
+        public SurfaceAffector(Affector textureAffector, List<TextureChannel> affectList)
         {
             this.textureAffector = textureAffector;
             AffectList.AddRange(affectList);
         }
 
-        public void Affect(TextureStack stack)
+        public void Affect(Surface surface)
         {
-            foreach(var pair in stack.SelectTextures (AffectList))
+            foreach(var pair in surface.SelectTextures (AffectList))
                 textureAffector.Affect (pair.Value);
         }
     }

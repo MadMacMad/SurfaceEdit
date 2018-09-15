@@ -14,14 +14,14 @@ namespace Tilify.Commands
         public readonly T newValue;
 
         private Ref<T> property;
-        private Action notifyPropertyChangedAction;
+        private Action callback;
         private string filePath;
 
-        public SetPropertyCommand (Ref<T> property, T newValue, Action notifyPropertyChangedAction, [CallerFilePath] string filePath = "", string propertyName = "")
+        public SetPropertyCommand (Ref<T> property, T newValue, Action callback, [CallerFilePath] string filePath = "", string propertyName = "")
         {
             this.propertyName = propertyName;
             this.property = property;
-            this.notifyPropertyChangedAction = notifyPropertyChangedAction;
+            this.callback = callback;
             this.filePath = filePath;
             oldValue = property.Value;
             this.newValue = newValue;
@@ -30,12 +30,12 @@ namespace Tilify.Commands
         public void Do ()
         {
             property.Value = newValue;
-            notifyPropertyChangedAction?.Invoke ();
+            callback?.Invoke ();
         }
         public void Undo ()
         {
             property.Value = oldValue;
-            notifyPropertyChangedAction?.Invoke ();
+            callback?.Invoke ();
         }
         public void Dispose () { }
 
