@@ -19,6 +19,9 @@ namespace Tilify
             this.undoRedoRegister = undoRedoRegister;
         }
 
+        /// <summary>
+        /// Sets the property to a new value. Creates and registers a new SetPropertyCommand in UndoRedoRegister.
+        /// </summary>
         protected void SetProperty<T> (Action<T> setter, Func<T> getter, T newValue,
                                        Func<T, T> validator = null,
                                        [CallerFilePath] string pathName = "",
