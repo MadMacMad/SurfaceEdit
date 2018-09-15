@@ -22,14 +22,14 @@ namespace Tilify
         public float DisplacementIntensity
         {
             get => displacementIntensity;
-            set => SetProperty (v => displacementIntensity = v, () => displacementIntensity, value, true, v => Mathf.Clamp01 (v));
+            set => SetPropertyAndRegisterUndoRedo (v => displacementIntensity = v, () => displacementIntensity, value, true, v => Mathf.Clamp01 (v));
         }
         private float displacementIntensity;
 
         public float TesselationMultiplier
         {
             get => tesselationMultiplier;
-            set => SetProperty (v => tesselationMultiplier = v, () => tesselationMultiplier, value, true, v => Mathf.Clamp (v, 1, 64));
+            set => SetPropertyAndRegisterUndoRedo (v => tesselationMultiplier = v, () => tesselationMultiplier, value, true, v => Mathf.Clamp (v, 1, 64));
         }
         private float tesselationMultiplier;
 

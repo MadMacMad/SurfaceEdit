@@ -13,7 +13,7 @@ namespace Tilify
         public Vector2 WorldSize
         {
             get => worldSize;
-            set => SetProperty (v => worldSize = v, () => worldSize, value, true, t => t.ClampBoth (.1f));
+            set => SetPropertyAndRegisterUndoRedo (v => worldSize = v, () => worldSize, value, true, t => t.ClampBoth (.1f));
         }
         private Vector2 worldSize;
 

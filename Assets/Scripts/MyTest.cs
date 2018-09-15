@@ -42,7 +42,7 @@ namespace Tilify
             };
             var textureStack = new Surface (UndoRedoRegister.Instance, dict, new Vector2(2, 2));
 
-            var layer = new Layer (UndoRedoRegister.Instance);
+            var layer = new Layer (UndoRedoRegister.Instance, new Mask(new SolidColorTextureProvider(new Vector2Int(1024, 1024), Color.white)));
 
             matVis = new MaterialVisualizer (UndoRedoRegister.Instance, textureStack, .1f, 10, true);
         }

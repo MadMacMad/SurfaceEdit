@@ -8,14 +8,28 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class Layer : ObjectChangedRegistrator
+    public class Layer : ObjectChangedRegistrator, IDisposable
     {
         public IReadOnlyList<ISurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
-        private List<ISurfaceAffector> surfaceAffectors;
+        private List<ISurfaceAffector> surfaceAffectors = new List<ISurfaceAffector>();
 
-        public Layer (UndoRedoRegister undoRedoRegister ) : base (undoRedoRegister)
+        public bool IsUseMask { get => isUseMask; set => SetPropertyAndRegisterUndoRedo (v => isUseMask = v, () => isUseMask, value, true); }
+        private bool isUseMask;
+
+        private Mask mask;
+        private List<TextureAffector> maskAffectors = new List<TextureAffector>();
+
+        public Layer (UndoRedoRegister undoRedoRegister, Mask mask) : base (undoRedoRegister)
         {
+            if ( mask is null )
+                throw new ArgumentNullException ($"{nameof(mask)} is null");
+            this.mask = mask;
+        }
 
+        public void Process(Surface surface)
+        {
+            foreach ( var affector in surfaceAffectors )
+                affector.Affect (surface);
         }
 
         public void AddSurfaceAffector<T>(SurfaceAffector<T> surfaceAffector) where T : TextureAffector
@@ -37,7 +51,17 @@ namespace Tilify
             NotifyNeedUpdate ();
         }
 
+        public void AddMaskAffector(TextureAffector textureAffector)
+        {
+
+        }
+
         private void OnSurfaceAffectorNeedUpdate(object sender)
             => NotifyNeedUpdate ();
+
+        public void Dispose()
+        {
+
+        }
     }
 }

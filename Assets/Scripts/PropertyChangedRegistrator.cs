@@ -28,9 +28,23 @@ namespace Tilify
             => OnPropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 
         /// <summary>
-        /// Validates and sets the property to a new value. Creates and registers a new SetPropertyCommand in UndoRedoRegister.
+        /// Validates the new value. If the new value is not equal to the current value, sets the property to a new value and calls NotifyPropertyChanged 
         /// </summary>
-        protected void SetProperty<T> (Action<T> setter, Func<T> getter, T newValue,
+        protected void SerProperty<T>(ref T property, T newValue, Func<T, T> validator = null, [CallerMemberName] string propertyName = "")
+        {
+            if ( validator != null )
+                newValue = validator (newValue);
+
+            if ( !EqualityComparer<T>.Default.Equals (property, newValue) )
+            {
+                property = newValue;
+                NotifyPropertyChanged (propertyName);
+            }
+        }
+        /// <summary>
+        /// Validates the new value. If the new value is not equal to the current value, it creates and registers a new undo/redo command.
+        /// </summary>
+        protected void SetPropertyAndRegisterUndoRedo<T> (Action<T> setter, Func<T> getter, T newValue,
                                        bool needUpdateAfterFieldChange = false,
                                        Func<T, T> validator = null,
                                        [CallerFilePath] string pathName = "",
