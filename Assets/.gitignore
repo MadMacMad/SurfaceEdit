@@ -4,8 +4,8 @@
 [Bb]uild/
 [Bb]uilds/
 Assets/AssetStoreTools*
-Resouces/Textures/*
-Textures/Standard/*
+Resouces/Textures/
+Textures/Standard/
 # Visual Studio cache directory
 .vs/
 
