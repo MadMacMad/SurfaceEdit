@@ -9,6 +9,12 @@ using UnityEngine.SceneManagement;
 
 namespace Tilify
 {
+    /*
+     * Чтобы не рендерились объекты с создаваемой сцены,
+     * нужно создать слой (его id передаётся в конструктор PaintableTexture)
+     * и в основной камере выключить в Culling Mask этот слой
+     */
+
     public class PaintableTexture : IDisposable
     {
         public RenderTexture ResultTexture { get; private set; }
