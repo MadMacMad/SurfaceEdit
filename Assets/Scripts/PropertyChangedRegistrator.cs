@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Tilify.Commands;
 
 namespace Tilify
 {
-    public delegate void NeedUpdateEventHandler (object sender);
-
+    public delegate void NeedUpdateEventHandler(object sender);
     public abstract class ObjectChangedRegistrator : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler OnPropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
         public event NeedUpdateEventHandler OnNeedUpdate;
 
         protected readonly UndoRedoRegister undoRedoRegister;
@@ -20,12 +20,6 @@ namespace Tilify
                 throw new ArgumentNullException (nameof (undoRedoRegister) + " is null");
             this.undoRedoRegister = undoRedoRegister;
         }
-
-        protected void NotifyNeedUpdate ()
-            => OnNeedUpdate?.Invoke (this);
-
-        protected void NotifyPropertyChanged (string propertyName)
-            => OnPropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 
         /// <summary>
         /// Validates and sets the property to a new value. Creates and registers a new SetPropertyCommand in UndoRedoRegister.
@@ -41,10 +35,10 @@ namespace Tilify
            
             if ( !EqualityComparer<T>.Default.Equals (getter(), newValue) )
             {
-                Action callback = () => NotifyPropertyChanged(propertyName);
+                Action callback = () => PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 
                 if (needUpdateAfterFieldChange)
-                    callback += () => NotifyNeedUpdate();
+                    callback += () => OnNeedUpdate?.Invoke (this);
 
                 var command = new SetPropertyCommand<T> (new Ref<T>(setter, getter), newValue, callback, pathName, propertyName);
                 undoRedoRegister.Do (command as ICommand);

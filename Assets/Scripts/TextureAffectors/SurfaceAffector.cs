@@ -10,16 +10,15 @@ namespace Tilify.TextureAffectors
     {
         void Affect (Surface surface);
     }
-    public class SurfaceAffector<Affector> : ObjectChangedRegistrator, ISurfaceAffector where Affector : TextureAffector
+    public class SurfaceAffector<Affector> : ISurfaceAffector where Affector : TextureAffector
     {
         public List<TextureChannel> AffectList { get; private set; } = new List<TextureChannel> ();
         private Affector textureAffector;
 
-        public SurfaceAffector(UndoRedoRegister undoRedoRegister, Affector textureAffector, List<TextureChannel> affectList) : base(undoRedoRegister)
+        public SurfaceAffector(Affector textureAffector, List<TextureChannel> affectList)
         {
             this.textureAffector = textureAffector;
             AffectList.AddRange(affectList);
-            textureAffector.OnNeedUpdate += s => NotifyNeedUpdate (); 
         }
 
         public void Affect(Surface surface)
