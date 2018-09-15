@@ -1,0 +1,58 @@
+﻿#pragma kernel CSMain
+
+RWTexture2D<float4> Result;
+
+float2 MaxTextureSize;
+float BottomTextureHeightFactor;
+float TopTextureHeightFactor;
+float DepthFactor;
+bool IsHeight;
+
+Texture2D<float4> BottomTexture;
+Texture2D<float4> TopTexture;
+Texture2D<float4> BottomTextureHeight;
+Texture2D<float4> TopTextureHeight;
+Texture2D<float4> Mask;
+
+SamplerState LinearMirrorSampler;
+
+float4 HeightBlend(float4 texture1, float4 height1, float4 texture2, float4 height2, float time)
+{
+	float factor1 = 1 - time;
+	float factor2 = time;
+
+	float ma = max(height1 + factor1, height2 + factor2) - DepthFactor;
+
+	float b1 = max(height1 + factor1 - ma, 0);
+	float b2 = max(height2 + factor2 - ma, 0);
+
+	return (texture1 * b1 + texture2 * b2) / (b1 + b2);
+}
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	if (id.x > MaxTextureSize.x || id.y > MaxTextureSize.y)
+		return;
+
+	float2 uv = float2(id.xy / MaxTextureSize);
+
+	float maskValue = Mask.SampleLevel(LinearMirrorSampler, uv, 0).x;
+
+	float4 bottomTextureValue = BottomTexture.SampleLevel(LinearMirrorSampler, uv, 0);
+	float4 topTextureValue = TopTexture.SampleLevel(LinearMirrorSampler, uv, 0);
+
+	if (IsHeight)
+	{
+		bottomTextureValue = clamp(bottomTextureValue * BottomTextureHeightFactor, 0, 1);
+		topTextureValue = clamp(topTextureValue * BottomTextureHeightFactor, 0, 1);
+	}
+
+	float bottomTextureHeight = clamp(BottomTextureHeight.SampleLevel(LinearMirrorSampler, uv, 0) * BottomTextureHeightFactor, 0, 1);
+	float4 topTextureHeight = clamp(TopTextureHeight.SampleLevel(LinearMirrorSampler, uv, 0) * TopTextureHeightFactor, 0, 1);
+	bottomTextureValue.a = 1;
+	topTextureValue.a = 1;
+
+	Result[id.xy] = HeightBlend(bottomTextureValue, bottomTextureHeight, topTextureValue, topTextureHeight, maskValue);
+}
+

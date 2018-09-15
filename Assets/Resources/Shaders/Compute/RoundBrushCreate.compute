@@ -1,0 +1,38 @@
+﻿#pragma kernel CSMain
+
+RWTexture2D<float4> Result;
+
+float2 BrushCenter;
+float Size;
+float Hardness;
+
+static const float PI = 3.14159265f;
+
+float InverseLerp(float first, float second, float time)
+{
+	return (time - first) / (second - first);
+}
+
+float smoothstep(float t)
+{
+	return t * t * (3 - 2 * t);
+}
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	if (id.x > Size || id.y > Size)
+		return;
+
+	float Radius = Size / 2;
+	float value = distance(BrushCenter, id.xy);
+	float time = 0;
+	if (value < max(0.001, Hardness - .007) * Radius)
+		time = 1;
+	else
+	{
+		float t = max(0, (value - Radius) / (max(0.001, Hardness - .007) * Radius - Radius));
+		time = t * t * (3 - 2 * t);
+	}
+	Result[id.xy] = float4(1, 1, 1, time);
+}

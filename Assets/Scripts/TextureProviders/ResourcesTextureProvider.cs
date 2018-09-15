@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace Tilify.TextureProviders
+{
+    public class ResourcesTextureProvider : TextureProvider
+    {
+        private string texturePath;
+
+        public ResourcesTextureProvider (string texturePath)
+        {
+            this.texturePath = texturePath;
+        }
+        
+        protected override RenderTexture Provide_Internal ()
+        {
+            var texture = Resources.Load (texturePath) as Texture2D;
+            var renderTexture = texture.ConvertToRenderTexture ();
+            Resources.UnloadUnusedAssets ();
+            return renderTexture;
+        }
+    }
+}
