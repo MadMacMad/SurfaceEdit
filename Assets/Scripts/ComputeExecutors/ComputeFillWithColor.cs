@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class ComputeFillWithColor : ComputeExecutor<UnityEngine.RenderTexture>
+    public class ComputeFillWithColor : ComputeExecutor<RenderTexture>
     {
-        private UnityEngine.RenderTexture texture;
+        private RenderTexture texture;
         private Color color;
 
-        public ComputeFillWithColor (UnityEngine.RenderTexture texture, Color color) : base("Shaders/Compute/FillWithColor")
+        public ComputeFillWithColor (RenderTexture texture, Color color) : base("Shaders/Compute/FillWithColor")
         {
             this.texture = texture;
             this.color = color;

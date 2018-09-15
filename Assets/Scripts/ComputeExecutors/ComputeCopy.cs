@@ -7,18 +7,18 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class ComputeCopy : ComputeExecutor<UnityEngine.RenderTexture>
+    public class ComputeCopy : ComputeExecutor<RenderTexture>
     {
         private Texture sourceTexture;
-        private UnityEngine.RenderTexture destinationTexture;
+        private RenderTexture destinationTexture;
 
-        public ComputeCopy (Texture2D source, UnityEngine.RenderTexture destination) : base("Shaders/Compute/Copy")
+        public ComputeCopy (Texture2D source, RenderTexture destination) : base("Shaders/Compute/Copy")
         {
             sourceTexture = source;
             destinationTexture = destination;
         }
 
-        public ComputeCopy (UnityEngine.RenderTexture source, UnityEngine.RenderTexture destination) : base ("Shaders/Compute/Copy")
+        public ComputeCopy (RenderTexture source, RenderTexture destination) : base ("Shaders/Compute/Copy")
         {
             sourceTexture = source;
             destinationTexture = destination;

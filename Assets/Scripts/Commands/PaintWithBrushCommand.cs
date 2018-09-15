@@ -8,11 +8,11 @@ namespace Tilify.Commands
 {
     public class PaintWithBrushCommand : ICommand
     {
-        private UnityEngine.RenderTexture texture;
+        private RenderTexture texture;
         private Brush brush;
         private Vector2Int brushOrigin;
-        private Action<UnityEngine.RenderTexture> setTextureAction;
-        public PaintWithBrushCommand (UnityEngine.RenderTexture texture, Brush brush, Vector2Int brushOrigin, Action<UnityEngine.RenderTexture> setTextureAction)
+        private Action<RenderTexture> setTextureAction;
+        public PaintWithBrushCommand (RenderTexture texture, Brush brush, Vector2Int brushOrigin, Action<RenderTexture> setTextureAction)
         {
             this.texture = texture.Copy();
             this.setTextureAction = setTextureAction;

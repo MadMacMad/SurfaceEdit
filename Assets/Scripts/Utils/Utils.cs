@@ -11,7 +11,7 @@ namespace Tilify
     {
         public static RenderTexture CreateAndAllocateRenderTexture (int width, int height)
         {
-            UnityEngine.RenderTexture renderTexture = new UnityEngine.RenderTexture (width, height, 0, RenderTextureFormat.ARGB32)
+            RenderTexture renderTexture = new RenderTexture (width, height, 0, RenderTextureFormat.ARGB32)
             {
                 enableRandomWrite = true
             };

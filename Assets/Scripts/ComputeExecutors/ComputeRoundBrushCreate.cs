@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class ComputeRoundBrushCreate : ComputeExecutor<UnityEngine.RenderTexture>
+    public class ComputeRoundBrushCreate : ComputeExecutor<RenderTexture>
     {
         private int resolution;
         private float hardnessFactor;

@@ -7,13 +7,13 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class ComputeAlphaBlend : ComputeExecutor<UnityEngine.RenderTexture>
+    public class ComputeAlphaBlend : ComputeExecutor<RenderTexture>
     {
-        private UnityEngine.RenderTexture topTexture;
-        private UnityEngine.RenderTexture bottomTexture;
-        private UnityEngine.RenderTexture mask;
+        private RenderTexture topTexture;
+        private RenderTexture bottomTexture;
+        private RenderTexture mask;
 
-        public ComputeAlphaBlend(UnityEngine.RenderTexture topTexture, UnityEngine.RenderTexture bottomTexture, UnityEngine.RenderTexture mask) : base("Shaders/Compute/AlphaBlend")
+        public ComputeAlphaBlend(RenderTexture topTexture, RenderTexture bottomTexture, RenderTexture mask) : base("Shaders/Compute/AlphaBlend")
         {
             this.topTexture = topTexture;
             this.bottomTexture = bottomTexture;

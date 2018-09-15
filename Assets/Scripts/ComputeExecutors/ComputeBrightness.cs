@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class ComputeBrighntess : ComputeExecutor<UnityEngine.RenderTexture>
+    public class ComputeBrighntess : ComputeExecutor<RenderTexture>
     {
-        private UnityEngine.RenderTexture texture;
+        private RenderTexture texture;
         private float brightnessFactor;
 
-        public ComputeBrighntess (UnityEngine.RenderTexture texture, float brightnessFactor) : base("Shaders/Compute/Brightness")
+        public ComputeBrighntess (RenderTexture texture, float brightnessFactor) : base("Shaders/Compute/Brightness")
         {
             this.texture = texture;
             this.brightnessFactor = brightnessFactor;

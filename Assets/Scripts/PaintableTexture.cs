@@ -32,7 +32,7 @@ namespace Tilify
         }
         private Vector2 textureWorldSize;
 
-        public UnityEngine.RenderTexture baseTexture;
+        public RenderTexture baseTexture;
 
         private Scene scene;
         private Camera camera;
@@ -47,7 +47,7 @@ namespace Tilify
         private int layerID;
 
 
-        public PaintableTexture (Vector2 textureWorldSize, UnityEngine.RenderTexture baseTexture, UndoRedoRegister commandRegister, int layerID)
+        public PaintableTexture (Vector2 textureWorldSize, RenderTexture baseTexture, UndoRedoRegister commandRegister, int layerID)
         {
             this.baseTexture = baseTexture;
             ResultTexture = Utils.CreateAndAllocateRenderTexture (baseTexture.width, baseTexture.height);

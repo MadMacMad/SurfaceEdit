@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class ComputeCropTexture : ComputeExecutor<UnityEngine.RenderTexture>
+    public class ComputeCropTexture : ComputeExecutor<RenderTexture>
     {
-        private UnityEngine.RenderTexture textureToCrop;
+        private RenderTexture textureToCrop;
         private Vector2Int cropOrigin;
         private Vector2Int cropSize;
 
-        public ComputeCropTexture (UnityEngine.RenderTexture textureToCrop, Vector2Int cropOrigin, Vector2Int cropSize) : base ("Shaders/Compute/CropTexture")
+        public ComputeCropTexture (RenderTexture textureToCrop, Vector2Int cropOrigin, Vector2Int cropSize) : base ("Shaders/Compute/CropTexture")
         {
             this.textureToCrop = textureToCrop;
             this.cropOrigin = cropOrigin;

@@ -8,7 +8,7 @@ namespace Tilify
 {
     public class ImageBrush : Brush
     {
-        public ImageBrush(Vector2 realSize, UnityEngine.RenderTexture texture) : base(realSize)
+        public ImageBrush(Vector2 realSize, RenderTexture texture) : base(realSize)
         {
             BrushStamp = texture;
         }
