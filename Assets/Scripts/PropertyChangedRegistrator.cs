@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Tilify.Commands;
+using UnityEngine;
 
 namespace Tilify
 {
@@ -60,7 +61,7 @@ namespace Tilify
                 Action callback = () => NotifyPropertyChanged(propertyName);
 
                 if (needUpdateAfterFieldChange)
-                    callback += () => NotifyNeedUpdate();
+                    callback += () => NotifyNeedUpdate ();
 
                 var command = new SetPropertyCommand<T> (new Ref<T>(setter, getter), newValue, callback, pathName, propertyName);
                 undoRedoRegister.Do (command as ICommand);
