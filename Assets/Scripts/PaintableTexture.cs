@@ -25,7 +25,7 @@ namespace Tilify
     {
         public RenderTexture ResultTexture { get; private set; }
 
-        public Vector2 TextureRealSize
+        public Vector2 TextureWorldSize
         {
             get { return textureWorldSize; }
             set
@@ -105,7 +105,7 @@ namespace Tilify
             camera.targetTexture = ResultTexture;
 
             texturePlane = Utils.CreateNewGameObjectAtSpecificScene ("Texture Plane", scene, layerID);
-            texturePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildQuad (TextureRealSize).ConvertToMesh();
+            texturePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildQuad (textureWorldSize).ConvertToMesh();
             var renderer = texturePlane.AddComponent<MeshRenderer> ();
             renderer.material.shader = Shader.Find ("Unlit/Transparent");
             renderer.material.mainTexture = baseTexture;
@@ -113,7 +113,7 @@ namespace Tilify
         
         private void Update()
         {
-            camera.orthographicSize = TextureRealSize.y / 2;
+            camera.orthographicSize = textureWorldSize.y / 2;
 
             Render ();
         }
@@ -155,7 +155,7 @@ namespace Tilify
     }
     public class BrushPaintEntry : IDisposable
     {
-        public Vector2 TextureRealSize
+        public Vector2 TextureWorldSize
         {
             get { return textureWorldSize; }
             set
