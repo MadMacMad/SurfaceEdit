@@ -5,31 +5,40 @@ namespace Tilify.TextureProviders
 {
     public abstract class TextureProvider : IDisposable
     {
-        private RenderTexture texture;
-        private RenderTexture textureCopy;
+        private RenderTexture initialTexture;
+        private RenderTexture copiedTexture;
+
+        private bool cacheTexture;
+
+        public TextureProvider(bool cacheTexture)
+        {
+            this.cacheTexture = initialTexture;
+        }
 
         public void Override(RenderTexture texture)
         {
-            if ( this.texture is null )
-                this.texture = Provide_Internal ();
+            if ( this.initialTexture is null )
+                this.initialTexture = Provide_Internal ();
 
-            new ComputeCopy (this.texture, texture).Execute();
+            new ComputeCopy (this.initialTexture, texture).Execute();
         }
         public RenderTexture Provide ()
         {
-            if ( texture is null )
+            if ( initialTexture is null )
             {
-                texture = Provide_Internal ();
-                textureCopy = texture.Copy ();
+                initialTexture = Provide_Internal ();
+                if ( cacheTexture )
+                    copiedTexture = initialTexture.Copy ();
             }
-            return textureCopy;
+            return cacheTexture ? copiedTexture : initialTexture;
         }
 
         protected abstract RenderTexture Provide_Internal ();
 
         public void Dispose ()
         {
-            texture.Release ();
+            initialTexture.Release ();
+            copiedTexture.Release ();
             Dispose_Internal ();
         }
         protected virtual void Dispose_Internal () { }
