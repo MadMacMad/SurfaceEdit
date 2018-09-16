@@ -91,5 +91,9 @@ namespace Tilify
 
         public static void Clamp01 (this Vector2 vector)
             => vector.Clamp (Vector2.zero, Vector2.one);
+
+        public static IEnumerable<Enum> GetFlags (this Enum e) 
+            => Enum.GetValues (e.GetType ()).Cast<Enum> ().Where (e.HasFlag);
+        
     }
 }
