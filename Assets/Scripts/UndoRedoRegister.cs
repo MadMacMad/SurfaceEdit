@@ -29,7 +29,7 @@ namespace Tilify
             Assert.ArgumentNotNull (command, nameof (command));
 
             command.Do ();
-            Logger.Log (DateTime.Now.ToShortTimeString() + " DO(" + command.GetType ().ToString () + ") " + command.ToString ());
+            Log (ActionType.DO, command);
             undoStack.Push (command);
             foreach ( var c in redoSrack )
                 c.Dispose ();
@@ -41,7 +41,7 @@ namespace Tilify
             {
                 var command = redoSrack.Pop ();
                 command.Do ();
-                Logger.Log (DateTime.Now.ToShortTimeString () + " REDO(" + command.GetType ().ToString () + ") " + command.ToString ());
+                Log (ActionType.REDO, command);
                 undoStack.Push (command);
             }
         }
@@ -51,9 +51,21 @@ namespace Tilify
             {
                 var command = undoStack.Pop ();
                 command.Undo ();
-                Logger.Log (DateTime.Now.ToShortTimeString () + " UNDO(" + command.GetType ().ToString () + ") " + command.ToString ());
+                Log (ActionType.UNDO, command);
                 redoSrack.Push (command);
             }
+        }
+
+        private void Log(ActionType actionType, ICommand command)
+        {
+            Logger.Log ($"{DateTime.Now.ToShortTimeString ()} {actionType.ToString()}({command.GetType ().Name}):\n{command.ToString ()}");
+        }
+
+        private enum ActionType
+        {
+            DO,
+            REDO,
+            UNDO
         }
     }
 }
