@@ -76,7 +76,7 @@ namespace Tilify
         //     });
         //}
 
-        public static Vector2 Clamp(this Vector2 vector, Vector2 min, Vector2 max)
+        public static void Clamp(this Vector2 vector, Vector2 min, Vector2 max)
         {
             if ( vector.x < min.x )
                 vector.x = min.x;
@@ -87,8 +87,9 @@ namespace Tilify
                 vector.y = min.y;
             else if ( vector.y > max.y )
                 vector.y = max.y;
-
-            return vector;
         }
+
+        public static void Clamp01 (this Vector2 vector)
+            => vector.Clamp (Vector2.zero, Vector2.one);
     }
 }

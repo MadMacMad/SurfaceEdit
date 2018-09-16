@@ -11,6 +11,9 @@ namespace Tilify
 
         public Ref (Action<T> setter, Func<T> getter)
         {
+            Assert.ArgumentNotNull (setter, nameof (setter));
+            Assert.ArgumentNotNull (getter, nameof (getter));
+
             this.setter = setter;
             this.getter = getter;
         }

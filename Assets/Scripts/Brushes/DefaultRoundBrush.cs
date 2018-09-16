@@ -10,10 +10,9 @@ namespace Tilify
     {
         public float Hardness { get; }
 
-        public DefaultRoundBrush(float realSize, int resolution, float hardness) : base(new Vector2(realSize, realSize))
+        public DefaultRoundBrush(float percentageSize, int resolution, float hardness) : base(new Vector2(percentageSize, percentageSize))
         {
-            if (resolution < 8)
-                resolution = 8;
+            resolution = Mathf.Clamp (resolution, 1, 4096);
             hardness = Mathf.Clamp01 (hardness);
 
             Hardness = hardness;

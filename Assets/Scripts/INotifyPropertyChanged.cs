@@ -16,7 +16,7 @@ namespace Tilify
     {
         public readonly string propertyName;
 
-        public PropertyChangedEventArgs(string propertyName)
+        public PropertyChangedEventArgs(string propertyName = "")
         {
             this.propertyName = propertyName;
         }

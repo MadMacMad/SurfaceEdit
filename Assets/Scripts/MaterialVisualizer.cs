@@ -36,19 +36,21 @@ namespace Tilify
         private GameObject go;
         private Renderer goRenderer;
 
-        public MaterialVisualizer (UndoRedoRegister undoRedoRegister, Surface textureStack,
+        public MaterialVisualizer (UndoRedoRegister undoRedoRegister, Surface surface,
                                   float displacementIntensity, float tesselationMultiplier, bool invertNormal = false) : base (undoRedoRegister)
         {
+            Assert.ArgumentNotNull (surface, nameof (surface));
+
             go = new GameObject ("Material Visualzation Plane");
 
             go.transform.Rotate (90, 0, 0);
 
-            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (textureStack.WorldSize, new Vector2Int(64, 64)).ConvertToMesh ();
+            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (surface.WorldSize, new Vector2Int(64, 64)).ConvertToMesh ();
 
             goRenderer = go.AddComponent<MeshRenderer> ();
             goRenderer.material.shader = Shader.Find ("Custom/TesselationDisplacementShader");
 
-            foreach ( var pair in textureStack.Textures )
+            foreach ( var pair in surface.Textures )
                 if ( channelPropertyPair.ContainsKey (pair.Key) )
                     goRenderer.material.SetTexture (channelPropertyPair[pair.Key], pair.Value);
 

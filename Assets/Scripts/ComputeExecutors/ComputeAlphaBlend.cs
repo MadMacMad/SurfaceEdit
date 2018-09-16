@@ -15,6 +15,10 @@ namespace Tilify
 
         public ComputeAlphaBlend(RenderTexture topTexture, RenderTexture bottomTexture, RenderTexture mask) : base("Shaders/Compute/AlphaBlend")
         {
+            Assert.ArgumentNotNull (topTexture, nameof (topTexture));
+            Assert.ArgumentNotNull (bottomTexture, nameof (bottomTexture));
+            Assert.ArgumentNotNull (mask, nameof (mask));
+
             this.topTexture = topTexture;
             this.bottomTexture = bottomTexture;
             this.mask = mask;

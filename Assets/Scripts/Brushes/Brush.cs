@@ -15,16 +15,14 @@ namespace Tilify
 
         protected Brush (Vector2 percentageSize)
         {
-            if ( percentageSize.x <= 0 )
-                percentageSize.x = 1;
-            if ( percentageSize.y <= 0 )
-                percentageSize.y = 1;
-
+            percentageSize.Clamp01 ();
             PercentageSize = percentageSize;
         }
 
         public GameObject CreateGO (string name, Vector2 percentagePosition, float zWorldPosition, Vector2 textureWorldSize, Scene scene, int layerID)
         {
+            percentagePosition.Clamp01 ();
+
             var go = Utils.CreateNewGameObjectAtSpecificScene (name, scene, layerID);
 
             Vector3 worldPosition = (percentagePosition - PercentageSize / 2) * textureWorldSize;

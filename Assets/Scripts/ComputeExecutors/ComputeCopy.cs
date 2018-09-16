@@ -14,12 +14,18 @@ namespace Tilify
 
         public ComputeCopy (Texture2D source, RenderTexture destination) : base("Shaders/Compute/Copy")
         {
+            Assert.ArgumentNotNull (source, nameof (source));
+            Assert.ArgumentNotNull (destination, nameof (destination));
+
             sourceTexture = source;
             destinationTexture = destination;
         }
 
         public ComputeCopy (RenderTexture source, RenderTexture destination) : base ("Shaders/Compute/Copy")
         {
+            Assert.ArgumentNotNull (source, nameof (source));
+            Assert.ArgumentNotNull (destination, nameof (destination));
+
             sourceTexture = source;
             destinationTexture = destination;
         }

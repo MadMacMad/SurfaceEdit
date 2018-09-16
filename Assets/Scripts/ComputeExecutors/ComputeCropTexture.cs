@@ -14,6 +14,11 @@ namespace Tilify
 
         public ComputeCropTexture (RenderTexture textureToCrop, Vector2Int cropOrigin, Vector2Int cropSize) : base ("Shaders/Compute/CropTexture")
         {
+            Assert.ArgumentNotNull (textureToCrop, nameof (textureToCrop));
+
+            cropOrigin.Clamp (new Vector2Int (0, 0), new Vector2Int (textureToCrop.width - 1, textureToCrop.height - 1));
+            cropSize.Clamp (new Vector2Int (1, 1), new Vector2Int (textureToCrop.width - cropOrigin.x, textureToCrop.height - cropOrigin.y));
+
             this.textureToCrop = textureToCrop;
             this.cropOrigin = cropOrigin;
             this.cropSize = cropSize;

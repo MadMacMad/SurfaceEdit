@@ -21,13 +21,14 @@ namespace Tilify
 
         public Layer (UndoRedoRegister undoRedoRegister, Mask mask) : base (undoRedoRegister)
         {
-            if ( mask is null )
-                throw new ArgumentNullException ($"{nameof(mask)} is null");
+            Assert.ArgumentNotNull (mask, nameof (mask));
             this.mask = mask;
         }
 
         public void Process(Surface surface)
         {
+            Assert.ArgumentNotNull (surface, nameof (surface));
+
             foreach ( var affector in surfaceAffectors )
                 affector.Affect (surface);
         }
@@ -38,8 +39,8 @@ namespace Tilify
             {
                 surfaceAffector.OnNeedUpdate += OnSurfaceAffectorNeedUpdate;
                 surfaceAffectors.Add (surfaceAffector);
+                NotifyNeedUpdate ();
             }
-            NotifyNeedUpdate ();
         }
         public void RemoveSurfaceAffector<T> (SurfaceAffector<T> surfaceAffector) where T : TextureAffector
         {
@@ -47,8 +48,8 @@ namespace Tilify
             {
                 surfaceAffector.OnNeedUpdate -= OnSurfaceAffectorNeedUpdate;
                 surfaceAffectors.Remove (surfaceAffector as ISurfaceAffector);
+                NotifyNeedUpdate ();
             }
-            NotifyNeedUpdate ();
         }
 
         public void AddMaskAffector(TextureAffector textureAffector)

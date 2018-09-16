@@ -14,6 +14,9 @@ namespace Tilify
 
         public ComputeRoundBrushCreate (int resolution, float hardnessFactor) : base ("Shaders/Compute/RoundBrushCreate")
         {
+            resolution = Mathf.Clamp (resolution, 1, 4096);
+            hardnessFactor = Mathf.Clamp01 (hardnessFactor);
+
             this.resolution = resolution;
             this.hardnessFactor = hardnessFactor;
         }

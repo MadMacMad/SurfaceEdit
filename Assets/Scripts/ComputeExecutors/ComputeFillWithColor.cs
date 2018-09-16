@@ -14,6 +14,8 @@ namespace Tilify
 
         public ComputeFillWithColor (RenderTexture texture, Color color) : base("Shaders/Compute/FillWithColor")
         {
+            Assert.ArgumentNotNull (texture, nameof (texture));
+
             this.texture = texture;
             this.color = color;
         }

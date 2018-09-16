@@ -24,6 +24,9 @@ namespace Tilify
 
         public void RegisterConditionChecker(Func<bool> condition, Action callback)
         {
+            Assert.ArgumentNotNull (condition, nameof (condition));
+            Assert.ArgumentNotNull (callback, nameof (callback));
+
             conditionCheckerEntries.Add (new ConditionCheckerEntry (condition, callback));
         }
 

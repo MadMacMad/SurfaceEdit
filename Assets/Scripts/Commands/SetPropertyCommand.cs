@@ -19,6 +19,8 @@ namespace Tilify.Commands
 
         public SetPropertyCommand (Ref<T> property, T newValue, Action callback, [CallerFilePath] string filePath = "", string propertyName = "")
         {
+            Assert.ArgumentNotNull (property, nameof (property));
+
             this.propertyName = propertyName;
             this.property = property;
             this.callback = callback;

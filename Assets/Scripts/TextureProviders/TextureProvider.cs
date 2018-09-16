@@ -17,6 +17,8 @@ namespace Tilify.TextureProviders
 
         public void Override(RenderTexture texture)
         {
+            Assert.ArgumentNotNull (texture, nameof (texture));
+
             if ( initialTexture is null )
                 initialTexture = Provide_Internal ();
 

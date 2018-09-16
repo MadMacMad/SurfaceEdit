@@ -31,6 +31,8 @@ namespace Tilify
 
         public static UnityEngine.Object InstantiateAtSpecificScene (UnityEngine.Object original, Vector3 position, Quaternion rotation, Scene scene, int layerID)
         {
+            Assert.ArgumentNotNull (original, nameof (original));
+
             var currentScene = SceneManager.GetActiveScene ();
             SceneManager.SetActiveScene (scene);
             var obj = GameObject.Instantiate (original, position, rotation) as GameObject;

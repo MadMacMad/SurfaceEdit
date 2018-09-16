@@ -14,6 +14,8 @@ namespace Tilify
         private TextureProvider textureProvider;
         public Mask(TextureProvider textureProvider)
         {
+            Assert.ArgumentNotNull (textureProvider, nameof (textureProvider));
+
             this.textureProvider = textureProvider;
             Texture = this.textureProvider.Provide ();
         }

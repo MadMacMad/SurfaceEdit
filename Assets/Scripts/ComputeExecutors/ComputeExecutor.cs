@@ -18,6 +18,8 @@ namespace Tilify
         public ComputeExecutor (string shaderResourcesPath) : this(shaderResourcesPath, new string[] { "CSMain" }) { }
         public ComputeExecutor (string shaderResourcesPath, string[] functionNames)
         {
+            Assert.ArgumentNotNull (functionNames, nameof(functionNames));
+
             shader = (ComputeShader)Resources.Load (shaderResourcesPath);
 
             for (int i = 0; i < functionNames.Length; i++ )

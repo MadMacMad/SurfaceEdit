@@ -14,6 +14,8 @@ namespace Tilify
 
         public ComputeBrighntess (RenderTexture texture, float brightnessFactor) : base("Shaders/Compute/Brightness")
         {
+            Assert.ArgumentNotNull (texture, nameof (texture));
+
             this.texture = texture;
             this.brightnessFactor = brightnessFactor;
         }

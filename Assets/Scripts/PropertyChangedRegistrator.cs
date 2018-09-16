@@ -16,15 +16,14 @@ namespace Tilify
 
         public ObjectChangedRegistrator(UndoRedoRegister undoRedoRegister)
         {
-            if ( undoRedoRegister is null )
-                throw new ArgumentNullException (nameof (undoRedoRegister) + " is null");
+            Assert.ArgumentNotNull (undoRedoRegister, nameof (undoRedoRegister));
             this.undoRedoRegister = undoRedoRegister;
         }
 
         protected void NotifyNeedUpdate ()
             => OnNeedUpdate?.Invoke (this);
 
-        protected void NotifyPropertyChanged (string propertyName)
+        protected void NotifyPropertyChanged (string propertyName = "")
             => OnPropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 
         /// <summary>
@@ -50,6 +49,9 @@ namespace Tilify
                                        [CallerFilePath] string pathName = "",
                                        [CallerMemberName] string propertyName = "")
         {
+            Assert.ArgumentNotNull (setter, nameof (setter));
+            Assert.ArgumentNotNull (getter, nameof (getter));
+
             if (validator != null)
                 newValue = validator (newValue);
            
