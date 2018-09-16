@@ -33,6 +33,13 @@ namespace Tilify
         }
         private float tesselationMultiplier;
 
+        public bool InvertNormal
+        {
+            get => invertNormal;
+            set => SetPropertyAndRegisterUndoRedo (v => invertNormal = v, () => invertNormal, value, true);
+        }
+        private bool invertNormal;
+
         private GameObject go;
         private Renderer goRenderer;
 
@@ -54,14 +61,11 @@ namespace Tilify
                 if ( channelPropertyPair.ContainsKey (pair.Key) )
                     goRenderer.material.SetTexture (channelPropertyPair[pair.Key], pair.Value);
 
-            goRenderer.material.SetFloat ("_InvertNormal", ( invertNormal ) ? 1 : 0);
-
             this.displacementIntensity = Mathf.Clamp01 (displacementIntensity);
             this.tesselationMultiplier = Mathf.Clamp (tesselationMultiplier, 1, 64);
+            this.invertNormal = invertNormal;
 
-            goRenderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
-            goRenderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);
-
+            Update (this);
             OnNeedUpdate += Update;
         }
 
@@ -69,6 +73,7 @@ namespace Tilify
         {
             goRenderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
             goRenderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);
+            goRenderer.material.SetFloat ("_InvertNormal", ( invertNormal ) ? 1 : 0);
         }
 
         public void Dispose ()
