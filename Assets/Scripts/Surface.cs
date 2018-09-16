@@ -19,18 +19,7 @@ namespace Tilify
 
 
         public Surface (TextureChannel textureChannel, TextureProvider textureProvider, Vector2 worldSize)
-        {
-            Assert.ArgumentNotNull (textureProvider, nameof (textureProvider));
-
-            WorldSize = TextureHelper.Instance.ClampWorldSize (worldSize);
-
-            providers = new Dictionary<TextureChannel, TextureProvider>
-            {
-                { textureChannel, textureProvider }
-            };
-
-            FillTexturesArray ();
-        }
+            : this(new Dictionary<TextureChannel, TextureProvider>{{ textureChannel, textureProvider }}, worldSize) { }
 
         public Surface(Dictionary<TextureChannel, TextureProvider> textureProviders, Vector2 worldSize)
         {
