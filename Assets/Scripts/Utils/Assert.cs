@@ -13,7 +13,7 @@ namespace Tilify
             if ( !value )
                 throw new ArgumentException (message);
         }
-        public static void ArgumentNotNull<T>(string name, T obj) where T : class
+        public static void ArgumentNotNull<T>(T obj, string name) where T : class
         {
             if ( obj is null || obj == null )
                 throw new ArgumentNullException (name, name + " is null");
