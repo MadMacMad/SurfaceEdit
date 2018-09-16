@@ -14,6 +14,7 @@ namespace Tilify.TextureProviders
 
         public DiskTextureProvider (string texturePath, bool cacheTexture = true) : base (cacheTexture)
         {
+            this.texturePath = texturePath;
         }
 
         protected override RenderTexture Provide_Internal ()
