@@ -47,11 +47,6 @@ namespace Tilify
             }
         }
 
-        public void AddMaskAffector(TextureAffector textureAffector)
-        {
-
-        }
-
         private void OnSurfaceAffectorNeedUpdate(object sender)
             => NotifyNeedUpdate ();
 
