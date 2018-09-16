@@ -78,19 +78,17 @@ namespace Tilify
 
         public static Vector2 Clamp(this Vector2 vector, Vector2 min, Vector2 max)
         {
-            var newVector = vector;
+            if ( vector.x < min.x )
+                vector.x = min.x;
+            else if ( vector.x > max.x )
+                vector.x = max.x;
 
-            if ( newVector.x < min.x )
-                newVector.x = min.x;
-            else if ( newVector.x > max.x )
-                newVector.x = max.x;
+            if ( vector.y < min.y )
+                vector.y = min.y;
+            else if ( vector.y > max.y )
+                vector.y = max.y;
 
-            if ( newVector.y < min.y )
-                newVector.y = min.y;
-            else if ( newVector.y > max.y )
-                newVector.y = max.y;
-
-            return newVector;
+            return vector;
         }
     }
 }
