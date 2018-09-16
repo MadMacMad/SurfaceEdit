@@ -17,10 +17,10 @@ namespace Tilify.TextureProviders
 
         public void Override(RenderTexture texture)
         {
-            if ( this.initialTexture is null )
-                this.initialTexture = Provide_Internal ();
+            if ( initialTexture is null )
+                initialTexture = Provide_Internal ();
 
-            new ComputeCopy (this.initialTexture, texture).Execute();
+            new ComputeCopy (initialTexture, texture).Execute();
         }
         public RenderTexture Provide ()
         {
