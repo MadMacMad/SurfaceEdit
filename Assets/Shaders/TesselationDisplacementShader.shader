@@ -11,7 +11,7 @@
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
-		LOD 10000
+		LOD 100
 
 		CGPROGRAM
 		#pragma surface surf Standard fullforwardshadows vertex:vert tessellate:tess nolightmap addshadow 
