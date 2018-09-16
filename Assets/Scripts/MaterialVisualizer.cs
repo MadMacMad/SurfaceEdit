@@ -61,6 +61,12 @@ namespace Tilify
 
             goRenderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
             goRenderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);
+
+            OnNeedUpdate += o =>
+            {
+                goRenderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
+                goRenderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);
+            };
         }
 
         public void Dispose ()
