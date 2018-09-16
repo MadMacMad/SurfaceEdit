@@ -38,13 +38,13 @@ namespace Tilify
                 { TextureChannel.Albedo, new ResourcesTextureProvider ("Textures/ogio2_4K_Albedo") },
                 { TextureChannel.Normal, new ResourcesTextureProvider ("Textures/ogio2_4K_Normal") },
                 { TextureChannel.Roughness, new ResourcesTextureProvider ("Textures/ogio2_4K_Roughness") },
-                { TextureChannel.HeightDisplacement, new ResourcesTextureProvider ("Textures/ogio2_4K_Displacement") }
+                { TextureChannel.Height, new ResourcesTextureProvider ("Textures/ogio2_4K_Displacement") }
             };
-            var textureStack = new Surface (dict, new Vector2(2, 2));
+            var surface = new Surface (dict);
 
-            var layer = new Layer (UndoRedoRegister.Instance, new Mask(new SolidColorTextureProvider(new Vector2Int(1024, 1024), Color.white)));
+            var layer = new Layer (UndoRedoRegister.Instance);
 
-            matVis = new MaterialVisualizer (UndoRedoRegister.Instance, textureStack, .1f, 10, true);
+            matVis = new MaterialVisualizer (UndoRedoRegister.Instance, surface, new Vector2(2, 2), .1f, 10, true);
         }
         
         private void Update ()
