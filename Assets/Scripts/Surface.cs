@@ -17,13 +17,37 @@ namespace Tilify
 
         private Dictionary<TextureChannel, TextureProvider> providers;
 
+
+        public Surface (TextureChannel textureChannel, TextureProvider textureProvider, Vector2 worldSize)
+        {
+            Assert.ArgumentNotNull (textureProvider, nameof (textureProvider));
+
+            WorldSize = TextureHelper.Instance.ClampWorldSize (worldSize);
+
+            providers = new Dictionary<TextureChannel, TextureProvider>
+            {
+                { textureChannel, textureProvider }
+            };
+
+            FillTexturesArray ();
+        }
+
         public Surface(Dictionary<TextureChannel, TextureProvider> textureProviders, Vector2 worldSize)
         {
-            providers = textureProviders;
-            foreach(var pair in providers )
-                textures.Add (pair.Key, pair.Value.Provide ());
+            Assert.ArgumentNotNull (textureProviders, nameof (textureProviders));
+            Assert.ArgumentTrue (textureProviders.Count >= 1, nameof (textureProviders) + ".Count is less then 1");
 
-            WorldSize = worldSize.ClampBoth (.1f);
+            WorldSize = TextureHelper.Instance.ClampWorldSize (worldSize);
+
+            providers = textureProviders;
+
+            FillTexturesArray ();
+        }
+
+        private void FillTexturesArray()
+        {
+            foreach ( var pair in providers )
+                textures.Add (pair.Key, pair.Value.Provide ());
         }
           
         public Dictionary<TextureChannel, RenderTexture> SelectTextures(List<TextureChannel> selectionList)
