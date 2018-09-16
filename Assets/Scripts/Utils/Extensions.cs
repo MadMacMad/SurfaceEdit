@@ -76,19 +76,21 @@ namespace Tilify
         //     });
         //}
 
-        public static Vector2 ClampBoth(this Vector2 vector, float min, float max = float.MaxValue)
+        public static Vector2 Clamp(this Vector2 vector, Vector2 min, Vector2 max)
         {
-            if ( vector.x < min )
-                vector.x = min;
-            else if ( vector.x > max )
-                vector.x = max;
+            var newVector = vector;
 
-            if ( vector.y < min )
-                vector.y = min;
-            else if ( vector.y > max )
-                vector.y = max;
+            if ( newVector.x < min.x )
+                newVector.x = min.x;
+            else if ( newVector.x > max.x )
+                newVector.x = max.x;
 
-            return vector;
+            if ( newVector.y < min.y )
+                newVector.y = min.y;
+            else if ( newVector.y > max.y )
+                newVector.y = max.y;
+
+            return newVector;
         }
     }
 }
