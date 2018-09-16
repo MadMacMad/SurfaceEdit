@@ -12,7 +12,7 @@ namespace Tilify.TextureProviders
         private Vector2Int textureSize;
         private TextureChannel textureChannel;
 
-        public BlankChannelTextureProvider(bool cacheTexture, Vector2Int textureSize, TextureChannel textureChannel) : base(cacheTexture)
+        public BlankChannelTextureProvider(Vector2Int textureSize, TextureChannel textureChannel, bool cacheTexture = true) : base (cacheTexture)
         {
             textureSize.Clamp (Settings.minTextureSize, Settings.maxTextureSize);
             this.textureSize = textureSize;
