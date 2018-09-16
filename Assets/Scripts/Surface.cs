@@ -10,17 +10,30 @@ namespace Tilify
 {
     public class Surface
     {
-        public Vector2 WorldSize { get; }
-
         public IReadOnlyDictionary<TextureChannel, RenderTexture> Textures => textures;
         private Dictionary<TextureChannel, RenderTexture> textures = new Dictionary<TextureChannel, RenderTexture> ();
 
         private Dictionary<TextureChannel, TextureProvider> providers;
         
-        public Surface (TextureChannel textureChannel, TextureProvider textureProvider, Vector2 worldSize)
-            : this (new Dictionary<TextureChannel, TextureProvider> { { textureChannel, textureProvider } }, worldSize) { }
+        public static Surface CreateBlankSurface(Vector2Int textureSize, TextureChannel channels)
+        {
+            var surface = new Surface ();
 
-        public Surface (Dictionary<TextureChannel, TextureProvider> textureProviders, Vector2 worldSize)
+            textureSize = TextureHelper.Instance.ClampTextureSize (textureSize);
+
+            surface.providers = new Dictionary<TextureChannel, TextureProvider> ();
+
+            foreach ( TextureChannel channel in channels.GetFlags () )
+                surface.providers.Add (channel, new BlankChannelTextureProvider (textureSize, channel));
+
+            surface.FillTexturesArray ();
+
+            return surface;
+        }
+        
+        private Surface() { }
+
+        public Surface (Dictionary<TextureChannel, TextureProvider> textureProviders)
         {
             Assert.ArgumentNotNull (textureProviders, nameof (textureProviders));
             Assert.ArgumentTrue (textureProviders.Count >= 1, nameof (textureProviders) + ".Count is less then 1");
@@ -31,9 +44,7 @@ namespace Tilify
                 Assert.ArgumentNotNull (pair.Value, $"{nameof (textureProviders)}[{index}]");
                 index++;
             }
-
-            WorldSize = TextureHelper.Instance.ClampWorldSize (worldSize);
-
+            
             providers = textureProviders;
 
             FillTexturesArray ();
