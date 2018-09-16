@@ -24,7 +24,7 @@ namespace Tilify
 
         //private int m_RenderIgnoreLayerID;
 
-        private MaterialVisualizer matVis;
+        //private MaterialVisualizer matVis;
 
         private void Start ()
         {
@@ -33,40 +33,40 @@ namespace Tilify
             //pt = new PaintableTexture (m_textureRealSize, rt, CommandRegister.Instance, m_RenderIgnoreLayerID);
             //brush = new DefaultRoundBrush (.05f, 256, .5f);
 
-            var dict = new Dictionary<TextureChannel, TextureProvider>
-            {
-                { TextureChannel.Albedo, new ResourcesTextureProvider ("Textures/ogio2_4K_Albedo") },
-                { TextureChannel.Normal, new ResourcesTextureProvider ("Textures/ogio2_4K_Normal") },
-                { TextureChannel.Roughness, new ResourcesTextureProvider ("Textures/ogio2_4K_Roughness") },
-                { TextureChannel.Height, new ResourcesTextureProvider ("Textures/ogio2_4K_Displacement") }
-            };
-            var surface = new Surface (dict);
+            //var dict = new Dictionary<TextureChannel, TextureProvider>
+            //{
+            //    { TextureChannel.Albedo, new ResourcesTextureProvider ("Textures/ogio2_4K_Albedo") },
+            //    { TextureChannel.Normal, new ResourcesTextureProvider ("Textures/ogio2_4K_Normal") },
+            //    { TextureChannel.Roughness, new ResourcesTextureProvider ("Textures/ogio2_4K_Roughness") },
+            //    { TextureChannel.Height, new ResourcesTextureProvider ("Textures/ogio2_4K_Displacement") }
+            //};
+            //var surface = new Surface (dict);
 
-            var layer = new Layer (UndoRedoRegister.Instance);
+            //var layer = new Layer (UndoRedoRegister.Instance);
 
-            matVis = new MaterialVisualizer (UndoRedoRegister.Instance, surface, new Vector2(2, 2), .1f, 10, true);
+            //matVis = new MaterialVisualizer (UndoRedoRegister.Instance, surface, new Vector2(2, 2), .1f, 10, true);
         }
         
         private void Update ()
         {
-            if (Input.GetKey(KeyCode.Alpha4))
-            {
-                matVis.TesselationMultiplier += 1;
-            }
+            //if (Input.GetKey(KeyCode.Alpha4))
+            //{
+            //    matVis.TesselationMultiplier += 1;
+            //}
 
-            if ( Input.GetKey (KeyCode.Alpha5) )
-            {
-                matVis.TesselationMultiplier -= 1;
-            }
+            //if ( Input.GetKey (KeyCode.Alpha5) )
+            //{
+            //    matVis.TesselationMultiplier -= 1;
+            //}
 
-            if ( Input.GetKey (KeyCode.Alpha2) )
-            {
-                UndoRedoRegister.Instance.Undo ();
-            }
-            if ( Input.GetKey (KeyCode.Alpha3) )
-            {
-                UndoRedoRegister.Instance.Redo ();
-            }
+            //if ( Input.GetKey (KeyCode.Alpha2) )
+            //{
+            //    UndoRedoRegister.Instance.Undo ();
+            //}
+            //if ( Input.GetKey (KeyCode.Alpha3) )
+            //{
+            //    UndoRedoRegister.Instance.Redo ();
+            //}
 
             //if ( !pt.ResultTexture.IsCreated() )
             //    Debug.Log ("NULL");
