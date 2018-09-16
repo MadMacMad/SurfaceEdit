@@ -16,13 +16,8 @@ namespace Tilify
         public bool IsUseMask { get => isUseMask; set => SetPropertyAndRegisterUndoRedo (v => isUseMask = v, () => isUseMask, value, true); }
         private bool isUseMask;
 
-        private Mask mask;
-        private List<TextureAffector> maskAffectors = new List<TextureAffector>();
-
-        public Layer (UndoRedoRegister undoRedoRegister, Mask mask) : base (undoRedoRegister)
+        public Layer (UndoRedoRegister undoRedoRegister) : base (undoRedoRegister)
         {
-            Assert.ArgumentNotNull (mask, nameof (mask));
-            this.mask = mask;
         }
 
         public void Process(Surface surface)
