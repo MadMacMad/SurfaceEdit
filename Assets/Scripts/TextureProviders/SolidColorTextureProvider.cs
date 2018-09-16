@@ -12,7 +12,7 @@ namespace Tilify.TextureProviders
         private Color color;
         private Vector2Int textureSize;
 
-        public SolidColorTextureProvider(Vector2Int textureSize, Color color)
+        public SolidColorTextureProvider(Vector2Int textureSize, Color color, bool cacheTexture = true) : base (cacheTexture)
         {
             this.color = color;
             this.textureSize = textureSize;

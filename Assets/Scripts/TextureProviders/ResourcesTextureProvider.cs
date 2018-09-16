@@ -12,7 +12,7 @@ namespace Tilify.TextureProviders
     {
         private string texturePath;
 
-        public ResourcesTextureProvider (string texturePath)
+        public ResourcesTextureProvider (string texturePath, bool cacheTexture = true) : base(cacheTexture)
         {
             this.texturePath = texturePath;
         }
