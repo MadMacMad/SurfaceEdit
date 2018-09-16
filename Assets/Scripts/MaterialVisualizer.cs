@@ -16,7 +16,7 @@ namespace Tilify
             { TextureChannel.Normal, "_Normal" },
             { TextureChannel.Roughness, "_Roughness" },
             { TextureChannel.Metallic, "_Metallic" },
-            { TextureChannel.HeightDisplacement, "_Displacement" }
+            { TextureChannel.Height, "_Displacement" }
         };
 
         public float DisplacementIntensity
@@ -36,7 +36,7 @@ namespace Tilify
         private GameObject go;
         private Renderer goRenderer;
 
-        public MaterialVisualizer (UndoRedoRegister undoRedoRegister, Surface surface,
+        public MaterialVisualizer (UndoRedoRegister undoRedoRegister, Surface surface, Vector2 worldSize,
                                   float displacementIntensity, float tesselationMultiplier, bool invertNormal = false) : base (undoRedoRegister)
         {
             Assert.ArgumentNotNull (surface, nameof (surface));
@@ -45,7 +45,7 @@ namespace Tilify
 
             go.transform.Rotate (90, 0, 0);
 
-            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (surface.WorldSize, new Vector2Int(64, 64)).ConvertToMesh ();
+            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (worldSize, new Vector2Int(64, 64)).ConvertToMesh ();
 
             goRenderer = go.AddComponent<MeshRenderer> ();
             goRenderer.material.shader = Shader.Find ("Custom/TesselationDisplacementShader");
