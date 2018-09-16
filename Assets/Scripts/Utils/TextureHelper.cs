@@ -7,23 +7,18 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class TextureHelper
+    public class TextureHelper : Singleton<TextureHelper>
     {
-        public static TextureHelper Instance
+        private Vector2Int minTextureSize;
+        private Vector2Int maxTextureSize;
+
+        public TextureHelper()
         {
-            get
-            {
-                if ( instance is null )
-                    instance = new TextureHelper (Settings.minTextureSize, Settings.maxTextureSize);
-                return instance;
-            }
+            minTextureSize = Settings.minTextureSize;
+            maxTextureSize = Settings.maxTextureSize;
         }
-        private static TextureHelper instance;
 
-        private Vector2 minTextureSize;
-        private Vector2 maxTextureSize;
-
-        public TextureHelper(Vector2 minTextureSize, Vector2 maxTextureSize)
+        public TextureHelper(Vector2Int minTextureSize, Vector2Int maxTextureSize)
         {
             Assert.ArgumentTrue (minTextureSize.x < maxTextureSize.x, nameof (minTextureSize) + ".x is less or equals then " + nameof (maxTextureSize) + ".x");
             Assert.ArgumentTrue (minTextureSize.y < maxTextureSize.y, nameof (minTextureSize) + ".y is less or equals then " + nameof (maxTextureSize) + ".y");
@@ -32,9 +27,10 @@ namespace Tilify
             this.maxTextureSize = maxTextureSize;
         }
 
-        public Vector2 ClampTextureSize (Vector2 textureSize)
+        public Vector2Int ClampTextureSize (Vector2Int textureSize)
         {
-            return textureSize.Clamp (minTextureSize, maxTextureSize);
+            textureSize.Clamp (minTextureSize, maxTextureSize);
+            return textureSize;
         }
     }
 }
