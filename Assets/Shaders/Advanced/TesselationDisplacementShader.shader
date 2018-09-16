@@ -1,4 +1,4 @@
-﻿Shader "Custom/TesselationDisplacementShader" {
+﻿Shader "Tilify/Advanced/TesselationDisplacementShader" {
 	Properties {
 		_MainTex("Albedo", 2D) = "white" {}
 		[Normal] _Normal("Normal", 2D) = "bump" {}

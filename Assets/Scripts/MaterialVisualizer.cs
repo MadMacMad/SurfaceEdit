@@ -55,7 +55,7 @@ namespace Tilify
             go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (worldSize, new Vector2Int(64, 64)).ConvertToMesh ();
 
             goRenderer = go.AddComponent<MeshRenderer> ();
-            goRenderer.material.shader = Shader.Find ("Custom/TesselationDisplacementShader");
+            goRenderer.material.shader = Shader.Find ("Tilify/Advanced/TesselationDisplacementShader");
 
             foreach ( var pair in surface.Textures )
                 if ( channelPropertyPair.ContainsKey (pair.Key) )
