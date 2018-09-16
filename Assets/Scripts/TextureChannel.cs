@@ -5,20 +5,20 @@ namespace Tilify
     [Flags]
     public enum TextureChannel
     {
-        Unknown     = 0,
-        Albedo      = 1,
-        Normal      = 2,
-        Roughness   = 4,
-        Metallic    = 8,
-        Height      = 16,
-        Mask        = 32,
-        User1       = 64,
-        User2       = 128,
-        User3       = 256,
-        User4       = 512,
-        User5       = 1024,
-        User6       = 2048,
-        User7       = 4096,
-        User8       = 8192
+        Unknown     = 1,
+        Albedo      = 2,
+        Normal      = 4,
+        Roughness   = 8,
+        Metallic    = 16,
+        Height      = 32,
+        Mask        = 64,
+        User1       = 128,
+        User2       = 256,
+        User3       = 512,
+        User4       = 1024,
+        User5       = 2048,
+        User6       = 4096,
+        User7       = 8192,
+        User8       = 16384
     }
 }
