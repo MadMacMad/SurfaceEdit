@@ -30,8 +30,8 @@ namespace Tilify.TextureProviders
                 case TextureChannel.Height:             return ProvideSolidColorRenderTexture (new Color(.5f, .5f, .5f, 1));
                 case TextureChannel.Mask:               return ProvideSolidColorRenderTexture (Color.white);
                 case TextureChannel.Unknown:            return ProvideSolidColorRenderTexture (Color.white);
+                default:                                return ProvideSolidColorRenderTexture (Color.white);
             }
-            return ProvideSolidColorRenderTexture (Color.white);
         }
         private RenderTexture ProvideSolidColorRenderTexture(Color color)
         {
