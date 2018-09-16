@@ -50,7 +50,7 @@ namespace Tilify
         private Camera camera;
         private GameObject texturePlane;
 
-        private UndoRedoRegister commandRegister;
+        private UndoRedoRegister undoRedoRegister;
 
         private int brushCount = 1;
 
@@ -59,14 +59,14 @@ namespace Tilify
         private int layerID;
 
 
-        public PaintableTexture (Vector2 textureWorldSize, RenderTexture baseTexture, UndoRedoRegister commandRegister, int layerID)
+        public PaintableTexture (Vector2 textureWorldSize, RenderTexture baseTexture, UndoRedoRegister undoRedoRegister, int layerID)
         {
             this.baseTexture = baseTexture;
             ResultTexture = Utils.CreateAndAllocateRenderTexture (baseTexture.width, baseTexture.height);
 
             this.textureWorldSize = textureWorldSize;
 
-            this.commandRegister = commandRegister;
+            this.undoRedoRegister = undoRedoRegister;
 
             this.layerID = layerID;
 
@@ -78,7 +78,7 @@ namespace Tilify
         {
             var paintEntry = new BrushPaintEntry (brushCount, textureWorldSize, brush, percentagePosition, brushCount++ * brushZOffset, scene, layerID);
             var command = new PaintCommand (this, paintEntry);
-            commandRegister.Do (command);
+            undoRedoRegister.Do (command);
         }
         public void PaintWrapped(Brush brush, Vector2 percentagePosition)
         {
