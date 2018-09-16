@@ -6,16 +6,23 @@ namespace Tilify.TextureProviders
     public abstract class TextureProvider : IDisposable
     {
         private RenderTexture texture;
+        private RenderTexture textureCopy;
 
         public void Override(RenderTexture texture)
         {
-            new ComputeCopy (Provide (), texture).Execute();
+            if ( this.texture is null )
+                this.texture = Provide_Internal ();
+
+            new ComputeCopy (this.texture, texture).Execute();
         }
         public RenderTexture Provide ()
         {
-            if ( texture is null)
+            if ( texture is null )
+            {
                 texture = Provide_Internal ();
-            return texture.Copy ();
+                textureCopy = texture.Copy ();
+            }
+            return textureCopy;
         }
 
         protected abstract RenderTexture Provide_Internal ();
