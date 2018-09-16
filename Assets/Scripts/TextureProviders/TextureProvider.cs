@@ -37,8 +37,8 @@ namespace Tilify.TextureProviders
 
         public void Dispose ()
         {
-            initialTexture.Release ();
-            copiedTexture.Release ();
+            initialTexture?.Release ();
+            copiedTexture?.Release ();
             Dispose_Internal ();
         }
         protected virtual void Dispose_Internal () { }
