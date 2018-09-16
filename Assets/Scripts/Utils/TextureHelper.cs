@@ -32,5 +32,11 @@ namespace Tilify
             textureSize.Clamp (minTextureSize, maxTextureSize);
             return textureSize;
         }
+
+        public Vector2 ClampWorldSize(Vector2 worldSize)
+        {
+            worldSize.Clamp (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
+            return worldSize;
+        }
     }
 }
