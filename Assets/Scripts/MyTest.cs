@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tilify.AffectorRenderer;
 using Tilify.TextureProviders;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -26,8 +27,16 @@ namespace Tilify
 
         //private MaterialVisualizer matVis;
 
+        AffectorRendererStation aff;
+
+        private string linkToGitHubOctocat = "https://assets-cdn.github.com/images/modules/logos_page/Octocat.png";
+
         private void Start ()
         {
+            aff = new AffectorRendererStation (LayerMask.NameToLayer("AffectorRendererStation"),
+                new WebTextureProvider (linkToGitHubOctocat).Provide(),
+                Utils.CreateAndAllocateRenderTexture(1024), Vector2.one);
+
             //m_RenderIgnoreLayerID = LayerMask.NameToLayer ("RenderIgnore");
             //rt = baseTexture.ConvertToRenderTexture ();
             //pt = new PaintableTexture (m_textureRealSize, rt, CommandRegister.Instance, m_RenderIgnoreLayerID);
