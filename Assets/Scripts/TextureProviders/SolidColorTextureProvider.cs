@@ -14,6 +14,8 @@ namespace Tilify.TextureProviders
 
         public SolidColorTextureProvider(Vector2Int textureSize, Color color, bool cacheTexture = true) : base (cacheTexture)
         {
+            textureSize = TextureHelper.Instance.ClampTextureSize (textureSize);
+
             this.color = color;
             this.textureSize = textureSize;
         }
