@@ -8,22 +8,12 @@ using Tilify.Commands;
 
 namespace Tilify
 {
-    public class UndoRedoRegister
+    public class UndoRedoRegister : Singleton<UndoRedoRegister>
     {
-        public static UndoRedoRegister Instance
-        {
-            get
-            {
-                if ( instance == null )
-                    instance = new UndoRedoRegister ();
-                return instance;
-            }
-        }
-        private static UndoRedoRegister instance;
-
         private Stack<ICommand> undoStack = new Stack<ICommand>();
         private Stack<ICommand> redoSrack = new Stack<ICommand>();
         
+        public UndoRedoRegister() { }
 
         public void Reset()
         {
@@ -36,6 +26,8 @@ namespace Tilify
         }
         public void Do (ICommand command)
         {
+            Assert.ArgumentNotNull (command, nameof (command));
+
             command.Do ();
             Logger.Log (DateTime.Now.ToShortTimeString() + " DO(" + command.GetType ().ToString () + ") " + command.ToString ());
             undoStack.Push (command);
