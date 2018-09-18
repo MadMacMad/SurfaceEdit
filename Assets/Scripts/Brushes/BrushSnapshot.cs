@@ -17,9 +17,11 @@ namespace Tilify.Brushes
         public BrushSnapshot (Vector2 percentageSize, float intervals, RenderTexture brushStamp)
         {
             percentageSize.Clamp01 ();
+            if ( intervals <= 0 )
+                intervals = .001f;
 
             this.percentageSize = percentageSize;
-            this.intervals = Mathf.Clamp (intervals, .01f, 10f);
+            this.intervals = intervals;
             this.brushStamp = brushStamp;
         }
 
