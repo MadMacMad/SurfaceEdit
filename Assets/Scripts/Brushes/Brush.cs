@@ -31,6 +31,23 @@ namespace Tilify.Brushes
         }
         private float intervals;
 
+        public Material Material
+        {
+            get
+            {
+                if (material == null)
+                {
+                    material = new Material (Shader.Find ("Tilify/Unlit/Transparent"))
+                    {
+                        enableInstancing = true,
+                        mainTexture = BrushStamp
+                    };
+                }
+                return material;
+            }
+        }
+        private Material material;
+
         public RenderTexture BrushStamp { get; protected set; }
 
         protected Brush (Vector2 percentageSize, float intervals)
@@ -38,7 +55,6 @@ namespace Tilify.Brushes
             PercentageSize = percentageSize;
             Intervals = intervals;
         }
-
         public GameObject CreateGO (string name, Vector2 percentagePosition, float zWorldPosition, Vector2 textureWorldSize, Scene scene, int layerID)
         {
             percentagePosition.Clamp01 ();
