@@ -26,16 +26,13 @@ namespace Tilify
         //private int m_RenderIgnoreLayerID;
 
         //private MaterialVisualizer matVis;
-
-        AffectorRendererStation aff;
-
+        
         private string linkToGitHubOctocat = "https://assets-cdn.github.com/images/modules/logos_page/Octocat.png";
 
         private void Start ()
         {
-            aff = new AffectorRendererStation (LayerMask.NameToLayer("AffectorRendererStation"),
-                new WebTextureProvider (linkToGitHubOctocat).Provide(),
-                Utils.CreateAndAllocateRenderTexture(1024), Vector2.one);
+            var surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new WebTextureProvider (linkToGitHubOctocat) } });
+            var viz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
 
             //m_RenderIgnoreLayerID = LayerMask.NameToLayer ("RenderIgnore");
             //rt = baseTexture.ConvertToRenderTexture ();
