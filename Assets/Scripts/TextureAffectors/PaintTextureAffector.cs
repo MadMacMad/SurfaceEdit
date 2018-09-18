@@ -14,7 +14,7 @@ namespace Tilify.TextureAffectors
 
         public PaintTextureAffector(UndoRedoRegister undoRedoRegister) : base (undoRedoRegister)
         {
-            //rendererStation = new AffectorRendererStation ();
+            rendererStation = new AffectorRendererStation (Settings.affectorRendererStationLayerID);
         }
 
         public override void Affect (RenderTexture texture)
@@ -24,7 +24,7 @@ namespace Tilify.TextureAffectors
 
         public override void Dispose ()
         {
-            //rendererStation.Dispose ();
+            rendererStation.Dispose ();
         }
     }
 }
