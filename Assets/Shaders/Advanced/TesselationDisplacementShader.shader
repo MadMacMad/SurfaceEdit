@@ -10,7 +10,7 @@
 		[Toggle] _InvertNormal("Invert Normal", Float) = 0
 	}
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType" = "Opaque" }
 		LOD 100
 
 		CGPROGRAM
@@ -56,15 +56,14 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{
-			half4 c = tex2D(_MainTex, IN.uv_MainTex);
-			o.Albedo = c.rgb;
+			half4 albedo = tex2D(_MainTex, IN.uv_MainTex);
+			o.Albedo = albedo.rgb * albedo.a + float4(1, 0, 1, 1) * (1 - albedo.a);
 			o.Metallic = tex2D(_Metallic, IN.uv_MainTex);
 			o.Smoothness = 1 - tex2D(_Roughness, IN.uv_MainTex);
 			float4 normal = tex2D(_Normal, IN.uv_MainTex);
 			if (_InvertNormal == 1)
 				normal.g = 1 - normal.g;
 			o.Normal = UnpackNormal(normal);
-			o.Alpha = c.a;
 		}
 		ENDCG
 	}
