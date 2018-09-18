@@ -5,18 +5,38 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Tilify
+namespace Tilify.Brushes
 {
     public abstract class Brush : IDisposable
     {
-        public Vector2 PercentageSize { get; }
+        public Vector2 PercentageSize
+        {
+            get => percentageSize;
+            set
+            {
+                value.Clamp01 ();
+                percentageSize = value;
+            }
+        }
+        private Vector2 percentageSize;
+
+        public float Intervals
+        {
+            get => intervals;
+            set
+            {
+                value = Mathf.Clamp (value, .01f, 10f);
+                intervals = value;
+            }
+        }
+        private float intervals;
 
         public RenderTexture BrushStamp { get; protected set; }
 
-        protected Brush (Vector2 percentageSize)
+        protected Brush (Vector2 percentageSize, float intervals)
         {
-            percentageSize.Clamp01 ();
             PercentageSize = percentageSize;
+            Intervals = intervals;
         }
 
         public GameObject CreateGO (string name, Vector2 percentagePosition, float zWorldPosition, Vector2 textureWorldSize, Scene scene, int layerID)
