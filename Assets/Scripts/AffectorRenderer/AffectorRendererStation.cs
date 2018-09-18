@@ -12,31 +12,21 @@ namespace Tilify.AffectorRenderer
     {
         private static readonly float stackedObjectsZOffset = -.00001f;
 
-        public string ID { get; private set; }
-        public RenderTexture TargetTexture { get; private set; }
-        public Camera Camera { get; private set; }
-
-        private RenderTexture baseTexture;
-        private Vector2 textureWorldSize;
-
+        private Camera camera;
         private Scene scene;
         private GameObject rootObject;
         private GameObject texturePlane;
+        private Renderer texturePlaneRenderer;
 
+        private string id;
         private int stationLayerID;
 
-        public AffectorRendererStation (int stationLayerID, RenderTexture baseTexture, RenderTexture targetTexture, Vector2 textureWorldSize)
+        public AffectorRendererStation (int stationLayerID)
         {
-            Assert.ArgumentNotNull (targetTexture, nameof (targetTexture));
-            Assert.ArgumentNotNull (baseTexture, nameof (baseTexture));
-
-            TargetTexture = targetTexture;
-            this.baseTexture = baseTexture;
-            this.textureWorldSize = textureWorldSize = TextureHelper.Instance.ClampWorldSize (textureWorldSize);
             this.stationLayerID = stationLayerID;
-            ID = Guid.NewGuid ().ToString ();
+            id = Guid.NewGuid ().ToString ();
 
-            scene = SceneManager.CreateScene (nameof(AffectorRendererStation) + " Scene with ID = " + ID);
+            scene = SceneManager.CreateScene (nameof(AffectorRendererStation) + " Scene with ID = " + id);
             Setup ();
         }
 
@@ -44,33 +34,35 @@ namespace Tilify.AffectorRenderer
         {
             rootObject = Utils.CreateNewGameObjectAtSpecificScene ("Root", scene, stationLayerID);
 
-            Camera = Utils.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID, rootObject).AddComponent<Camera> ();
-            Camera.transform.Translate (textureWorldSize.x / 2f, textureWorldSize.y / 2f, 0);
-            Camera.backgroundColor = new Color (1, 1, 1, 0);
-            Camera.orthographic = true;
-            Camera.orthographicSize = textureWorldSize.y / 2;
-            Camera.farClipPlane = 1;
-            Camera.nearClipPlane = -float.MaxValue;
-            Camera.enabled = false;
-            Camera.targetTexture = TargetTexture;
-            Camera.cullingMask = LayerMask.GetMask(LayerMask.LayerToName(stationLayerID));
+            camera = Utils.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID, rootObject).AddComponent<Camera> ();
+            camera.backgroundColor = new Color (1, 1, 1, 0);
+            camera.orthographic = true;
+            camera.orthographicSize = .5f;
+            camera.farClipPlane = 1;
+            camera.nearClipPlane = -float.MaxValue;
+            camera.enabled = false;
+            camera.cullingMask = LayerMask.GetMask(LayerMask.LayerToName(stationLayerID));
 
             texturePlane = Utils.CreateNewGameObjectAtSpecificScene ("Texture Plane", scene, stationLayerID, rootObject);
-            texturePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildQuad (textureWorldSize).ConvertToMesh ();
-            var renderer = texturePlane.AddComponent<MeshRenderer> ();
-            renderer.material.shader = Shader.Find ("Tilify/Unlit/Transparent");
-            renderer.material.mainTexture = baseTexture;
+            texturePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildQuad (Vector2.one).ConvertToMesh ();
+
+            texturePlaneRenderer = texturePlane.AddComponent<MeshRenderer> ();
+            texturePlaneRenderer.material.shader = Shader.Find ("Tilify/Unlit/Transparent");
 
             rootObject.SetActive (false);
         }
 
         public void UseIt (GameObject go)
         {
+            Assert.ArgumentNotNull (go, nameof (go));
+
             go.transform.parent = rootObject.transform; // GameObject will automatically move to our scene
         }
 
         public void StopUseIt (GameObject go)
         {
+            Assert.ArgumentNotNull (go, nameof (go));
+
             if ( go.scene != scene )
                 Debug.Log ("GameObject is already not in the scene used by the station");
             else
@@ -80,16 +72,20 @@ namespace Tilify.AffectorRenderer
             }
         }
 
-        public void Render()
+        public void Render(RenderTexture texture)
         {
+            Assert.ArgumentNotNull (texture, nameof (texture));
+
+            texturePlaneRenderer.material.mainTexture = texture;
+            camera.targetTexture = texture;
+
             rootObject.SetActive (true);
-            Camera.Render ();
+            camera.Render ();
             rootObject.SetActive (false);
         }
 
         public void Dispose()
         {
-            TargetTexture.Release ();
             SceneManager.UnloadSceneAsync (scene);
         }
     }
