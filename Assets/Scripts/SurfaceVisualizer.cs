@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tilify.Commands;
+using Tilify.TextureProviders;
 using UnityEngine;
 
 namespace Tilify
@@ -92,7 +93,9 @@ namespace Tilify
             else
             {
                 renderer.material.shader = textureShader;
-                var texture = surface.Textures[renderedChannel];
+                surface.Textures.TryGetValue(renderedChannel, out RenderTexture texture);
+                if ( texture == null )
+                    texture = new BlankChannelTextureProvider (new Vector2Int (2, 2), renderedChannel, false).Provide();
                 renderer.material.SetTexture ("_MainTex", texture);
             }
 
