@@ -17,8 +17,10 @@ namespace Tilify
         private void Start ()
         {
             var surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.User1, new WebTextureProvider (linkToGitHubOctocat) } });
-            var viz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
-            viz.RenderedChannel = TextureChannel.Normal;
+            var viz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel)
+            {
+                RenderedChannel = TextureChannel.Normal
+            };
         }
     }
 }
