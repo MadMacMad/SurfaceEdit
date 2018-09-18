@@ -30,7 +30,7 @@ namespace Tilify
         /// <summary>
         /// Validates the new value. If the new value is not equal to the current value, sets the property to a new value and calls NotifyPropertyChanged 
         /// </summary>
-        protected void SerProperty<T>(ref T property, T newValue, Func<T, T> validator = null, [CallerMemberName] string propertyName = "")
+        protected void SetProperty<T>(ref T property, T newValue, bool needUpdateAfterFieldChange = false, Func<T, T> validator = null, [CallerMemberName] string propertyName = "")
         {
             if ( validator != null )
                 newValue = validator (newValue);
@@ -39,6 +39,8 @@ namespace Tilify
             {
                 property = newValue;
                 NotifyPropertyChanged (propertyName);
+                if ( needUpdateAfterFieldChange )
+                    NotifyNeedUpdate ();
             }
         }
         /// <summary>
