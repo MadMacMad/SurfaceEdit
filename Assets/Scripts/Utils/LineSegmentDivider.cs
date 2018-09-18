@@ -9,10 +9,10 @@ namespace Tilify
 {
     public static class LineSegmentDivider
     {
-        public static Vector2[] DivideLineSegmentIntoPoints (Vector2 startPosition, Vector2 endPosition, float distanceBetweenPoints)
+        public static List<Vector2> DivideLineSegmentIntoPoints (Vector2 startPosition, Vector2 endPosition, float distanceBetweenPoints)
         {
             if ( startPosition == endPosition )
-                return new Vector2[] { startPosition };
+                return new List<Vector2>() { startPosition };
 
             if ( distanceBetweenPoints < .01f )
                 distanceBetweenPoints = .01f;
@@ -22,13 +22,13 @@ namespace Tilify
             var pointOffset = normalizedVector * distanceBetweenPoints;
 
             var pointsCount = Mathf.FloorToInt(originVector.magnitude / distanceBetweenPoints);
-            var result = new Vector2[pointsCount];
+            var result = new List<Vector2> ();
 
             var offsetPosition = startPosition;
 
-            for(int i = 0; i < result.Length; i++ )
+            for(int i = 0; i < pointsCount; i++ )
             {
-                result[i] = offsetPosition;
+                result.Add(offsetPosition);
                 offsetPosition += pointOffset;
             }
 
