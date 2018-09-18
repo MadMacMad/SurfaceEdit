@@ -59,6 +59,8 @@ namespace Tilify.Brushes
             return go;
         }
 
+        public BrushSnapshot AsSnapshot () => new BrushSnapshot (percentageSize, intervals, BrushStamp);
+
         public virtual void Dispose ()
         {
             BrushStamp.Release ();
