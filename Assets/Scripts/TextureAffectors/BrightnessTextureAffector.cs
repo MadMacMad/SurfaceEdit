@@ -9,7 +9,7 @@ namespace Tilify.TextureAffectors
 {
     public class BrightnessTextureAffector : TextureAffector
     {
-        public float Factor { get => factor; set => SetPropertyAndRegisterUndoRedo (v => factor = v, () => factor, value, true); }
+        public float Factor { get => factor; set => SetPropertyUndoRedo (v => factor = v, () => factor, value, true); }
         private float factor;
 
         public BrightnessTextureAffector(UndoRedoRegister undoRedoRegister, float factor) : base(undoRedoRegister)

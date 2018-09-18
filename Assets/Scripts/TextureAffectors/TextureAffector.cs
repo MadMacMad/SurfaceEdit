@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Tilify.TextureAffectors
 {
-    public abstract class TextureAffector : ObjectChangedRegistrator, IDisposable
+    public abstract class TextureAffector : PropertyChangedRegistrator, IDisposable
     {
         public TextureAffector(UndoRedoRegister undoRedoRegister) : base (undoRedoRegister) { }
 

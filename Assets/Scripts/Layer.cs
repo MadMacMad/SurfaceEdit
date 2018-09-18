@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class Layer : ObjectChangedRegistrator, IDisposable
+    public class Layer : PropertyChangedRegistrator, IDisposable
     {
         public IReadOnlyList<ISurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
         private List<ISurfaceAffector> surfaceAffectors = new List<ISurfaceAffector>();
 
-        public bool IsUseMask { get => isUseMask; set => SetPropertyAndRegisterUndoRedo (v => isUseMask = v, () => isUseMask, value, true); }
+        public bool IsUseMask { get => isUseMask; set => SetPropertyUndoRedo (v => isUseMask = v, () => isUseMask, value, true); }
         private bool isUseMask;
 
         public Layer (UndoRedoRegister undoRedoRegister) : base (undoRedoRegister)

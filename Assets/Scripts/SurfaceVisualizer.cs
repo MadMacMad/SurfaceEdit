@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class SurfaceVisualizer : ObjectChangedRegistrator, IDisposable
+    public class SurfaceVisualizer : PropertyChangedRegistrator, IDisposable
     {
         private static Dictionary<TextureChannel, string> channelPropertyPair = new Dictionary<TextureChannel, string> ()
         {
@@ -25,21 +25,21 @@ namespace Tilify
         public float DisplacementIntensity
         {
             get => displacementIntensity;
-            set => SetPropertyAndRegisterUndoRedo (v => displacementIntensity = v, () => displacementIntensity, value, true, v => Mathf.Clamp01 (v));
+            set => SetPropertyUndoRedo (v => displacementIntensity = v, () => displacementIntensity, value, true, v => Mathf.Clamp01 (v));
         }
         private float displacementIntensity = .1f;
 
         public float TesselationMultiplier
         {
             get => tesselationMultiplier;
-            set => SetPropertyAndRegisterUndoRedo (v => tesselationMultiplier = v, () => tesselationMultiplier, value, true, v => Mathf.Clamp (v, 1, 64));
+            set => SetPropertyUndoRedo (v => tesselationMultiplier = v, () => tesselationMultiplier, value, true, v => Mathf.Clamp (v, 1, 64));
         }
         private float tesselationMultiplier = 5;
 
         public bool InvertNormal
         {
             get => invertNormal;
-            set => SetPropertyAndRegisterUndoRedo (v => invertNormal = v, () => invertNormal, value, true);
+            set => SetProperty (ref invertNormal, value, true);
         }
         private bool invertNormal = false;
 
