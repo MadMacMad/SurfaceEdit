@@ -27,7 +27,9 @@ namespace Tilify.TextureAffectors
         public void Paint(PaintEntry paintEntry)
         {
             var material = paintEntry.brushSnapshot.brush.Material;
-                
+            
+            var offset = paintEntry.brushSnapshot.percentageSize / 2f;
+
             foreach ( var position in paintEntry.BrushPositions )
             {
                 var go = new GameObject ("Brush");
@@ -35,11 +37,16 @@ namespace Tilify.TextureAffectors
 
                 go.AddComponent<MeshFilter> ().mesh = quadMesh;
                 renderer.material = material;
-                go.transform.position = position;
+                go.transform.position = position - offset;
                 go.transform.localScale = paintEntry.brushSnapshot.percentageSize;
 
                 rendererStation.UseIt (go);
             }
+        }
+
+        public void Reset()
+        {
+            rendererStation.Reset ();
         }
 
         public override void Affect (RenderTexture texture)

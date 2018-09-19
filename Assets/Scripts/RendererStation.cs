@@ -10,6 +10,8 @@ namespace Tilify
 {
     public class RendererStation : IDisposable
     {
+        // TODO: Cache system
+
         private static readonly float stackedObjectsZOffset = -.00001f;
 
         private Camera camera;
@@ -21,19 +23,20 @@ namespace Tilify
         private string id;
         private int stationLayerID;
 
-        private int stackedObjectsCount = 1;
+        private int stackedObjectsCount;
 
         public RendererStation (int stationLayerID)
         {
             this.stationLayerID = stationLayerID;
-            id = Guid.NewGuid ().ToString ();
-
-            scene = SceneManager.CreateScene (nameof(RendererStation) + " Scene with ID = " + id);
+            
             Setup ();
         }
 
         private void Setup ()
         {
+            stackedObjectsCount = 1;
+            id = Guid.NewGuid ().ToString ();
+            scene = SceneManager.CreateScene (nameof (RendererStation) + " Scene with ID = " + id);
             rootObject = Utils.CreateNewGameObjectAtSpecificScene ("Root", scene, stationLayerID);
 
             camera = Utils.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID).AddComponent<Camera> ();
@@ -77,6 +80,15 @@ namespace Tilify
             rootObject.SetActive (true);
             camera.Render ();
             rootObject.SetActive (false);
+
+            texturePlaneRenderer.material.mainTexture = null;
+            camera.targetTexture = null;
+        }
+
+        public void Reset ()
+        {
+            SceneManager.UnloadSceneAsync (scene);
+            Setup ();
         }
 
         public void Dispose()

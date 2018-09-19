@@ -14,14 +14,14 @@ namespace Tilify
             if ( startPosition == endPosition )
                 return new List<Vector2>() { startPosition };
 
-            if ( distanceBetweenPoints < .01f )
-                distanceBetweenPoints = .01f;
+            if ( distanceBetweenPoints < .00001f )
+                distanceBetweenPoints = .00001f;
 
             var originVector = endPosition - startPosition;
             var normalizedVector = originVector.normalized;
             var pointOffset = normalizedVector * distanceBetweenPoints;
 
-            var pointsCount = Mathf.FloorToInt(originVector.magnitude / distanceBetweenPoints);
+            var pointsCount = Mathf.FloorToInt(originVector.magnitude / distanceBetweenPoints) + 1;
             var result = new List<Vector2> ();
 
             var offsetPosition = startPosition;

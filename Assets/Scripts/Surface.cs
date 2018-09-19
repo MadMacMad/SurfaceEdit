@@ -73,8 +73,8 @@ namespace Tilify
         }
         public void ResetAll ()
         {
-            foreach ( var pair in textures )
-                providers[pair.Key].Override (textures[pair.Key]);
+            foreach ( var pair in providers )
+                pair.Value.Override (textures[pair.Key]);
         }
     }
 }

@@ -74,6 +74,9 @@ namespace Tilify
             go.transform.Rotate (90, 0, 0);
 
             go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (worldSize, new Vector2Int (64, 64)).ConvertToMesh ();
+            var collider = go.AddComponent<BoxCollider> ();
+            collider.size = new Vector3 (1, 1, .01f);
+            collider.center = new Vector3 (.5f, .5f, 0);
 
             renderer = go.AddComponent<MeshRenderer> ();
 

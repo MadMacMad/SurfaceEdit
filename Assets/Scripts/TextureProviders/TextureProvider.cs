@@ -12,7 +12,7 @@ namespace Tilify.TextureProviders
 
         public TextureProvider(bool cacheTexture)
         {
-            this.cacheTexture = initialTexture;
+            this.cacheTexture = cacheTexture;
         }
 
         public void Override(RenderTexture texture)

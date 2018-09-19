@@ -25,7 +25,7 @@ namespace Tilify.Brushes
             get => intervals;
             set
             {
-                value = Mathf.Clamp (value, .01f, 10f);
+                value = Mathf.Clamp (value, .00001f, 10f);
                 intervals = value;
             }
         }

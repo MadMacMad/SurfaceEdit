@@ -28,7 +28,7 @@ namespace Tilify
             brushPositions = LineSegmentDivider.DivideLineSegmentIntoPoints (
                 lastPercentagePosition, newPercentagePosition,
                 brushSnapshot.intervals * maxBrushPercentageSizeDimension);
-            
+
             NeedPaint = brushPositions.Count != 0;
         }
     }
