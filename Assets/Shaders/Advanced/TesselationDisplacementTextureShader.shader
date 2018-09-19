@@ -59,7 +59,6 @@
 			o.Albedo = value.rgb * value.a + float4(1, 0, 1, 1) * (1 - value.a);
 			o.Metallic = 0;
 			o.Smoothness = 0;
-			o.Alpha = value.a;
 		}
 		ENDCG
 	}

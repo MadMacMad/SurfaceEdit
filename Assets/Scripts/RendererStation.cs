@@ -36,20 +36,22 @@ namespace Tilify
         {
             rootObject = Utils.CreateNewGameObjectAtSpecificScene ("Root", scene, stationLayerID);
 
-            camera = Utils.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID, rootObject).AddComponent<Camera> ();
+            camera = Utils.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID).AddComponent<Camera> ();
+            camera.transform.position = new Vector3 (.5f, .5f);
             camera.backgroundColor = new Color (1, 1, 1, 0);
             camera.orthographic = true;
             camera.orthographicSize = .5f;
-            camera.farClipPlane = 1;
-            camera.nearClipPlane = -float.MaxValue;
+            camera.farClipPlane = 10;
+            camera.nearClipPlane = -100000000;
             camera.enabled = false;
             camera.cullingMask = LayerMask.GetMask(LayerMask.LayerToName(stationLayerID));
 
             texturePlane = Utils.CreateNewGameObjectAtSpecificScene ("Texture Plane", scene, stationLayerID, rootObject);
+            texturePlane.transform.position = new Vector3 (0, 0, .2f);
             texturePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildQuad (Vector2.one).ConvertToMesh ();
 
             texturePlaneRenderer = texturePlane.AddComponent<MeshRenderer> ();
-            texturePlaneRenderer.material.shader = Shader.Find ("Tilify/Unlit/Transparent");
+            texturePlaneRenderer.material.shader = Shader.Find ("Unlit/Transparent");
 
             rootObject.SetActive (false);
         }
@@ -62,25 +64,13 @@ namespace Tilify
             var position = go.transform.position;
             position.z = stackedObjectsZOffset * stackedObjectsCount++;
             go.transform.position = position;
-        }
-
-        public void StopUseIt (GameObject go)
-        {
-            Assert.ArgumentNotNull (go, nameof (go));
-
-            if ( go.scene != scene )
-                Debug.Log ("GameObject is already not in the scene used by the station");
-            else
-            {
-                go.transform.parent = null; // Move GameObject to default scene
-                go.SetActive (true);
-            }
+            go.layer = stationLayerID;
         }
 
         public void Render(RenderTexture texture)
         {
             Assert.ArgumentNotNull (texture, nameof (texture));
-
+            
             texturePlaneRenderer.material.mainTexture = texture;
             camera.targetTexture = texture;
 

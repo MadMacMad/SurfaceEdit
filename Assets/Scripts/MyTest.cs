@@ -20,9 +20,9 @@ namespace Tilify
             var surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new WebTextureProvider (linkToGitHubOctocat) } });
 
             var taff = new PaintTextureAffector (UndoRedoRegister.Instance);
-            taff.Paint (new PaintEntry (new DefaultRoundBrush (.1f, .1f, 256, .5f).AsSnapshot (), new Vector2 (0, 0), new Vector2 (.5f, .5f)));
+            taff.Paint (new PaintEntry (new DefaultRoundBrush (.1f, .2f, 256, .1f).AsSnapshot (), new Vector2 (0, 0), new Vector2 (.5f, .5f)));
             taff.Affect (surface.Textures[TextureChannel.Albedo]);
-
+            
             var surfViz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
         }
     }
