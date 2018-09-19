@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Tilify.AffectorRenderer
+namespace Tilify
 {
-    public class AffectorRendererStation : IDisposable
+    public class RendererStation : IDisposable
     {
         private static readonly float stackedObjectsZOffset = -.00001f;
 
@@ -21,12 +21,14 @@ namespace Tilify.AffectorRenderer
         private string id;
         private int stationLayerID;
 
-        public AffectorRendererStation (int stationLayerID)
+        private int stackedObjectsCount = 1;
+
+        public RendererStation (int stationLayerID)
         {
             this.stationLayerID = stationLayerID;
             id = Guid.NewGuid ().ToString ();
 
-            scene = SceneManager.CreateScene (nameof(AffectorRendererStation) + " Scene with ID = " + id);
+            scene = SceneManager.CreateScene (nameof(RendererStation) + " Scene with ID = " + id);
             Setup ();
         }
 
@@ -57,6 +59,9 @@ namespace Tilify.AffectorRenderer
             Assert.ArgumentNotNull (go, nameof (go));
 
             go.transform.parent = rootObject.transform; // GameObject will automatically move to our scene
+            var position = go.transform.position;
+            position.z = stackedObjectsZOffset * stackedObjectsCount++;
+            go.transform.position = position;
         }
 
         public void StopUseIt (GameObject go)

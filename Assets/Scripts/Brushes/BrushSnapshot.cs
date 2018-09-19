@@ -9,20 +9,19 @@ namespace Tilify.Brushes
 {
     public sealed class BrushSnapshot
     {
+        public readonly Brush brush;
+
         public readonly Vector2 percentageSize;
         public readonly float intervals;
 
         public readonly RenderTexture brushStamp;
 
-        public BrushSnapshot (Vector2 percentageSize, float intervals, RenderTexture brushStamp)
+        public BrushSnapshot (Brush brush)
         {
-            percentageSize.Clamp01 ();
-            if ( intervals <= 0 )
-                intervals = .001f;
-
-            this.percentageSize = percentageSize;
-            this.intervals = intervals;
-            this.brushStamp = brushStamp;
+            this.brush = brush;
+            percentageSize = brush.PercentageSize;
+            intervals = brush.Intervals;
+            brushStamp = brush.BrushStamp;
         }
 
     }
