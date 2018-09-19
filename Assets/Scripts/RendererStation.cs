@@ -11,6 +11,7 @@ namespace Tilify
     public class RendererStation : IDisposable
     {
         // TODO: Cache system
+        // TODO: geometry shader or Graphics.DrawMeshInstancedIndirect maybe
 
         private static readonly float stackedObjectsZOffset = -.00001f;
 
@@ -58,11 +59,11 @@ namespace Tilify
 
             rootObject.SetActive (false);
         }
-
+        
         public void UseIt (GameObject go)
         {
             Assert.ArgumentNotNull (go, nameof (go));
-
+            
             go.transform.parent = rootObject.transform; // GameObject will automatically move to our scene
             var position = go.transform.position;
             position.z = stackedObjectsZOffset * stackedObjectsCount++;
