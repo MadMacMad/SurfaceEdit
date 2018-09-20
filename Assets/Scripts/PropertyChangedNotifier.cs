@@ -11,14 +11,14 @@ namespace Tilify
 
     public abstract class PropertyChangedNotifier : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler OnPropertyChanged;
-        public event NeedUpdateEventHandler OnNeedUpdate;
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event NeedUpdateEventHandler NeedUpdate;
 
         protected void NotifyNeedUpdate ()
-            => OnNeedUpdate?.Invoke (this);
+            => NeedUpdate?.Invoke (this);
 
         protected void NotifyPropertyChanged ([CallerMemberName] string propertyName = "")
-            => OnPropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
+            => PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 
         /// <summary>
         /// Validates and modifies the new value with validator.

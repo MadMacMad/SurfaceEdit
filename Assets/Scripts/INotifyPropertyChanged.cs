@@ -9,7 +9,7 @@ namespace Tilify
     public delegate void PropertyChangedEventHandler (object sender, PropertyChangedEventArgs args);
     public interface INotifyPropertyChanged
     {
-        event PropertyChangedEventHandler OnPropertyChanged;
+        event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class PropertyChangedEventArgs : EventArgs

@@ -7,29 +7,23 @@ using UnityEngine.SceneManagement;
 
 namespace Tilify.Brushes
 {
-    public abstract class Brush : IDisposable
+    public abstract class Brush : PropertyChangedNotifier, IDisposable
     {
         public Vector2 PercentageSize
         {
             get => percentageSize;
-            set
-            {
-                value.Clamp01 ();
-                percentageSize = value;
-            }
+            set => SetProperty (ref percentageSize, value, false, v => { v.Clamp01 (); return v; });
         }
         private Vector2 percentageSize;
 
-        public float Intervals
+        public float PercentageIntervals
         {
-            get => intervals;
-            set
-            {
-                value = Mathf.Clamp (value, .00001f, 10f);
-                intervals = value;
-            }
+            get => percentageIntervals;
+            set => SetProperty (ref percentageIntervals, value, false, v => Mathf.Clamp (v, .00001f, 10f));
         }
-        private float intervals;
+        private float percentageIntervals;
+
+        public float RealIntervals { get; private set; }
 
         public Material Material
         {
@@ -50,31 +44,22 @@ namespace Tilify.Brushes
 
         public RenderTexture BrushStamp { get; protected set; }
 
-        protected Brush (Vector2 percentageSize, float intervals)
+        protected Brush (Vector2 percentageSize, float percentageIntervals)
         {
-            PercentageSize = percentageSize;
-            Intervals = intervals;
-        }
-        public GameObject CreateGO (string name, Vector2 percentagePosition, float zWorldPosition, Vector2 textureWorldSize, Scene scene, int layerID)
-        {
-            percentagePosition.Clamp01 ();
+            percentageSize.Clamp01 ();
+            percentageIntervals = Mathf.Clamp (percentageIntervals, .00001f, 10f);
 
-            var go = Utils.CreateNewGameObjectAtSpecificScene (name, scene, layerID);
+            this.percentageSize = percentageSize;
+            this.percentageIntervals = percentageIntervals;
 
-            Vector3 worldPosition = (percentagePosition - PercentageSize / 2) * textureWorldSize;
-            worldPosition.z = zWorldPosition;
-            go.transform.position = worldPosition;
-
-            var mesh = MeshBuilder.BuildQuad (PercentageSize * textureWorldSize).ConvertToMesh();
-            go.AddComponent<MeshFilter> ().mesh = mesh;
-
-            var renderer = go.AddComponent<MeshRenderer> ();
-            renderer.material.shader = Shader.Find ("Unlit/Transparent");
-            renderer.material.mainTexture = BrushStamp;
-
-            return go;
+            UpdateRealIntervals (null, null);
+            PropertyChanged += UpdateRealIntervals;
         }
 
+        private void UpdateRealIntervals(object sender, EventArgs eventArgs)
+        {
+            RealIntervals = percentageIntervals * Mathf.Max (percentageSize.x, percentageSize.y);
+        }
         public BrushSnapshot AsSnapshot () => new BrushSnapshot (this);
 
         public virtual void Dispose ()

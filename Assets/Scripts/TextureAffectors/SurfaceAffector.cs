@@ -19,7 +19,7 @@ namespace Tilify.TextureAffectors
         {
             this.textureAffector = textureAffector;
             AffectList.AddRange(affectList);
-            textureAffector.OnNeedUpdate += s => NotifyNeedUpdate (); 
+            textureAffector.NeedUpdate += s => NotifyNeedUpdate (); 
         }
 
         public void Affect(Surface surface)

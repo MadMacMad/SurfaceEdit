@@ -81,7 +81,7 @@ namespace Tilify
             renderer = go.AddComponent<MeshRenderer> ();
 
             Update (this);
-            OnNeedUpdate += Update;
+            NeedUpdate += Update;
         }
 
         private void Update (object sender)

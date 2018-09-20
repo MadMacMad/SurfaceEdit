@@ -20,7 +20,7 @@ namespace Tilify.Brushes
         {
             this.brush = brush;
             percentageSize = brush.PercentageSize;
-            intervals = brush.Intervals;
+            intervals = brush.PercentageIntervals;
             brushStamp = brush.BrushStamp;
         }
 

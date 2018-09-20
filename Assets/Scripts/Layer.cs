@@ -32,7 +32,7 @@ namespace Tilify
         {
             if (!surfaceAffectors.Contains(surfaceAffector))
             {
-                surfaceAffector.OnNeedUpdate += OnSurfaceAffectorNeedUpdate;
+                surfaceAffector.NeedUpdate += OnSurfaceAffectorNeedUpdate;
                 surfaceAffectors.Add (surfaceAffector);
                 NotifyNeedUpdate ();
             }
@@ -41,7 +41,7 @@ namespace Tilify
         {
             if ( surfaceAffectors.Contains (surfaceAffector) )
             {
-                surfaceAffector.OnNeedUpdate -= OnSurfaceAffectorNeedUpdate;
+                surfaceAffector.NeedUpdate -= OnSurfaceAffectorNeedUpdate;
                 surfaceAffectors.Remove (surfaceAffector as ISurfaceAffector);
                 NotifyNeedUpdate ();
             }
