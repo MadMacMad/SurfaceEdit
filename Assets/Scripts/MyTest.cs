@@ -30,56 +30,37 @@ namespace Tilify
 
         private void Start ()
         {
-            surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new BlankChannelTextureProvider(new Vector2Int(4096, 4096), TextureChannel.Metallic) } });
+            surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new BlankChannelTextureProvider(new Vector2Int(512, 512), TextureChannel.Metallic) } });
 
             taff = new PaintTextureAffector (UndoRedoRegister.Instance);
             
             var surfViz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
 
             brush = new DefaultRoundBrush (size, intervals, 64, hardness);
+
+            PaintingManager.Instance.CurrentBrush = brush;
+            PaintingManager.Instance.PaintTrigger += () =>
+            {
+                if ( Input.GetKey (KeyCode.Mouse0) && !Input.GetKey (KeyCode.LeftAlt) )
+                {
+                    bool isHit = Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out RaycastHit hit);
+                    var point = new Vector2 (hit.point.x, hit.point.z);
+                    return new PaintingManager.PaintTriggerEntry (isHit, point);
+                }
+                return new PaintingManager.PaintTriggerEntry (false, Vector2.zero);
+            };
+            PaintingManager.Instance.OnPaint = e =>
+            {
+                surface.ResetAll ();
+                taff.Paint (e);
+                taff.Affect (surface.Textures[TextureChannel.Albedo]);
+            };
         }
-
-        private Vector2 last;
-
         private void Update ()
         {
-            bool isHit = Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out RaycastHit hit);
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                surface.ResetAll ();
-                taff.Reset ();
-                taff.Affect (surface.Textures[TextureChannel.Albedo]);
-            }
-
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                brush = new DefaultRoundBrush (size, intervals, 64, hardness);
-            }
-
-            var point = new Vector2 (hit.point.x, hit.point.z);
-
-            if ( Input.GetKeyDown (KeyCode.Mouse0) && !Input.GetKey (KeyCode.LeftAlt) )
-            {
-                last = point;
-            }
-            if ( isHit && Input.GetKey (KeyCode.Mouse0) && !Input.GetKey(KeyCode.LeftAlt) )
-            {
-                if ( point == last )
-                    return;
-                taff.Paint (new PaintEntry (brush.AsSnapshot (), last, point));
-                last = point;
-                surface.ResetAll ();
-                taff.Affect (surface.Textures[TextureChannel.Albedo]);
-            }
-            if ( Input.GetKeyDown (KeyCode.Alpha1) )
-            {
-                //UndoRedoRegister.Instance.Undo ();
-            }
-            if ( Input.GetKeyDown (KeyCode.Alpha2) )
-            {
-                //UndoRedoRegister.Instance.Redo ();
-            }
+            brush.PercentageSize = new Vector2(size, size);
+            brush.PercentageIntervals = intervals;
+            (brush as DefaultRoundBrush ).Hardness = hardness;
         }
     }
 }

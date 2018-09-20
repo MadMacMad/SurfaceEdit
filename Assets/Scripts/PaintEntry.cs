@@ -10,26 +10,19 @@ namespace Tilify
 { 
     public sealed class PaintEntry
     {
-        public bool NeedPaint { get; private set; }
-
         public readonly BrushSnapshot brushSnapshot;
 
-        public IReadOnlyList<Vector2> BrushPositions => brushPositions;
-        private List<Vector2> brushPositions;
+        public IReadOnlyCollection<Vector2> BrushPositions => Array.AsReadOnly(brushPositions);
+        private Vector2[] brushPositions;
 
-        public PaintEntry(BrushSnapshot brushSnapshot, Vector2 lastPercentagePosition, Vector2 newPercentagePosition)
+        public PaintEntry(BrushSnapshot brushSnapshot, Vector2[] brushPositions)
         {
-            lastPercentagePosition.Clamp01 ();
-            newPercentagePosition.Clamp01 ();
+            Assert.ArgumentNotNull (brushSnapshot, nameof (brushSnapshot));
+            Assert.ArgumentNotNull (brushPositions, nameof (brushPositions));
+            Assert.ArgumentTrue (brushPositions.Length >= 1, nameof (brushPositions) + ".Lenght is less then 1");
+
             this.brushSnapshot = brushSnapshot;
-
-            var maxBrushPercentageSizeDimension = Math.Max (brushSnapshot.percentageSize.x, brushSnapshot.percentageSize.y);
-
-            brushPositions = LineSegmentDivider.DivideLineSegmentIntoPoints (
-                lastPercentagePosition, newPercentagePosition,
-                brushSnapshot.intervals * maxBrushPercentageSizeDimension);
-
-            NeedPaint = brushPositions.Count != 0;
+            this.brushPositions = brushPositions;
         }
     }
 }
