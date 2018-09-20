@@ -10,18 +10,10 @@ using UnityEngine.SceneManagement;
 
 namespace Tilify
 {
-    /*
-     * Чтобы не рендерились объекты с создаваемой сцены,
-     * нужно создать слой (его id передаётся в конструктор PaintableTexture)
-     * и в основной камере выключить в Culling Mask этот слой.
-     */
-
-
-     /*
-      * Пока функционал сильно ограничен, это тестовая версия.
-      * Как закончу с LayerStack перепишу всё и добавлю функционала
-     */
-
+    /// <summary>
+    /// Just for reference. In near future will be completely removed
+    /// </summary>
+    [Obsolete]
     public class PaintableTexture : IDisposable
     {
         public RenderTexture ResultTexture { get; private set; }
@@ -195,7 +187,7 @@ namespace Tilify
             if ( go != null )
                 GameObject.Destroy (go);
 
-            go = brush.CreateGO (entryID.ToString (), percentagePosition, zWorldPosition, textureWorldSize, scene, layerID);
+            //go = brush.CreateGO (entryID.ToString (), percentagePosition, zWorldPosition, textureWorldSize, scene, layerID);
         }
         
         public void Show ()
