@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 
 namespace Tilify
 {
-    public class PaintingTest : MonoBehaviour
+    public class DemoOne : MonoBehaviour
     {
         private string linkToGitHubOctocat = "https://assets-cdn.github.com/images/modules/logos_page/Octocat.png";
         private string pathToLenna = "Textures/Standard/Lenna";
