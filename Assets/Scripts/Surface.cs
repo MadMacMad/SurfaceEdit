@@ -5,53 +5,62 @@ using UnityEngine;
 
 namespace Tilify
 {
-    public class Surface
+    public sealed class Surface
     {
         public IReadOnlyDictionary<TextureChannel, RenderTexture> Textures => textures;
         private Dictionary<TextureChannel, RenderTexture> textures = new Dictionary<TextureChannel, RenderTexture> ();
 
-        private Dictionary<TextureChannel, TextureProvider> providers;
+        private Dictionary<TextureChannel, TextureProvider> providers = new Dictionary<TextureChannel, TextureProvider>();
+
+        private TextureChannelCollection channels;
+        private TextureResolution textureResolution;
         
-        public static Surface CreateBlankSurface(TextureResolution textureResolution, TextureChannel channels)
+        public void RecreateBlankSurface(TextureChannelCollection newChannels)
         {
-            var surface = new Surface
+            foreach ( var newChannel in newChannels.List)
             {
-                providers = new Dictionary<TextureChannel, TextureProvider> ()
-            };
+                if ( !channels.List.Contains(newChannel) )
+                {
+                    channels.AddChannel (newChannel);
 
-            foreach ( TextureChannel channel in channels.GetFlags () )
-                surface.providers.Add (channel, new BlankChannelTextureProvider (textureResolution, channel));
+                    var provider = new BlankChannelTextureProvider (textureResolution, newChannel);
+                    providers.Add (newChannel, provider);
+                    textures.Add (newChannel, provider.Provide());
+                }
+            }
 
-            surface.FillTexturesArray ();
+            foreach(var channel in channels.List)
+            {
+                if (!newChannels.List.Contains(channel))
+                {
+                    var provider = providers[channel];
+                    provider.Dispose ();
+                    providers.Remove (channel);
 
-            return surface;
+                    var texture = textures[channel];
+                    texture.Release ();
+                    textures.Remove (channel);
+                }
+            }
         }
-        
+
         private Surface() { }
 
-        public Surface (Dictionary<TextureChannel, TextureProvider> textureProviders)
+        public Surface (TextureResolution textureResolution, TextureChannelCollection channels)
         {
-            Assert.ArgumentNotNull (textureProviders, nameof (textureProviders));
-            Assert.ArgumentTrue (textureProviders.Count >= 1, nameof (textureProviders) + ".Count is less then 1");
+            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
+            Assert.ArgumentNotNull (channels, nameof (channels));
 
-            int index = 0;
-            foreach ( var pair in textureProviders )
+            this.channels = channels;
+
+            foreach(var channel in channels.List)
             {
-                Assert.ArgumentNotNull (pair.Value, $"{nameof (textureProviders)}[{index}]");
-                index++;
+                var provider = new BlankChannelTextureProvider (textureResolution, channel);
+                providers.Add (channel, provider);
+                textures.Add (channel, provider.Provide ());
             }
-            
-            providers = textureProviders;
-
-            FillTexturesArray ();
         }
-
-        private void FillTexturesArray ()
-        {
-            foreach ( var pair in providers )
-                textures.Add (pair.Key, pair.Value.Provide ());
-        }
-
+        
         public Dictionary<TextureChannel, RenderTexture> SelectTextures (List<TextureChannel> selectionList)
         {
             Assert.ArgumentNotNull (selectionList, nameof(selectionList));
@@ -60,6 +69,7 @@ namespace Tilify
                 .Where (s => textures.ContainsKey (s))
                 .ToDictionary (s => s, s => textures[s]);
         }
+
         public void Reset (List<TextureChannel> selectionList)
         {
             Assert.ArgumentNotNull (selectionList, nameof (selectionList));

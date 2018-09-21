@@ -5,19 +5,19 @@ namespace Tilify.TextureProviders
     public class SolidColorTextureProvider : TextureProvider
     {
         private Color color;
-        private TextureResolution textureResolution;
+        private TextureResolution resolution;
 
-        public SolidColorTextureProvider(TextureResolution textureResolution, Color color, bool cacheTexture = true) : base (cacheTexture)
+        public SolidColorTextureProvider(TextureResolution resolution, Color color, bool cacheTexture = true) : base (cacheTexture)
         {
-            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
+            Assert.ArgumentNotNull (resolution, nameof (resolution));
 
             this.color = color;
-            this.textureResolution = textureResolution;
+            this.resolution = resolution;
         }
 
         protected override RenderTexture Provide_Internal ()
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (textureResolution.Vector);
+            var renderTexture = Utils.CreateAndAllocateRenderTexture (resolution.Vector);
             renderTexture = new ComputeFillWithColor (renderTexture, color).Execute ();
             return renderTexture;
         }

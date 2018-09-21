@@ -4,17 +4,17 @@ namespace Tilify.TextureProviders
 {
     public class BlankChannelTextureProvider : TextureProvider
     {
-        private TextureResolution textureResolution;
+        private TextureResolution resolution;
         private TextureChannel textureChannel;
 
-        public BlankChannelTextureProvider(TextureResolution textureResolution, TextureChannel textureChannel, bool cacheTexture = true) : base (cacheTexture)
+        public BlankChannelTextureProvider(TextureResolution resolution, TextureChannel textureChannel, bool cacheTexture = true) : base (cacheTexture)
         {
-            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
+            Assert.ArgumentNotNull (resolution, nameof (resolution));
             
-            this.textureResolution = textureResolution;
+            this.resolution = resolution;
             this.textureChannel = textureChannel;
 
-            textureResolution.PropertyChanged += (s, e) => isNeedReprovide = true;
+            resolution.PropertyChanged += (s, e) => isNeedReprovide = true;
         }
 
         protected override RenderTexture Provide_Internal ()
@@ -27,13 +27,12 @@ namespace Tilify.TextureProviders
                 case TextureChannel.Roughness:          return ProvideSolidColorRenderTexture (Color.white);
                 case TextureChannel.Height:             return ProvideSolidColorRenderTexture (new Color(.5f, .5f, .5f, 1));
                 case TextureChannel.Mask:               return ProvideSolidColorRenderTexture (Color.white);
-                case TextureChannel.Unknown:            return ProvideSolidColorRenderTexture (Color.white);
                 default:                                return ProvideSolidColorRenderTexture (Color.white);
             }
         }
         private RenderTexture ProvideSolidColorRenderTexture(Color color)
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (textureResolution.Vector);
+            var renderTexture = Utils.CreateAndAllocateRenderTexture (resolution.Vector);
             return new ComputeFillWithColor (renderTexture, color).Execute();
         }
     }

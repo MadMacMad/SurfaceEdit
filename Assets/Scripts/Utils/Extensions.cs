@@ -90,6 +90,5 @@ namespace Tilify
 
         public static IEnumerable<Enum> GetFlags (this Enum e) 
             => Enum.GetValues (e.GetType ()).Cast<Enum> ().Where (e.HasFlag);
-        
     }
 }

@@ -21,6 +21,7 @@ namespace Tilify
 
         private Surface surface;
         private PaintTextureAffector taff;
+        private FillTextureAffector fillAffector;
 
         private Brush brush;
 
@@ -28,10 +29,16 @@ namespace Tilify
 
         private void Start ()
         {
-            surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new BlankChannelTextureProvider(new TextureResolution(TextureResolutionEnum.x1024), TextureChannel.Metallic) } });
+            var channels = new TextureChannelCollection ();
+            channels.AddChannel (TextureChannel.Albedo);
+
+            surface = new Surface (new TextureResolution(TextureResolutionEnum.x2048), channels);
 
             taff = new PaintTextureAffector (UndoRedoRegister.Instance);
-            
+            fillAffector = new FillTextureAffector (UndoRedoRegister.Instance, new Color (0, 0, 0, 1));
+
+            fillAffector.Affect (surface.Textures[TextureChannel.Albedo]);
+
             var surfViz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
 
             brush = new DefaultRoundBrush (new TextureResolution(TextureResolutionEnum.x64), size, intervals, hardness);
@@ -50,12 +57,14 @@ namespace Tilify
             PaintingManager.Instance.OnPaintTemporary = e =>
             {
                 surface.ResetAll ();
+                fillAffector.Affect (surface.Textures[TextureChannel.Albedo]);
                 taff.PaintTemporary (e);
                 taff.Affect (surface.Textures[TextureChannel.Albedo]);
             };
             PaintingManager.Instance.OnPaintFinal = e =>
             {
                 surface.ResetAll ();
+                fillAffector.Affect (surface.Textures[TextureChannel.Albedo]);
                 taff.Paint (e);
                 taff.Affect (surface.Textures[TextureChannel.Albedo]);
             };
@@ -67,12 +76,14 @@ namespace Tilify
             if ( Input.GetKeyDown (KeyCode.Alpha1) )
             {
                 surface.ResetAll ();
+                fillAffector.Affect (surface.Textures[TextureChannel.Albedo]);
                 UndoRedoRegister.Instance.Undo ();
                 taff.Affect (surface.Textures[TextureChannel.Albedo]);
             }
             if ( Input.GetKeyDown (KeyCode.Alpha2) )
             {
                 surface.ResetAll ();
+                fillAffector.Affect (surface.Textures[TextureChannel.Albedo]);
                 UndoRedoRegister.Instance.Redo ();
                 taff.Affect (surface.Textures[TextureChannel.Albedo]);
             }
