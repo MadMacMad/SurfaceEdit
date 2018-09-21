@@ -67,6 +67,7 @@ namespace SurfaceEdit
                 taff.Affect (surface.Textures[TextureChannel.Albedo]);
             };
 
+
             ui = GameObject.Find ("UI").GetComponent<TextMeshProUGUI>();
         }
         private void Update ()
