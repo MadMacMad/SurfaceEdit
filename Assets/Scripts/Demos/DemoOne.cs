@@ -28,13 +28,13 @@ namespace Tilify
 
         private void Start ()
         {
-            surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new BlankChannelTextureProvider(new Vector2Int(2048, 2048), TextureChannel.Metallic) } });
+            surface = new Surface (new Dictionary<TextureChannel, TextureProvider> () { { TextureChannel.Albedo, new BlankChannelTextureProvider(new TextureResolution(TextureResolutionEnum.x1024), TextureChannel.Metallic) } });
 
             taff = new PaintTextureAffector (UndoRedoRegister.Instance);
             
             var surfViz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
 
-            brush = new DefaultRoundBrush (size, intervals, 64, hardness);
+            brush = new DefaultRoundBrush (new TextureResolution(TextureResolutionEnum.x64), size, intervals, hardness);
 
             PaintingManager.Instance.CurrentBrush = brush;
             PaintingManager.Instance.PaintTrigger += () =>

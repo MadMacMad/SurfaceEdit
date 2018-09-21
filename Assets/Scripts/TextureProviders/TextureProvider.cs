@@ -8,11 +8,13 @@ namespace Tilify.TextureProviders
         private RenderTexture initialTexture;
         private RenderTexture copiedTexture;
 
-        private bool cacheTexture;
+        private bool isCacheTexture;
 
-        public TextureProvider(bool cacheTexture)
+        protected bool isNeedReprovide = false;
+
+        public TextureProvider(bool isCacheTexture)
         {
-            this.cacheTexture = cacheTexture;
+            this.isCacheTexture = isCacheTexture;
         }
 
         public void Override(RenderTexture texture)
@@ -26,13 +28,22 @@ namespace Tilify.TextureProviders
         }
         public RenderTexture Provide ()
         {
-            if ( initialTexture is null )
+            if (isNeedReprovide)
             {
+                initialTexture?.Release ();
                 initialTexture = Provide_Internal ();
-                if ( cacheTexture )
+                isNeedReprovide = false;
+                if ( isCacheTexture )
                     copiedTexture = initialTexture.Copy ();
             }
-            return cacheTexture ? copiedTexture : initialTexture;
+            else if ( initialTexture is null )
+            {
+                initialTexture = Provide_Internal ();
+                if ( isCacheTexture )
+                    copiedTexture = initialTexture.Copy ();
+            }
+
+            return isCacheTexture ? copiedTexture : initialTexture;
         }
 
         protected abstract RenderTexture Provide_Internal ();

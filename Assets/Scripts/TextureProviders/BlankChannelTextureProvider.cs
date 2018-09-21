@@ -4,14 +4,17 @@ namespace Tilify.TextureProviders
 {
     public class BlankChannelTextureProvider : TextureProvider
     {
-        private Vector2Int textureSize;
+        private TextureResolution textureResolution;
         private TextureChannel textureChannel;
 
-        public BlankChannelTextureProvider(Vector2Int textureSize, TextureChannel textureChannel, bool cacheTexture = true) : base (cacheTexture)
+        public BlankChannelTextureProvider(TextureResolution textureResolution, TextureChannel textureChannel, bool cacheTexture = true) : base (cacheTexture)
         {
-            textureSize.Clamp (Settings.minTextureSize, Settings.maxTextureSize);
-            this.textureSize = textureSize;
+            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
+            
+            this.textureResolution = textureResolution;
             this.textureChannel = textureChannel;
+
+            textureResolution.PropertyChanged += (s, e) => isNeedReprovide = true;
         }
 
         protected override RenderTexture Provide_Internal ()
@@ -30,7 +33,7 @@ namespace Tilify.TextureProviders
         }
         private RenderTexture ProvideSolidColorRenderTexture(Color color)
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (textureSize);
+            var renderTexture = Utils.CreateAndAllocateRenderTexture (textureResolution.Vector);
             return new ComputeFillWithColor (renderTexture, color).Execute();
         }
     }

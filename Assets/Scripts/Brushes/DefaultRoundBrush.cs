@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Tilify.Brushes
 {
@@ -11,26 +12,19 @@ namespace Tilify.Brushes
         }
         private float hardness;
 
-        public int Resolution
-        {
-            get => resolution;
-            set => SetProperty (ref resolution, value, true, v => Mathf.Clamp (v, 1, 4096));
-        }
-        private int resolution;
+        public TextureResolution Resolution { get; private set; }
 
-        public DefaultRoundBrush(float percentageSize, float intervals, int resolution, float hardness)
+        public DefaultRoundBrush(TextureResolution textureResolution, float percentageSize, float intervals, float hardness)
             : base(new Vector2(percentageSize, percentageSize), intervals)
         {
-            this.resolution = Mathf.Clamp (resolution, 1, 4096);
             this.hardness = Mathf.Clamp01 (hardness);
-            
-            NeedUpdate += OnNeedUpdate;
-            OnNeedUpdate (this);
+
+            Resolution.PropertyChanged += OnNeedUpdate;
         }
 
-        private void OnNeedUpdate(object sender)
+        private void OnNeedUpdate(object sender, EventArgs eventArgs)
         {
-            BrushStamp = new ComputeRoundBrushCreate (resolution, hardness).Execute ();
+            BrushStamp = new ComputeRoundBrushCreate (Resolution.Value, hardness).Execute ();
         }
     }
 }

@@ -8,11 +8,11 @@ namespace Tilify
         private Surface collectorSurface;
         private Surface layerSurface;
 
-        public LayerStack(Vector2Int textureSize, TextureChannel activeChannels)
+        public LayerStack(TextureResolution textureResolution, TextureChannel activeChannels)
         {
-            textureSize = TextureHelper.Instance.ClampTextureSize (textureSize);
+            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
 
-            collectorSurface = Surface.CreateBlankSurface (textureSize, activeChannels);
+            collectorSurface = Surface.CreateBlankSurface (textureResolution, activeChannels);
         }
 
         public void CreateLayer()

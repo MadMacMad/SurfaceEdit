@@ -12,16 +12,15 @@ namespace Tilify
 
         private Dictionary<TextureChannel, TextureProvider> providers;
         
-        public static Surface CreateBlankSurface(Vector2Int textureSize, TextureChannel channels)
+        public static Surface CreateBlankSurface(TextureResolution textureResolution, TextureChannel channels)
         {
-            var surface = new Surface ();
-
-            textureSize = TextureHelper.Instance.ClampTextureSize (textureSize);
-
-            surface.providers = new Dictionary<TextureChannel, TextureProvider> ();
+            var surface = new Surface
+            {
+                providers = new Dictionary<TextureChannel, TextureProvider> ()
+            };
 
             foreach ( TextureChannel channel in channels.GetFlags () )
-                surface.providers.Add (channel, new BlankChannelTextureProvider (textureSize, channel));
+                surface.providers.Add (channel, new BlankChannelTextureProvider (textureResolution, channel));
 
             surface.FillTexturesArray ();
 

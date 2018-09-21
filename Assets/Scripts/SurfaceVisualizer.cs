@@ -94,7 +94,7 @@ namespace Tilify
                 renderer.material.shader = textureShader;
                 surface.Textures.TryGetValue(renderedChannel, out RenderTexture texture);
                 if ( texture == null )
-                    texture = new BlankChannelTextureProvider (new Vector2Int (2, 2), renderedChannel, false).Provide();
+                    texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x2), renderedChannel, false).Provide();
                 renderer.material.SetTexture ("_MainTex", texture);
             }
 

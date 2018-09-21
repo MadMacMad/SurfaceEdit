@@ -41,7 +41,7 @@ namespace Tilify
 
         private void Awake ()
         {
-            currentBrush = new DefaultRoundBrush (.1f, .1f, 256, .8f);
+            currentBrush = new DefaultRoundBrush (new TextureResolution(TextureResolutionEnum.x64), .1f, .1f, .8f);
 
             PropertyChanged += ResetPaint;
             currentBrush.PropertyChanged += ResetPaint;
