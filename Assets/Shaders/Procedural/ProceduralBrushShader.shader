@@ -1,4 +1,4 @@
-﻿Shader "Tilify/Procedural/PointsBrush"
+﻿Shader "SurfaceEdit/Procedural/PointsBrush"
 {
 	Properties
 	{

@@ -1,4 +1,4 @@
-﻿Shader "Tilify/Unlit/Transparent"
+﻿Shader "SurfaceEdit/Unlit/Transparent"
 {
 	Properties
 	{

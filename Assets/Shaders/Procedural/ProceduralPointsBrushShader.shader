@@ -1,4 +1,4 @@
-﻿Shader "Tilify/Procedural/Brush"
+﻿Shader "SurfaceEdit/Procedural/Brush"
 {
 	Properties
 	{

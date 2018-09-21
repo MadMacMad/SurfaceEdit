@@ -1,4 +1,4 @@
-﻿Shader "Tilify/Advanced/TesselationDisplacementTextureShader"
+﻿Shader "SurfaceEdit/Advanced/TesselationDisplacementTextureShader"
 {
 	Properties
 	{

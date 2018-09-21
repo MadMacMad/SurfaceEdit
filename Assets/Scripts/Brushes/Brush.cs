@@ -27,7 +27,7 @@ namespace SurfaceEdit.Brushes
             {
                 if (material == null)
                 {
-                    material = new Material (Shader.Find ("Tilify/Procedural/Brush"));
+                    material = new Material (Shader.Find ("SurfaceEdit/Procedural/Brush"));
                     Update ();
                 }
                 return material;

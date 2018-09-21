@@ -15,8 +15,8 @@ namespace SurfaceEdit
             { TextureChannel.Metallic, "_Metallic" },
             { TextureChannel.Height, "_Displacement" }
         };
-        private static Shader surfaceShader = Shader.Find ("Tilify/Advanced/TesselationDisplacementShader");
-        private static Shader textureShader = Shader.Find ("Tilify/Advanced/TesselationDisplacementTextureShader");
+        private static Shader surfaceShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementShader");
+        private static Shader textureShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementTextureShader");
 
         public float DisplacementIntensity
         {
