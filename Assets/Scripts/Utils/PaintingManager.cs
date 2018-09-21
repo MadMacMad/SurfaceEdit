@@ -32,20 +32,28 @@ namespace Tilify
 
         public Func<PaintTriggerEntry> PaintTrigger;
 
-        public Action<PaintEntry> OnPaint;
+        public Action<PaintEntry> OnPaintFinal;
+        public Action<PaintEntry> OnPaintTemporary;
 
         private bool isTriggeredLastFrame;
         private Vector2 lastPosition;
-        
+
+        private BrushSnapshot brushSnapshot;
+        private List<Vector3> brushPositions = new List<Vector3>();
+
         private void Awake ()
         {
             currentBrush = new DefaultRoundBrush (.1f, .1f, 256, .8f);
 
-            PropertyChanged += (s, e) =>
-            {
-                isTriggeredLastFrame = false;
-            };
+            PropertyChanged += ResetPaint;
+            currentBrush.PropertyChanged += ResetPaint;
         }
+
+        private void ResetPaint (object sender, EventArgs eventArgs)
+        {
+            isTriggeredLastFrame = false;
+        }
+
         private void Update ()
         {
             var triggerEntry = PaintTrigger ();
@@ -59,11 +67,14 @@ namespace Tilify
                 {
                     isTriggeredLastFrame = true;
                     lastPosition = newPosition;
-                    
-                    OnPaint (new PaintEntry (currentBrush.AsSnapshot (), new Vector2[] { newPosition }));
+
+                    brushPositions.Add (newPosition);
+                    brushSnapshot = currentBrush.AsSnapshot ();
+
+                    OnPaintTemporary (new PaintEntry (brushSnapshot, brushPositions));
                     return;
                 }
-                
+
                 var movement = newPosition - lastPosition;
                 var distance = movement.magnitude;
 
@@ -79,25 +90,36 @@ namespace Tilify
                     // lastPosition is set to point. We ignore the rest of the movement because it is not enough to contain one more point.
                     lastPosition = point;
 
-                    var paintEntry = new PaintEntry (currentBrush.AsSnapshot (), new Vector2[] { point });
-                    OnPaint (paintEntry);
+                    brushPositions.Add (point);
+                    var paintEntry = new PaintEntry (brushSnapshot, brushPositions);
+                    OnPaintTemporary (paintEntry);
                 }
                 // Movement is enough to paint several times in a line.
                 else
                 {
-                    var points = DivideLineSegmentIntoPoints ( lastPosition, newPosition, currentBrush.RealIntervals);
+                    var points = DivideLineSegmentIntoPoints (lastPosition, newPosition, currentBrush.RealIntervals);
                     // lastPosition is set to last point. We ignore the rest of the movement because it is not enough to contain one more point.
-                    lastPosition = points.Last();
+                    lastPosition = points.Last ();
 
-                    var paintEntry = new PaintEntry (currentBrush.AsSnapshot (), points);
-                    OnPaint (paintEntry);
+                    brushPositions.AddRange (points);
+
+                    var paintEntry = new PaintEntry (brushSnapshot, brushPositions);
+                    OnPaintTemporary (paintEntry);
                 }
             }
             else
+            {
+                if ( isTriggeredLastFrame )
+                {
+                    OnPaintFinal (new PaintEntry (brushSnapshot, brushPositions));
+                    brushPositions.Clear ();
+                }
+
                 isTriggeredLastFrame = false;
+            }
         }
 
-        private static Vector2[] DivideLineSegmentIntoPoints (Vector2 startPosition, Vector2 endPosition, float distanceBetweenPoints)
+        private static List<Vector3> DivideLineSegmentIntoPoints (Vector2 startPosition, Vector2 endPosition, float distanceBetweenPoints)
         {
             var originVector = endPosition - startPosition;
             var normalizedVector = originVector.normalized;
@@ -105,13 +127,13 @@ namespace Tilify
 
             // We subtract one because we dont need the first point that will be equals startPosition, because it is already been drawn.
             var pointsCount = Mathf.FloorToInt (originVector.magnitude / distanceBetweenPoints) - 1;
-            var points = new Vector2[pointsCount];
+            var points = new List<Vector3>();
             // For the same reason we add pointOffset to startPosition.
             var offsetPosition = startPosition + pointOffset;
 
             for ( int i = 0; i < pointsCount; i++ )
             {
-                points[i] = offsetPosition;
+                points.Add(offsetPosition);
                 offsetPosition += pointOffset;
             }
 

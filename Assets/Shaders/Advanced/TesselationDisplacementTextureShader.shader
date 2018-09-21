@@ -1,5 +1,7 @@
-﻿Shader "Tilify/Advanced/TesselationDisplacementTextureShader" {
-	Properties {
+﻿Shader "Tilify/Advanced/TesselationDisplacementTextureShader"
+{
+	Properties
+	{
 		_MainTex("Main Texture", 2D) = "white" {}
 		_Displacement("Displacement", 2D) = "gray" {}
 		_DisplacementIntensity("Displacement Intensity", Range(0, 1)) = 1
@@ -7,7 +9,8 @@
 		[Toggle] _IsNormal("Is Normal", Float) = 0
 		[Toggle] _InvertNormal("Invert Normal", Float) = 0
 	}
-	SubShader {
+	SubShader
+	{
 		Tags { "RenderType" = "Opaque" }
 		LOD 100
 
@@ -18,14 +21,16 @@
 
 		#include "Tessellation.cginc"
 
-		struct appdata {
+		struct appdata
+		{
 			float4 vertex : POSITION;
 			float4 tangent : TANGENT;
 			float3 normal : NORMAL;
 			float2 texcoord : TEXCOORD0;
 		};
 
-		struct Input {
+		struct Input
+		{
 			float2 uv_MainTex;
 		};
 

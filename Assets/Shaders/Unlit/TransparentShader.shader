@@ -19,6 +19,7 @@
 
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma multi_compile_instancing
 
 			#include "UnityCG.cginc"
 
@@ -26,6 +27,7 @@
 			{
 				float4 vertex : POSITION;
 				float2 texcoord : TEXCOORD0;
+				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
 			struct v2f
@@ -38,6 +40,7 @@
 
 			v2f vert(appdata_t v)
 			{
+				UNITY_SETUP_INSTANCE_ID(v);
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = v.texcoord;

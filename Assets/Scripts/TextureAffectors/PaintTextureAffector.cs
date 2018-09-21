@@ -4,18 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tilify.Brushes;
+using Tilify.Commands;
 using UnityEngine;
 
 namespace Tilify.TextureAffectors
 {
     public class PaintTextureAffector : TextureAffector
     {
-        private static readonly Mesh quadMesh;
-
-        static PaintTextureAffector()
-        {
-            quadMesh = MeshBuilder.BuildQuad (Vector2.one).ConvertToMesh ();
-        }
+        private static readonly float distanceBetweenBrushes = .00001f;
 
         private RendererStation rendererStation;
 
@@ -24,23 +20,27 @@ namespace Tilify.TextureAffectors
             rendererStation = new RendererStation (Settings.affectorRendererStationLayerID);
         }
 
-        public void Paint(PaintEntry paintEntry)
+        public void PaintTemporary(PaintEntry paintEntry) => Paint_Internal (paintEntry, true);
+        public void Paint (PaintEntry paintEntry) => Paint_Internal (paintEntry, false);
+
+        private void Paint_Internal(PaintEntry paintEntry, bool isTemporary)
         {
-            var material = paintEntry.brushSnapshot.brush.Material;
-            
-            var offset = paintEntry.brushSnapshot.percentageSize / 2f;
+            Assert.ArgumentNotNull (paintEntry, nameof (paintEntry));
 
-            foreach ( var position in paintEntry.BrushPositions )
+            var material = paintEntry.brushSnapshot.material;
+
+            var go = new GameObject ("PaintEntry");
+            go.AddComponent<MeshRenderer> ().material = material;
+            go.AddComponent<MeshFilter> ().mesh = paintEntry.Mesh;
+
+            var objectWidth = paintEntry.BrushPositions.Count * distanceBetweenBrushes;
+
+            if ( isTemporary )
+                rendererStation.UseItTemporary (go, objectWidth);
+            else
             {
-                var go = new GameObject ("Brush");
-                var renderer = go.AddComponent<MeshRenderer> ();
-
-                go.AddComponent<MeshFilter> ().mesh = quadMesh;
-                renderer.material = material;
-                go.transform.position = position - offset;
-                go.transform.localScale = paintEntry.brushSnapshot.percentageSize;
-
-                rendererStation.UseIt (go);
+                var command = new PaintCommand (rendererStation, go, objectWidth);
+                undoRedoRegister.Do (command);
             }
         }
 

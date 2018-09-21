@@ -7,10 +7,9 @@ using UnityEngine;
 
 namespace Tilify.Brushes
 {
-    public sealed class BrushSnapshot
+    public sealed class BrushSnapshot : IDisposable
     {
-        public readonly Brush brush;
-
+        public readonly Material material;
         public readonly Vector2 percentageSize;
         public readonly float intervals;
 
@@ -18,11 +17,15 @@ namespace Tilify.Brushes
 
         public BrushSnapshot (Brush brush)
         {
-            this.brush = brush;
             percentageSize = brush.PercentageSize;
             intervals = brush.PercentageIntervals;
             brushStamp = brush.BrushStamp;
+            material = new Material (brush.Material);
         }
 
+        public void Dispose()
+        {
+            GameObject.Destroy (material);
+        }
     }
 }

@@ -10,10 +10,8 @@ namespace Tilify
 {
     public class RendererStation : IDisposable
     {
-        // TODO: Cache system
-        // TODO: geometry shader or Graphics.DrawMeshInstancedIndirect maybe
-
-        private static readonly float stackedObjectsZOffset = -.00001f;
+        private static readonly float distanceBetweenStackedObjects = -.00001f;
+        private static readonly int defaultLayerID = LayerMask.NameToLayer("Default");
 
         private Camera camera;
         private Scene scene;
@@ -21,10 +19,14 @@ namespace Tilify
         private GameObject texturePlane;
         private Renderer texturePlaneRenderer;
 
+        private List<GameObject> stackedObjects = new List<GameObject>();
+
         private string id;
         private int stationLayerID;
 
-        private int stackedObjectsCount;
+        private float stackedObjectsOffset;
+
+        private GameObject temporaryObject;
 
         public RendererStation (int stationLayerID)
         {
@@ -35,7 +37,7 @@ namespace Tilify
 
         private void Setup ()
         {
-            stackedObjectsCount = 1;
+            stackedObjectsOffset = 0;
             id = Guid.NewGuid ().ToString ();
             scene = SceneManager.CreateScene (nameof (RendererStation) + " Scene with ID = " + id);
             rootObject = Utils.CreateNewGameObjectAtSpecificScene ("Root", scene, stationLayerID);
@@ -59,16 +61,42 @@ namespace Tilify
 
             rootObject.SetActive (false);
         }
-        
-        public void UseIt (GameObject go)
+
+        public void UseIt (GameObject go, float width) => UseIt_Internal (go, width, false);
+        public void UseItTemporary (GameObject go, float width) => UseIt_Internal (go, width, true);
+
+        private void UseIt_Internal(GameObject go, float width, bool isTemporary)
         {
             Assert.ArgumentNotNull (go, nameof (go));
+            Assert.ArgumentTrue (width >= 0, nameof (width) + " is less then 0");
+
+            if ( temporaryObject != null)
+                GameObject.DestroyImmediate (temporaryObject);
             
             go.transform.parent = rootObject.transform; // GameObject will automatically move to our scene
             var position = go.transform.position;
-            position.z = stackedObjectsZOffset * stackedObjectsCount++;
+            position.z = stackedObjectsOffset;
             go.transform.position = position;
+
             go.layer = stationLayerID;
+
+            if ( isTemporary )
+                temporaryObject = go;
+            else
+            {
+                stackedObjectsOffset -= width + distanceBetweenStackedObjects;
+                stackedObjects.Add (go);
+            }
+        }
+
+        public void StopUseIt(GameObject go)
+        {
+            if ( stackedObjects.Contains (go))
+            {
+                go.layer = defaultLayerID;
+                go.transform.parent = null; // Move gameObject to default scene
+                stackedObjects.Remove (go);
+            }
         }
 
         public void Render(RenderTexture texture)
@@ -77,7 +105,7 @@ namespace Tilify
             
             texturePlaneRenderer.material.mainTexture = texture;
             camera.targetTexture = texture;
-
+            
             rootObject.SetActive (true);
             camera.Render ();
             rootObject.SetActive (false);
