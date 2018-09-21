@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Tilify.TextureAffectors;
-using Tilify.TextureProviders;
-using UnityEngine;
 
 namespace Tilify
 {

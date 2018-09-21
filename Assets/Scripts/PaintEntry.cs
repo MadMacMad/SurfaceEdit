@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tilify.Brushes;
 using UnityEngine;
 
 namespace Tilify
-{ 
+{
     public sealed class PaintEntry : IDisposable
     {
         public readonly BrushSnapshot brushSnapshot;

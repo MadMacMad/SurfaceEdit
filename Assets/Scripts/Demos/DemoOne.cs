@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Tilify.Brushes;
 using Tilify.TextureAffectors;
 using Tilify.TextureProviders;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 
 namespace Tilify
 {
