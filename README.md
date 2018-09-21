@@ -1,7 +1,6 @@
 Open source software for editing and removing seams on photogrammetry textures. Early alpha.  
-At the moment it doesn't work :)  
-
+At the moment the project is at the stage of designing the architecture and developing the basic functions. Some of them have already been implemented, but the release will not take place soon. There is still a lot to do  
+  
 Some progress:  
-RealTime Texture Panting With UNDO/REDO - https://www.youtube.com/watch?v=x7kwf4HOW90  
-It will be used in drawing masks for layers
+RealTime Texture Panting With UNDO/REDO - https://www.youtube.com/watch?v=AfzSRBYXdJE
 
