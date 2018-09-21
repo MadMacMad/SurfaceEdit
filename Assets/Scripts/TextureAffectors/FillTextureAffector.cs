@@ -13,6 +13,7 @@ namespace Tilify.TextureAffectors
 
         public override void Affect (RenderTexture texture)
         {
+            Assert.ArgumentNotNull (texture, nameof (texture));
             new ComputeFillWithColor (texture, color).Execute ();
         }
     }
