@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Tilify.Brushes
+namespace SurfaceEdit.Brushes
 {
     public sealed class BrushSnapshot : IDisposable
     {

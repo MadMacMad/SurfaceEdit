@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public static class Assert
     {

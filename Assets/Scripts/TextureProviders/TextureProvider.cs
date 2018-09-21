@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Tilify.TextureProviders
+namespace SurfaceEdit.TextureProviders
 {
     public abstract class TextureProvider : IDisposable
     {

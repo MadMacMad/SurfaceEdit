@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tilify.Brushes;
+using SurfaceEdit.Brushes;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public sealed class PaintEntry : IDisposable
     {

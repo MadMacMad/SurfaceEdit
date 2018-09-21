@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Tilify.TextureAffectors
+namespace SurfaceEdit.TextureAffectors
 {
     public abstract class TextureAffector : PropertyChangedRegistrator, IDisposable
     {

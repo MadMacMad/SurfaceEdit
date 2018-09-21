@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tilify.Commands
+namespace SurfaceEdit.Commands
 {
     public interface ICommand : IDisposable
     {

@@ -1,7 +1,7 @@
-﻿using Tilify.Commands;
+﻿using SurfaceEdit.Commands;
 using UnityEngine;
 
-namespace Tilify.TextureAffectors
+namespace SurfaceEdit.TextureAffectors
 {
     public class PaintTextureAffector : TextureAffector
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Tilify.Commands;
+using SurfaceEdit.Commands;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public class UndoRedoRegister : Singleton<UndoRedoRegister>
     {

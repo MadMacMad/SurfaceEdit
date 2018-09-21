@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     [RequireComponent(typeof(Camera))]
     public class OrbitCameraMovement : MonoBehaviour

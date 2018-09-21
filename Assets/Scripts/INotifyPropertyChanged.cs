@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public delegate void PropertyChangedEventHandler (object sender, PropertyChangedEventArgs args);
     public interface INotifyPropertyChanged

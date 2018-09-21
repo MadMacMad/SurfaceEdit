@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Tilify.Commands
+namespace SurfaceEdit.Commands
 {
     public class PaintCommand : ICommand
     {

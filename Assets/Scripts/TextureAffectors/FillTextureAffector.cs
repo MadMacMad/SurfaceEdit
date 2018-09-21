@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Tilify.TextureAffectors
+namespace SurfaceEdit.TextureAffectors
 {
     public class FillTextureAffector : TextureAffector
     {

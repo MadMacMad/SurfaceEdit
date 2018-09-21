@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public abstract class Singleton<T> where T : class, new()
     {

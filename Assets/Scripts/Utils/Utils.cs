@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public static class Utils
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public class UpdateChecker : MonoBehaviour
     {

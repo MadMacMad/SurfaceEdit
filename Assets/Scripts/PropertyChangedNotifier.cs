@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public delegate void NeedUpdateEventHandler (object sender);
 

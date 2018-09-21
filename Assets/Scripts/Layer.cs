@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tilify.TextureAffectors;
+using SurfaceEdit.TextureAffectors;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public class Layer : PropertyChangedRegistrator, IDisposable
     {

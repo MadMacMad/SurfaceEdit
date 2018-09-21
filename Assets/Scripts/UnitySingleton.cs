@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public abstract class UnitySingleton<T> : MonoBehaviour where T : MonoBehaviour
     {

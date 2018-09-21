@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public sealed class TextureChannelCollection : PropertyChangedNotifier
     {

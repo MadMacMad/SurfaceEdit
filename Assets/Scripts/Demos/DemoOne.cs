@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using Tilify.Brushes;
-using Tilify.TextureAffectors;
-using Tilify.TextureProviders;
+﻿using SurfaceEdit.Brushes;
+using SurfaceEdit.TextureAffectors;
 using TMPro;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public class DemoOne : MonoBehaviour
     {
@@ -114,8 +112,8 @@ namespace Tilify
                 ( brush as DefaultRoundBrush ).Hardness = hardness;
             }
 
-            ui.text = $"Size = {size} [ and ] to change\nIntervals = {intervals} Up arrow and down arrow to change \nHardness = {hardness} Right arrow and left arrow to change\n\nSpace to apply changes\nAlpha 1 key for undo, Alpha 2 key for redo\n"
-                + "\nDemo uses compute shaders and geometry shaders\nBrushes are generated on GPU with compute shader\n2K texture is used in painting \nOn 4k texture with many brush instances demo is noticeably lagging.\nI know how to improve the perfomance, but that will be done in the future releases\n\nSources can be found here: https://github.com/grenqa/Tilify \nVersion: Alpha 1";
+            ui.text = $"Size = {size} [ and ] to change\nIntervals = {intervals} Up arrow and down arrow to change \nHardness = {hardness} Right arrow and left arrow to change\n\nSpace to apply brush changes\nAlpha 1 key for undo, Alpha 2 key for redo\n"
+                + "\nDemo uses compute shaders and geometry shaders\nBrushes are generated on GPU with compute shader\n2K texture is used in painting \nOn 4k texture with many brush instances demo is noticeably lagging.\nI know how to improve the perfomance, but that will be done in the future releases\n\nSources can be found here: https://github.com/grenqa/SurfaceEdit \nVersion: Alpha 1";
         }
     }
 }

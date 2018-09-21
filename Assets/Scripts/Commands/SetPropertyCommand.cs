@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Tilify.Commands
+namespace SurfaceEdit.Commands
 {
     public class SetPropertyCommand<T> : ICommand
     {

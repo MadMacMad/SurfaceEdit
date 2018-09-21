@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tilify.TextureAffectors
+namespace SurfaceEdit.TextureAffectors
 {
     public interface ISurfaceAffector
     {

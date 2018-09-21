@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tilify.TextureProviders;
+using SurfaceEdit.TextureProviders;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public class SurfaceVisualizer : PropertyChangedRegistrator, IDisposable
     {

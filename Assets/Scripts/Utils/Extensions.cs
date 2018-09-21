@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public static class Extensions
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public static class Settings
     {

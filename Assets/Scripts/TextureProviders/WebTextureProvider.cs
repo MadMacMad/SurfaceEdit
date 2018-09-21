@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using UnityEngine;
 
-namespace Tilify.TextureProviders
+namespace SurfaceEdit.TextureProviders
 {
     public class WebTextureProvider : TextureProvider
     {

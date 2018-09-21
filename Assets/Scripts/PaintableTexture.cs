@@ -1,10 +1,10 @@
 ﻿using System;
-using Tilify.Brushes;
-using Tilify.Commands;
+using SurfaceEdit.Brushes;
+using SurfaceEdit.Commands;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     /// <summary>
     /// Just for reference. In near future will be completely removed

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Tilify.TextureProviders
+namespace SurfaceEdit.TextureProviders
 {
     public class SolidColorTextureProvider : TextureProvider
     {

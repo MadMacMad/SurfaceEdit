@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Tilify.Brushes;
+using SurfaceEdit.Brushes;
 using UnityEngine;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public class PaintingManager : UnitySingleton<PaintingManager>, INotifyPropertyChanged
     {

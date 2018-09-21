@@ -1,4 +1,4 @@
-﻿namespace Tilify
+﻿namespace SurfaceEdit
 {
     public enum TextureChannel
     {

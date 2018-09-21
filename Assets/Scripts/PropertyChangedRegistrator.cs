@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Tilify.Commands;
+using SurfaceEdit.Commands;
 
-namespace Tilify
+namespace SurfaceEdit
 {
     public abstract class PropertyChangedRegistrator : PropertyChangedNotifier
     {
