@@ -8,7 +8,7 @@ namespace SurfaceEdit.Brushes
         public Vector2 PercentageSize
         {
             get => percentageSize;
-            set => SetProperty (ref percentageSize, value, false, v => { v.Clamp (Vector2.zero, new Vector2(float.MaxValue, float.MaxValue)); return v; });
+            set => SetProperty (ref percentageSize, value, false, v => { v.Clamp (Vector2.zero, new Vector2 (float.MaxValue, float.MaxValue)); return v; });
         }
         private Vector2 percentageSize;
 
@@ -19,53 +19,40 @@ namespace SurfaceEdit.Brushes
         }
         private float percentageIntervals;
 
+        public RenderTexture BrushStamp { get; private set; }
+
         public float RealIntervals { get; private set; }
-
-        public Material Material
-        {
-            get
-            {
-                if (material == null)
-                {
-                    material = new Material (Shader.Find ("SurfaceEdit/Procedural/Brush"));
-                    Update ();
-                }
-                return material;
-            }
-        }
-        private Material material;
-
-        public RenderTexture BrushStamp
-        {
-            get => brushStamp;
-            set => SetProperty (ref brushStamp, value);
-        }
-        private RenderTexture brushStamp;
 
         protected Brush (Vector2 percentageSize, float percentageIntervals)
         {
-            percentageSize.Clamp(Vector2.zero, new Vector2(float.MaxValue, float.MaxValue));
+            percentageSize.Clamp (Vector2.zero, new Vector2 (float.MaxValue, float.MaxValue));
             percentageIntervals = Mathf.Clamp (percentageIntervals, .00001f, 10f);
 
             this.percentageSize = percentageSize;
             this.percentageIntervals = percentageIntervals;
 
-            Update ();
-            PropertyChanged += Update;
+            BrushStamp = ProvideBrushStamp ();
+
+            PropertyChanged += (s, e) =>
+            {
+                if ( e?.propertyName == "PercentageSize" || e?.propertyName == "PercentageIntervals" )
+                    RealIntervals = percentageIntervals * Mathf.Max (percentageSize.x, percentageSize.y);
+            };
         }
 
-        private void Update(object sender = null, EventArgs eventArgs = null)
+        public void UpdateBrushStamp ()
         {
-            RealIntervals = percentageIntervals * Mathf.Max (percentageSize.x, percentageSize.y);
-            Material.SetFloat ("_QuadScaleX", percentageSize.x);
-            Material.SetFloat ("_QuadScaleY", percentageSize.y);
-            Material.mainTexture = brushStamp;
+            BrushStamp = ProvideBrushStamp ();
+            NotifyPropertyChanged ("BrushStamp");
         }
         public BrushSnapshot AsSnapshot () => new BrushSnapshot (this);
 
-        public virtual void Dispose ()
+        public void Dispose ()
         {
             BrushStamp.Release ();
+            Dispose_Internal ();
         }
+        protected virtual void Dispose_Internal () { }
+        protected abstract RenderTexture ProvideBrushStamp ();
     }
 }

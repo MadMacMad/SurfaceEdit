@@ -22,15 +22,11 @@ namespace SurfaceEdit.Brushes
             this.hardness = Mathf.Clamp01 (hardness);
             Resolution = resolution;
 
-            Resolution.PropertyChanged += Update;
-            NeedUpdate += s => Update();
-
-            Update ();
+            Resolution.PropertyChanged += (s, e) => UpdateBrushStamp();
+            PropertyChanged += (s, e) => UpdateBrushStamp ();
         }
-
-        private void Update(object sender = null, EventArgs eventArgs = null)
-        {
-            BrushStamp = new ComputeRoundBrushCreate (Resolution.Value, hardness).Execute ();
-        }
+        
+        protected override RenderTexture ProvideBrushStamp ()
+            => new ComputeRoundBrushCreate (Resolution.Value, hardness).Execute ();
     }
 }

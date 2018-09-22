@@ -16,7 +16,11 @@ namespace SurfaceEdit.Brushes
             percentageSize = brush.PercentageSize;
             intervals = brush.PercentageIntervals;
             brushStamp = brush.BrushStamp;
-            material = new Material (brush.Material);
+
+            material = new Material (Shader.Find("SurfaceEdit/Procedural/BrushPoints"));
+            material.mainTexture = brushStamp;
+            material.SetFloat ("_QuadScaleX", percentageSize.x);
+            material.SetFloat ("_QuadScaleY", percentageSize.y);
         }
 
         public void Dispose()

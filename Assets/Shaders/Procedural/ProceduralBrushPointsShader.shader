@@ -1,4 +1,4 @@
-﻿Shader "SurfaceEdit/Procedural/Brush"
+﻿Shader "SurfaceEdit/Procedural/BrushPoints"
 {
 	Properties
 	{
