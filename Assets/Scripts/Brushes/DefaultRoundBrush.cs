@@ -23,6 +23,7 @@ namespace SurfaceEdit.Brushes
             Resolution = resolution;
 
             Resolution.PropertyChanged += Update;
+            NeedUpdate += s => Update();
 
             Update ();
         }
