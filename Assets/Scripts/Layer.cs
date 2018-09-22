@@ -6,15 +6,10 @@ namespace SurfaceEdit
 {
     public class Layer : PropertyChangedRegistrator, IDisposable
     {
-        public IReadOnlyList<ISurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
+        public IReadOnlyCollection<ISurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
         private List<ISurfaceAffector> surfaceAffectors = new List<ISurfaceAffector>();
-
-        public bool IsUseMask { get => isUseMask; set => SetPropertyUndoRedo (v => isUseMask = v, () => isUseMask, value, true); }
-        private bool isUseMask;
-
-        public Layer (UndoRedoRegister undoRedoRegister) : base (undoRedoRegister)
-        {
-        }
+        
+        public Layer (UndoRedoRegister undoRedoRegister) : base (undoRedoRegister) { }
 
         public void Process(Surface surface)
         {
@@ -28,7 +23,7 @@ namespace SurfaceEdit
         {
             if (!surfaceAffectors.Contains(surfaceAffector))
             {
-                surfaceAffector.NeedUpdate += OnSurfaceAffectorNeedUpdate;
+                surfaceAffector.NeedUpdate += OnChildNeedUpdate;
                 surfaceAffectors.Add (surfaceAffector);
                 NotifyNeedUpdate ();
             }
@@ -37,13 +32,13 @@ namespace SurfaceEdit
         {
             if ( surfaceAffectors.Contains (surfaceAffector) )
             {
-                surfaceAffector.NeedUpdate -= OnSurfaceAffectorNeedUpdate;
+                surfaceAffector.NeedUpdate -= OnChildNeedUpdate;
                 surfaceAffectors.Remove (surfaceAffector as ISurfaceAffector);
                 NotifyNeedUpdate ();
             }
         }
 
-        private void OnSurfaceAffectorNeedUpdate(object sender)
+        private void OnChildNeedUpdate(object sender, EventArgs eventArgs)
             => NotifyNeedUpdate ();
 
         public void Dispose()

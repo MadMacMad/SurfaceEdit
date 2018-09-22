@@ -15,7 +15,7 @@ namespace SurfaceEdit.TextureAffectors
         {
             this.textureAffector = textureAffector;
             AffectList.AddRange(affectList);
-            textureAffector.NeedUpdate += s => NotifyNeedUpdate (); 
+            textureAffector.NeedUpdate += (s, e) => NotifyNeedUpdate (); 
         }
 
         public void Affect(Surface surface)

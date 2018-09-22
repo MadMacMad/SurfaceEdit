@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace SurfaceEdit
 {
-    public delegate void NeedUpdateEventHandler (object sender);
+    public delegate void NeedUpdateEventHandler (object sender, EventArgs eventArgs);
 
     public abstract class PropertyChangedNotifier : INotifyPropertyChanged
     {
@@ -12,7 +12,7 @@ namespace SurfaceEdit
         public event NeedUpdateEventHandler NeedUpdate;
 
         protected void NotifyNeedUpdate ()
-            => NeedUpdate?.Invoke (this);
+            => NeedUpdate?.Invoke (this, null);
 
         protected void NotifyPropertyChanged ([CallerMemberName] string propertyName = "")
             => PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));

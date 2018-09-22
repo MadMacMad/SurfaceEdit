@@ -76,11 +76,11 @@ namespace SurfaceEdit
 
             renderer = go.AddComponent<MeshRenderer> ();
 
-            Update (this);
+            Update ();
             NeedUpdate += Update;
         }
 
-        private void Update (object sender)
+        private void Update (object sender = null, EventArgs eventArgs = null)
         {
             if ( renderMode == SurfaceRenderMode.Surface )
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SurfaceEdit
 {
@@ -6,6 +7,9 @@ namespace SurfaceEdit
     {
         public TextureResolution Resolution { get; private set; }
         public TextureChannelCollection Channels { get; private set; }
+
+        public IReadOnlyCollection<Layer> Layers => layers.AsReadOnly();
+        private List<Layer> layers = new List<Layer> ();
 
         private Surface collectorSurface;
         private Surface layerSurface;
@@ -26,7 +30,7 @@ namespace SurfaceEdit
             Channels.PropertyChanged += Update;
         }
 
-        public void CreateLayer()
+        public void AddLayer()
         {
 
         }
