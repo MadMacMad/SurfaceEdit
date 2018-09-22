@@ -39,7 +39,7 @@ namespace SurfaceEdit
 
             var surfViz = new SurfaceVisualizer (UndoRedoRegister.Instance, surface, Vector2.one, SurfaceVisualizer.SurfaceRenderMode.Channel);
 
-            brush = new DefaultRoundBrush (new TextureResolution(TextureResolutionEnum.x64), size, intervals, hardness);
+            brush = new DefaultRoundBrush (new TextureResolution(TextureResolutionEnum.x256), size, intervals, hardness);
 
             PaintingManager.Instance.CurrentBrush = brush;
             PaintingManager.Instance.PaintTrigger += () =>
