@@ -79,11 +79,14 @@ namespace SurfaceEdit.Demos
             
             surfaceVisualizer = new SurfaceVisualizer (UndoRedoRegister.Instance, layerStack.ResultSurface, Vector2.one);
             surfaceVisualizer.DisplacementIntensity = .15f;
-            surfaceVisualizer.TesselationMultiplier = 20;
+            surfaceVisualizer.TesselationMultiplier = 3;
             surfaceVisualizer.InvertNormal = true;
+            UndoRedoRegister.Instance.Reset ();
 
             brush = new DefaultRoundBrush (new TextureResolution (TextureResolutionEnum.x64), .2f, .25f, 0);
-            
+
+            brush.TintColor = isBrushBlack ? Color.black * new Color (1, 1, 1, pressure) : Color.white * new Color (1, 1, 1, pressure);
+
             PaintingManager.Instance.CurrentBrush = brush;
             PaintingManager.Instance.PaintTrigger += () =>
             {
@@ -103,7 +106,6 @@ namespace SurfaceEdit.Demos
             {
                 paintTextureAffector.Paint (e);
             };
-            brush.TintColor = Color.white * new Color (1, 1, 1, .3f);
 
             ui1 = GameObject.Find ("UI1").GetComponent<TextMeshProUGUI>();
             ui2 = GameObject.Find ("UI2").GetComponent<TextMeshProUGUI>();
@@ -115,7 +117,7 @@ namespace SurfaceEdit.Demos
         }
 
         private bool isBrushBlack = false;
-        private float pressure = .1f;
+        private float pressure = 1f;
         private Vector2 lastMousePosition;
         private Material skyboxMaterial;
 

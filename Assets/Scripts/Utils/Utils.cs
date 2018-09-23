@@ -8,7 +8,7 @@ namespace SurfaceEdit
     {
         public static RenderTexture CreateAndAllocateRenderTexture (int width, int height)
         {
-            Debug.Log ("Render Texture Allocated (Width: " + width + ", Height: " + height + ")");
+            //Debug.Log ("Render Texture Allocated (Width: " + width + ", Height: " + height + ")");
             RenderTexture renderTexture = new RenderTexture (width, height, 0, RenderTextureFormat.ARGB32)
             {
                 enableRandomWrite = true
