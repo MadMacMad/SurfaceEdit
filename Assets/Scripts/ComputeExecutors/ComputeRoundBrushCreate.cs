@@ -25,7 +25,7 @@ namespace SurfaceEdit
             shader.SetFloat ("Size", resolution);
             shader.SetFloat ("Hardness", hardnessFactor);
 
-            AutoDispatchDefaultShaderFunction (renderTexture.width, renderTexture.height, 8, 8);
+            AutoDispatchDefaultShaderFunction (renderTexture.width, renderTexture.height);
             
             return renderTexture;
         }

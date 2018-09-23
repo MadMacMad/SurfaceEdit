@@ -39,17 +39,17 @@ namespace SurfaceEdit
             var functionID = DefaultFunctionID;
             shader.Dispatch (functionID, threadGroupsX, threadGroupsY, threadGroupsZ);
         }
-        protected void AutoDispatchDefaultShaderFunction (int textureWidth, int textureHeight, int threadsX, int threadsY)
+        protected void AutoDispatchDefaultShaderFunction (int textureWidth, int textureHeight)
         {
-            AutoDispatchShaderFunction ("CSMain", textureWidth, textureHeight, threadsX, threadsY);
+            AutoDispatchShaderFunction ("CSMain", textureWidth, textureHeight);
         }
 
-        protected void AutoDispatchShaderFunction(string functionName, int textureWidth, int textureHeight, int threadsX, int threadsY)
+        protected void AutoDispatchShaderFunction(string functionName, int textureWidth, int textureHeight)
         {
             var functionID = GetFunctionIDByName (functionName);
 
-            var threadGroupsX = textureWidth / threadsX;
-            var threadGroupsY = textureHeight / threadsY;
+            var threadGroupsX = textureWidth / 32;
+            var threadGroupsY = textureHeight / 32;
 
             if ( threadGroupsX <= 0 )
                 threadGroupsX = 1;

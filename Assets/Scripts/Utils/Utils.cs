@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 
 namespace SurfaceEdit
@@ -7,6 +8,7 @@ namespace SurfaceEdit
     {
         public static RenderTexture CreateAndAllocateRenderTexture (int width, int height)
         {
+            Debug.Log ("Render Texture Allocated (Width: " + width + ", Height: " + height + ")");
             RenderTexture renderTexture = new RenderTexture (width, height, 0, RenderTextureFormat.ARGB32)
             {
                 enableRandomWrite = true
@@ -25,7 +27,7 @@ namespace SurfaceEdit
             return CreateAndAllocateRenderTexture (size.x, size.y);
         }
 
-        public static UnityEngine.Object InstantiateAtSpecificScene (UnityEngine.Object original, Vector3 position, Quaternion rotation, Scene scene, int layerID, GameObject parent = null)
+        public static Object InstantiateAtSpecificScene (Object original, Vector3 position, Quaternion rotation, Scene scene, int layerID, GameObject parent = null)
         {
             Assert.ArgumentNotNull (original, nameof (original));
 

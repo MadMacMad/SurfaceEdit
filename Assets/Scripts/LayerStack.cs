@@ -1,52 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SurfaceEdit
 {
-    public sealed class LayerStack : PropertyChangedNotifier, IDisposable
+    public sealed class LayerStack : PropertyChangedRegistrator, IDisposable
     {
         public TextureResolution Resolution { get; private set; }
         public TextureChannelCollection Channels { get; private set; }
 
-        public IReadOnlyCollection<Layer> Layers => layers.AsReadOnly();
+        public IReadOnlyCollection<Layer> Layers => layers.AsReadOnly ();
         private List<Layer> layers = new List<Layer> ();
+
+        public Surface ResultSurface => collectorSurface;
 
         private Surface collectorSurface;
         private Surface layerSurface;
-
-        public LayerStack(TextureResolution textureResolution, TextureChannelCollection channels)
+        
+        public LayerStack (UndoRedoRegister undoRedoRegister, TextureResolution resolution, TextureChannelCollection channels)
+            : base (undoRedoRegister)
         {
-            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
+            Assert.ArgumentNotNull (resolution, nameof (resolution));
             Assert.ArgumentNotNull (channels, nameof (channels));
 
-            Resolution = textureResolution;
+            Resolution = resolution;
             Channels = channels;
+
+            collectorSurface = new Surface (resolution, Channels);
+            layerSurface = new Surface (resolution, Channels);
             
-            collectorSurface = new Surface (textureResolution, Channels);
-            layerSurface = new Surface (textureResolution, Channels);
-
-
-            textureResolution.PropertyChanged += Update;
             Channels.PropertyChanged += Update;
         }
 
-        public void AddLayer()
+        public Layer CreateLayer ()
         {
-
+            var layer = new Layer (undoRedoRegister);
+            layer.NeedUpdate += Update;
+            layers.Add (layer);
+            RequestRender ();
+            return layer;
         }
 
         private void Update (object sender = null, EventArgs args = null)
         {
-            Render ();
+            RequestRender ();
         }
-        public void Render ()
-        {
 
+        private bool renderRequestedThisFrame = false;
+
+        public void RequestRender ()
+        {
+            if ( !renderRequestedThisFrame )
+            {
+                UnityUpdateRegistrator.Instance.OnUpdateRegisterOneTimeAction (RenderImmidiate);
+                renderRequestedThisFrame = true;
+            }
+        }
+        public void RenderImmidiate()
+        {
+            renderRequestedThisFrame = false;
+            collectorSurface.ResetAll ();
+            int index = 0;
+            foreach ( var layer in Layers )
+            {
+                if ( index == 0 )
+                    layer.Process (collectorSurface);
+                else
+                {
+                    layerSurface.ResetAll ();
+                    layer.Process (layerSurface);
+                    SurfaceCombiner.CombineSurfaces (collectorSurface, layerSurface, layer.BlendType);
+                }
+                index++;
+            }
         }
 
         public void Dispose ()
         {
-
+            collectorSurface.Dispose ();
+            layerSurface.Dispose ();
         }
     }
 }

@@ -1,14 +1,12 @@
 ﻿#pragma kernel CSMain
 
-RWTexture2D<float4> Result;
-
 float2 MaxTextureSize;
 float BottomTextureHeightFactor;
 float TopTextureHeightFactor;
 float DepthFactor;
 bool IsHeight;
 
-Texture2D<float4> BottomTexture;
+RWTexture2D<float4> BottomTexture;
 Texture2D<float4> TopTexture;
 Texture2D<float4> BottomTextureHeight;
 Texture2D<float4> TopTextureHeight;
@@ -29,7 +27,7 @@ float4 HeightBlend(float4 texture1, float4 height1, float4 texture2, float4 heig
 	return (texture1 * b1 + texture2 * b2) / (b1 + b2);
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(32, 32, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
 	if (id.x > MaxTextureSize.x || id.y > MaxTextureSize.y)
@@ -39,7 +37,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
 	float maskValue = Mask.SampleLevel(LinearMirrorSampler, uv, 0).x;
 
-	float4 bottomTextureValue = BottomTexture.SampleLevel(LinearMirrorSampler, uv, 0);
+	float4 bottomTextureValue = BottomTexture.Load(id.xy);
 	float4 topTextureValue = TopTexture.SampleLevel(LinearMirrorSampler, uv, 0);
 
 	if (IsHeight)
@@ -53,6 +51,6 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 	bottomTextureValue.a = 1;
 	topTextureValue.a = 1;
 
-	Result[id.xy] = HeightBlend(bottomTextureValue, bottomTextureHeight, topTextureValue, topTextureHeight, maskValue);
+	BottomTexture[id.xy] = HeightBlend(bottomTextureValue, bottomTextureHeight, topTextureValue, topTextureHeight, maskValue);
 }
 

@@ -9,6 +9,12 @@ namespace SurfaceEdit.TextureAffectors
 
         public abstract void Affect (RenderTexture texture);
 
+        public SurfaceAffector ToSurfaceAffector(TextureChannelCollection channels)
+            => new SurfaceAffector ( this, channels);
+
+        public SurfaceAffector ToSurfaceAffector (TextureChannel channel)
+            => new SurfaceAffector (this, new TextureChannelCollection(channel));
+
         public virtual void Dispose () { }
     }
 }

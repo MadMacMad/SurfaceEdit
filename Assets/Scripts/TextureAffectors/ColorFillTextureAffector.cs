@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using SurfaceEdit.TextureProviders;
+using UnityEngine;
 
 namespace SurfaceEdit.TextureAffectors
 {
-    public class FillTextureAffector : TextureAffector
+    public class ColorFillTextureAffector : TextureAffector
     {
         private Color color;
 
-        public FillTextureAffector(UndoRedoRegister undoRedoRegister, Color color) : base(undoRedoRegister)
+        public ColorFillTextureAffector(UndoRedoRegister undoRedoRegister, Color color) : base(undoRedoRegister)
         {
             this.color = color;
         }

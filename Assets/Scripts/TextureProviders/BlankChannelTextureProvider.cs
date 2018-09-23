@@ -4,17 +4,11 @@ namespace SurfaceEdit.TextureProviders
 {
     public class BlankChannelTextureProvider : TextureProvider
     {
-        private TextureResolution resolution;
-        private TextureChannel textureChannel;
+        public readonly TextureChannel textureChannel;
 
-        public BlankChannelTextureProvider(TextureResolution resolution, TextureChannel textureChannel, bool cacheTexture = true) : base (cacheTexture)
+        public BlankChannelTextureProvider(TextureResolution resolution, TextureChannel textureChannel, bool cacheTexture = true) : base (resolution, cacheTexture)
         {
-            Assert.ArgumentNotNull (resolution, nameof (resolution));
-            
-            this.resolution = resolution;
             this.textureChannel = textureChannel;
-
-            resolution.PropertyChanged += (s, e) => isNeedReprovide = true;
         }
 
         protected override RenderTexture Provide_Internal ()
@@ -26,7 +20,7 @@ namespace SurfaceEdit.TextureProviders
                 case TextureChannel.Metallic:           return ProvideSolidColorRenderTexture (Color.black);
                 case TextureChannel.Roughness:          return ProvideSolidColorRenderTexture (Color.white);
                 case TextureChannel.Height:             return ProvideSolidColorRenderTexture (new Color(.5f, .5f, .5f, 1));
-                case TextureChannel.Mask:               return ProvideSolidColorRenderTexture (Color.white);
+                case TextureChannel.Mask:               return ProvideSolidColorRenderTexture (Color.black);
                 default:                                return ProvideSolidColorRenderTexture (Color.white);
             }
         }

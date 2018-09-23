@@ -1,14 +1,15 @@
-﻿using SurfaceEdit.Brushes;
+﻿using System.Collections.Generic;
+using SurfaceEdit.Brushes;
 using SurfaceEdit.TextureAffectors;
 using TMPro;
 using UnityEngine;
 
-namespace SurfaceEdit
+namespace SurfaceEdit.Demos
 {
     public class DemoOne : MonoBehaviour
     {
-        private string linkToGitHubOctocat = "https://assets-cdn.github.com/images/modules/logos_page/Octocat.png";
-        private string pathToLenna = "Textures/Standard/Lenna";
+        //private string linkToGitHubOctocat = "https://assets-cdn.github.com/images/modules/logos_page/Octocat.png";
+        //private string pathToLenna = "Textures/Standard/Lenna";
 
         [Range(0, 1)]
         public float size = .1f;
@@ -19,7 +20,7 @@ namespace SurfaceEdit
 
         private Surface surface;
         private PaintTextureAffector taff;
-        private FillTextureAffector fillAffector;
+        private ColorFillTextureAffector fillAffector;
 
         private Brush brush;
 
@@ -33,7 +34,7 @@ namespace SurfaceEdit
             surface = new Surface (new TextureResolution(TextureResolutionEnum.x2048), channels);
 
             taff = new PaintTextureAffector (UndoRedoRegister.Instance);
-            fillAffector = new FillTextureAffector (UndoRedoRegister.Instance, new Color (0, 0, 0, 1));
+            fillAffector = new ColorFillTextureAffector (UndoRedoRegister.Instance, new Color (0, 0, 0, 1));
 
             fillAffector.Affect (surface.Textures[TextureChannel.Albedo]);
 
@@ -48,9 +49,9 @@ namespace SurfaceEdit
                 {
                     bool isHit = Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out RaycastHit hit);
                     var point = new Vector2 (hit.point.x, hit.point.z);
-                    return new PaintingManager.PaintTriggerEntry (isHit, point);
+                    return new PaintingManager.PaintTriggerEntry (true, isHit, point);
                 }
-                return new PaintingManager.PaintTriggerEntry (false, Vector2.zero);
+                return new PaintingManager.PaintTriggerEntry (false, false, Vector2.zero);
             };
             PaintingManager.Instance.OnPaintTemporary = e =>
             {
@@ -113,8 +114,21 @@ namespace SurfaceEdit
                 ( brush as DefaultRoundBrush ).Hardness = hardness;
             }
 
-            ui.text = $"Size = {size} [ and ] to change\nIntervals = {intervals} Up arrow and down arrow to change \nHardness = {hardness} Right arrow and left arrow to change\n\nSpace to apply brush changes\nAlpha 1 key for undo, Alpha 2 key for redo\n"
-                + "\nDemo uses compute shaders and geometry shaders\nBrushes are generated on GPU with compute shader\n2K texture is used in painting \nOn 4k texture with many brush instances demo is noticeably lagging.\nI know how to improve the perfomance, but that will be done in the future releases\n\nSources can be found here: https://github.com/grenqa/SurfaceEdit \nVersion: Alpha 1";
+            ui.text =
+                $"Size = {size} [ and ] to change\n" +
+                $"Intervals = {intervals} Up arrow and down arrow to change \n" +
+                $"Hardness = {hardness} Right arrow and left arrow to change\n" +
+                $"\n" +
+                $"Space to apply brush changes\n" +
+                $"Alpha 1 key for undo, Alpha 2 key for redo\n"
+                + "\nDemo uses compute shaders and geometry shaders\n" +
+                "Brushes are generated on GPU with compute shader\n" +
+                "2K texture is used in painting \n" +
+                "On 4k texture with many brush instances demo is noticeably lagging.\n" +
+                "I know how to improve the perfomance, but that will be done in the future releases\n" +
+                "\n" +
+                "Sources can be found here: https://github.com/grenqa/SurfaceEdit \n" +
+                "Version: Alpha 1";
         }
     }
 }

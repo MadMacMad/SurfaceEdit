@@ -80,6 +80,8 @@ namespace SurfaceEdit
             NeedUpdate += Update;
         }
 
+        public void Update () => Update (null, null);
+
         private void Update (object sender = null, EventArgs eventArgs = null)
         {
             if ( renderMode == SurfaceRenderMode.Surface )

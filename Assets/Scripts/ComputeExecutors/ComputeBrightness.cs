@@ -21,7 +21,7 @@ namespace SurfaceEdit
             shader.SetFloats ("TextureSize", texture.width, texture.height);
             shader.SetFloat ("Brightness", brightnessFactor);
 
-            AutoDispatchDefaultShaderFunction (texture.width, texture.height, 8, 8);
+            AutoDispatchDefaultShaderFunction (texture.width, texture.height);
 
             return texture;
         }

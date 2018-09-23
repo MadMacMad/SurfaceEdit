@@ -1,0 +1,22 @@
+﻿#pragma kernel CSMain
+
+Texture2D<float4> Texture;
+RWTexture2D<float4> Result;
+
+float2 CurrentTextureSize;
+float2 AdjustedTextureSize;
+
+SamplerState LinearMirrorSampler;
+
+[numthreads(32, 32, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	if (id.x > AdjustedTextureSize.x || id.y > AdjustedTextureSize.y)
+		return;
+
+	float2 uv = float2(id.xy / AdjustedTextureSize);
+
+	float4 value = Texture.SampleLevel(LinearMirrorSampler, uv, 0);
+
+	Result[id.xy] = value;
+}

@@ -6,7 +6,7 @@ namespace SurfaceEdit.TextureProviders
     {
         private string texturePath;
 
-        public DiskTextureProvider (string texturePath, bool cacheTexture = true) : base (cacheTexture)
+        public DiskTextureProvider (TextureResolution resolution, string texturePath, bool cacheTexture = true) : base (resolution, cacheTexture)
         {
             this.texturePath = texturePath;
         }

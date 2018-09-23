@@ -7,7 +7,7 @@ namespace SurfaceEdit
 {
     public abstract class PropertyChangedRegistrator : PropertyChangedNotifier
     {
-        protected readonly UndoRedoRegister undoRedoRegister;
+        public readonly UndoRedoRegister undoRedoRegister;
 
         public PropertyChangedRegistrator(UndoRedoRegister undoRedoRegister)
         {

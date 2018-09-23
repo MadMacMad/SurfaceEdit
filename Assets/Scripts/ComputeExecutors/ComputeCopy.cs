@@ -27,11 +27,14 @@ namespace SurfaceEdit
 
         public override RenderTexture Execute ()
         {
+            if ( sourceTexture == destinationTexture )
+                return destinationTexture;
+
             shader.SetTexture (DefaultFunctionID, "Result", destinationTexture);
             shader.SetTexture (DefaultFunctionID, "Texture", sourceTexture);
             shader.SetFloats ("TextureSize", sourceTexture.width, sourceTexture.height);
 
-            AutoDispatchDefaultShaderFunction (sourceTexture.width, sourceTexture.height, 8, 8);
+            AutoDispatchDefaultShaderFunction (sourceTexture.width, sourceTexture.height);
 
             return destinationTexture;
         }

@@ -5,22 +5,21 @@ namespace SurfaceEdit
     public sealed class TextureResolution : PropertyChangedNotifier
     {
         public int Value { get; private set; }
-
+        public TextureResolutionEnum AsEnum { get; private set; }
         public Vector2Int Vector { get; private set; }
-        private TextureResolutionEnum resolution;
 
-        public TextureResolution(TextureResolutionEnum resolution)
+        public TextureResolution (TextureResolutionEnum resolution)
         {
-            this.resolution = resolution;
+            AsEnum = resolution;
             Vector = TextureResolutionEnumToVector (resolution);
             Value = (int)resolution;
         }
 
         public void SetResolution (TextureResolutionEnum resolution)
         {
-            if ( resolution != this.resolution )
+            if ( resolution != AsEnum )
             {
-                this.resolution = resolution;
+                AsEnum = resolution;
                 Vector = TextureResolutionEnumToVector (resolution);
                 Value = (int)resolution;
                 NotifyPropertyChanged (nameof (Vector));

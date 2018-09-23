@@ -5,12 +5,22 @@ using SurfaceEdit.Commands;
 
 namespace SurfaceEdit
 {
-    public class UndoRedoRegister : Singleton<UndoRedoRegister>
+    public class UndoRedoRegister : UnitySingleton<UndoRedoRegister>
     {
+        private Func<bool> undoTrigger;
+        private Func<bool> redoTrigger;
+
         private Stack<ICommand> undoStack = new Stack<ICommand>();
         private Stack<ICommand> redoSrack = new Stack<ICommand>();
         
-        public UndoRedoRegister() { }
+        public void SetUndoTrigger (Func<bool> undoTrigger)
+        {
+            this.undoTrigger = undoTrigger;
+        }
+        public void SetRedoTrigger (Func<bool> redoTrigger)
+        {
+            this.redoTrigger = redoTrigger;
+        }
 
         public void Reset()
         {
@@ -56,6 +66,14 @@ namespace SurfaceEdit
         private void Log(ActionType actionType, ICommand command)
         {
             Logger.Log ($"{DateTime.Now.ToShortTimeString ()} {actionType.ToString()}({command.GetType ().Name}):\n{command.ToString ()}");
+        }
+
+        private void Update ()
+        {
+            if ( redoTrigger () )
+                Redo ();
+            else if ( undoTrigger () )
+                Undo ();
         }
 
         private enum ActionType

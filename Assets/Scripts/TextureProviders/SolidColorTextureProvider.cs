@@ -5,14 +5,10 @@ namespace SurfaceEdit.TextureProviders
     public class SolidColorTextureProvider : TextureProvider
     {
         private Color color;
-        private TextureResolution resolution;
 
-        public SolidColorTextureProvider(TextureResolution resolution, Color color, bool cacheTexture = true) : base (cacheTexture)
+        public SolidColorTextureProvider(TextureResolution resolution, Color color, bool cacheTexture = true) : base (resolution, cacheTexture)
         {
-            Assert.ArgumentNotNull (resolution, nameof (resolution));
-
             this.color = color;
-            this.resolution = resolution;
         }
 
         protected override RenderTexture Provide_Internal ()

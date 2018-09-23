@@ -15,7 +15,7 @@
 		LOD 100
 
 		CGPROGRAM
-		#pragma surface surf Standard fullforwardshadows vertex:vert tessellate:tess nolightmap addshadow 
+		#pragma surface surf Lambert fullforwardshadows vertex:vert tessellate:tess nolightmap addshadow 
 
 		#pragma target 5.0
 
@@ -55,15 +55,15 @@
 			return _TesselationMultiplier;
 		}
 
-		void surf (Input IN, inout SurfaceOutputStandard o)
+		void surf (Input IN, inout SurfaceOutput o)
 		{
 			half4 value = tex2D(_MainTex, IN.uv_MainTex);
 			if (_IsNormal == 1)
 				if (_InvertNormal == 1)
 					value.g = 1 - value.g;
 			o.Albedo = value.rgb * value.a + float4(1, 0, 1, 1) * (1 - value.a);
-			o.Metallic = 0;
-			o.Smoothness = 0;
+			o.Specular = 0;
+			o.Gloss = 0;
 		}
 		ENDCG
 	}

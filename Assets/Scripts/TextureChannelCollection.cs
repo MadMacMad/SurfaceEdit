@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SurfaceEdit
 {
@@ -8,10 +9,18 @@ namespace SurfaceEdit
         private List<TextureChannel> channels = new List<TextureChannel>();
 
         public TextureChannelCollection() { }
-        public TextureChannelCollection(List<TextureChannel> channels)
+        public TextureChannelCollection(TextureChannel channel)
+        {
+            channels.Add (channel);
+        }
+        public TextureChannelCollection (IEnumerable<TextureChannel> channels)
         {
             if ( channels != null )
-                this.channels = channels;
+            { 
+                foreach ( var c in channels )
+                    if (!this.channels.Contains(c))
+                        this.channels.Add (c);
+            }
         }
 
         public void AddChannel(TextureChannel channel)

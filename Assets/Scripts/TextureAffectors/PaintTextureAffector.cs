@@ -30,10 +30,13 @@ namespace SurfaceEdit.TextureAffectors
             var objectWidth = paintEntry.BrushPositions.Count * distanceBetweenBrushes;
 
             if ( isTemporary )
+            {
                 rendererStation.UseItTemporary (go, objectWidth);
+                NotifyNeedUpdate ();
+            }
             else
             {
-                var command = new PaintCommand (rendererStation, go, objectWidth);
+                var command = new PaintCommand (rendererStation, go, objectWidth, () => NotifyNeedUpdate ());
                 undoRedoRegister.Do (command);
             }
         }

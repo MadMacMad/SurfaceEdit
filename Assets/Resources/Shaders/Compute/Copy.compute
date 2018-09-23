@@ -8,7 +8,7 @@ float2 TextureSize;
 
 SamplerState LinearMirrorSampler;
 
-[numthreads(8,8,1)]
+[numthreads(32,32,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
 	if (id.x > TextureSize.x || id.y > TextureSize.y)

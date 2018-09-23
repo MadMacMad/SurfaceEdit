@@ -29,7 +29,7 @@ namespace SurfaceEdit
             shader.SetFloats ("CropOrigin", cropOrigin.x, cropOrigin.y);
             shader.SetFloats ("TextureSize", textureToCrop.width, textureToCrop.height);
 
-            AutoDispatchDefaultShaderFunction (textureToCrop.width, textureToCrop.height, 8, 8);
+            AutoDispatchDefaultShaderFunction (textureToCrop.width, textureToCrop.height);
 
             return renderTexture;
         }

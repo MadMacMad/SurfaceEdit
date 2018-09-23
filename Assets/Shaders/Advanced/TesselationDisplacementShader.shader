@@ -1,5 +1,7 @@
-﻿Shader "SurfaceEdit/Advanced/TesselationDisplacementShader" {
-	Properties {
+﻿Shader "SurfaceEdit/Advanced/TesselationDisplacementShader"
+{
+	Properties
+	{
 		_MainTex("Albedo", 2D) = "white" {}
 		[Normal] _Normal("Normal", 2D) = "bump" {}
 		_Roughness("Roughness", 2D) = "white" {}
@@ -9,15 +11,15 @@
 		_TesselationMultiplier("Tesselation Multiplier", Range(1, 64)) = 3
 		[Toggle] _InvertNormal("Invert Normal", Float) = 0
 	}
-	SubShader {
+	SubShader
+	{
 		Tags { "RenderType" = "Opaque" }
 		LOD 100
 
 		CGPROGRAM
-		#pragma surface surf Standard fullforwardshadows vertex:vert tessellate:tess nolightmap addshadow 
-
+		#pragma surface surf Lambert fullforwardshadows vertex:vert tessellate:tess nolightmap addshadow
 		#pragma target 5.0
-
+				
 		#include "Tessellation.cginc"
 
 		struct appdata {
@@ -54,12 +56,13 @@
 			return _TesselationMultiplier;
 		}
 
-		void surf (Input IN, inout SurfaceOutputStandard o)
+		void surf (Input IN, inout SurfaceOutput o)
 		{
 			half4 albedo = tex2D(_MainTex, IN.uv_MainTex);
-			o.Albedo = albedo.rgb * albedo.a + float4(1, 0, 1, 1) * (1 - albedo.a);
-			o.Metallic = tex2D(_Metallic, IN.uv_MainTex);
-			o.Smoothness = 1 - tex2D(_Roughness, IN.uv_MainTex);
+			half alpha = max(albedo.a, .3);
+			o.Albedo = albedo.rgb * alpha + half4(1, 0, 1, 1) * (1 - alpha);
+			o.Specular = tex2D(_Metallic, IN.uv_MainTex);
+			o.Gloss = float4(1, 1, 1, 1) - tex2D(_Roughness, IN.uv_MainTex);
 			float4 normal = tex2D(_Normal, IN.uv_MainTex);
 			if (_InvertNormal == 1)
 				normal.g = 1 - normal.g;

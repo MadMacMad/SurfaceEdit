@@ -56,8 +56,11 @@ namespace SurfaceEdit
         {
             var triggerEntry = PaintTrigger ();
 
-            if ( triggerEntry.isPaintTriggered )
+            if ( triggerEntry.isActivated )
             {
+                if ( !triggerEntry.isPositionValid )
+                    return;
+
                 var newPosition = triggerEntry.paintPosition;
 
                 // On first trigger always paint.
@@ -140,12 +143,14 @@ namespace SurfaceEdit
 
         public class PaintTriggerEntry
         {
-            public readonly bool isPaintTriggered;
+            public readonly bool isActivated;
+            public readonly bool isPositionValid;
             public readonly Vector2 paintPosition;
 
-            public PaintTriggerEntry (bool isPaintTriggered, Vector2 paintPosition)
+            public PaintTriggerEntry (bool isActivated, bool isPositionValid, Vector2 paintPosition)
             {
-                this.isPaintTriggered = isPaintTriggered;
+                this.isActivated = isActivated;
+                this.isPositionValid = isPositionValid;
                 this.paintPosition = paintPosition;
             }
         }

@@ -2,25 +2,26 @@
 
 namespace SurfaceEdit.TextureAffectors
 {
-    public interface ISurfaceAffector
+    public class SurfaceAffector : PropertyChangedRegistrator
     {
-        void Affect (Surface surface);
-    }
-    public class SurfaceAffector<Affector> : PropertyChangedRegistrator, ISurfaceAffector where Affector : TextureAffector
-    {
-        public List<TextureChannel> AffectList { get; private set; } = new List<TextureChannel> ();
-        private Affector textureAffector;
+        public IReadOnlyCollection<TextureChannel> AffectedChannels => affectedChannels.List;
+        private TextureChannelCollection affectedChannels;
+        private TextureAffector textureAffector;
 
-        public SurfaceAffector(UndoRedoRegister undoRedoRegister, Affector textureAffector, List<TextureChannel> affectList) : base(undoRedoRegister)
+        public SurfaceAffector(TextureAffector textureAffector, TextureChannelCollection affectedChannels) : base(textureAffector?.undoRedoRegister)
         {
-            this.textureAffector = textureAffector;
-            AffectList.AddRange(affectList);
-            textureAffector.NeedUpdate += (s, e) => NotifyNeedUpdate (); 
-        }
+            Assert.ArgumentNotNull (affectedChannels, nameof (affectedChannels));
 
+            this.textureAffector = textureAffector;
+            this.affectedChannels = affectedChannels;
+
+            textureAffector.NeedUpdate += (s, e) => NotifyNeedUpdate ();
+            affectedChannels.PropertyChanged += (s, e) => NotifyNeedUpdate ();
+        }
+        
         public void Affect(Surface surface)
         {
-            foreach(var pair in surface.SelectTextures (AffectList))
+            foreach(var pair in surface.SelectTextures (affectedChannels.List) )
                 textureAffector.Affect (pair.Value);
         }
     }

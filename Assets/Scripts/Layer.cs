@@ -6,8 +6,18 @@ namespace SurfaceEdit
 {
     public class Layer : PropertyChangedRegistrator, IDisposable
     {
-        public IReadOnlyCollection<ISurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
-        private List<ISurfaceAffector> surfaceAffectors = new List<ISurfaceAffector>();
+        public LayerBlendType BlendType
+        {
+            get => blendType;
+            set => SetPropertyUndoRedo (v => blendType = v, () => blendType, value, true);
+        }
+        private LayerBlendType blendType = LayerBlendType.HeightBlend;
+
+        public IReadOnlyCollection<TextureChannel> Channels => channels.AsReadOnly();
+        private List<TextureChannel> channels = new List<TextureChannel>();
+
+        public IReadOnlyCollection<SurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
+        private List<SurfaceAffector> surfaceAffectors = new List<SurfaceAffector> ();
         
         public Layer (UndoRedoRegister undoRedoRegister) : base (undoRedoRegister) { }
 
@@ -19,7 +29,10 @@ namespace SurfaceEdit
                 affector.Affect (surface);
         }
 
-        public void AddSurfaceAffector<T>(SurfaceAffector<T> surfaceAffector) where T : TextureAffector
+        public void AddSurfaceAffector (TextureAffector textureAffector, TextureChannel channel)
+        => AddSurfaceAffector (textureAffector.ToSurfaceAffector (channel));
+
+        public void AddSurfaceAffector(SurfaceAffector surfaceAffector)
         {
             if (!surfaceAffectors.Contains(surfaceAffector))
             {
@@ -28,12 +41,12 @@ namespace SurfaceEdit
                 NotifyNeedUpdate ();
             }
         }
-        public void RemoveSurfaceAffector<T> (SurfaceAffector<T> surfaceAffector) where T : TextureAffector
+        public void RemoveSurfaceAffector (SurfaceAffector surfaceAffector) 
         {
             if ( surfaceAffectors.Contains (surfaceAffector) )
             {
                 surfaceAffector.NeedUpdate -= OnChildNeedUpdate;
-                surfaceAffectors.Remove (surfaceAffector as ISurfaceAffector);
+                surfaceAffectors.Remove(surfaceAffector);
                 NotifyNeedUpdate ();
             }
         }
@@ -45,5 +58,10 @@ namespace SurfaceEdit
         {
 
         }
+    }
+    public enum LayerBlendType
+    {
+        AlphaBlend,
+        HeightBlend
     }
 }

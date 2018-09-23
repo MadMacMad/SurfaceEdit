@@ -23,7 +23,11 @@ namespace SurfaceEdit.Brushes
             Resolution = resolution;
 
             Resolution.PropertyChanged += (s, e) => UpdateBrushStamp();
-            PropertyChanged += (s, e) => UpdateBrushStamp ();
+            PropertyChanged += (s, e) =>
+            {
+                if ( e?.propertyName == "Hardness" )
+                    UpdateBrushStamp ();
+            };
         }
         
         protected override RenderTexture ProvideBrushStamp ()

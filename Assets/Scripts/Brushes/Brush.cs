@@ -8,7 +8,7 @@ namespace SurfaceEdit.Brushes
         public Vector2 PercentageSize
         {
             get => percentageSize;
-            set => SetProperty (ref percentageSize, value, false, v => { v.Clamp (Vector2.zero, new Vector2 (float.MaxValue, float.MaxValue)); return v; });
+            set => SetProperty (ref percentageSize, value, false, v => v.Clamp01 ());
         }
         private Vector2 percentageSize;
 
@@ -19,7 +19,23 @@ namespace SurfaceEdit.Brushes
         }
         private float percentageIntervals;
 
-        public RenderTexture BrushStamp { get; private set; }
+        public RenderTexture BrushStamp
+        {
+            get
+            {
+                if ( brushStamp == null )
+                    brushStamp = ProvideBrushStamp ();
+                return brushStamp;
+            }
+        }
+        private RenderTexture brushStamp;
+
+        public Color TintColor
+        {
+            get => tintColor;
+            set => SetProperty (ref tintColor, value);
+        }
+        private Color tintColor = Color.white;
 
         public float RealIntervals { get; private set; }
 
@@ -31,25 +47,28 @@ namespace SurfaceEdit.Brushes
             this.percentageSize = percentageSize;
             this.percentageIntervals = percentageIntervals;
 
-            BrushStamp = ProvideBrushStamp ();
+            RealIntervals = percentageIntervals * Mathf.Max (percentageSize.x, percentageSize.y);
 
             PropertyChanged += (s, e) =>
             {
                 if ( e?.propertyName == "PercentageSize" || e?.propertyName == "PercentageIntervals" )
                     RealIntervals = percentageIntervals * Mathf.Max (percentageSize.x, percentageSize.y);
+                if ( e?.propertyName == "TintColor" )
+                    UpdateBrushStamp ();
             };
         }
 
         public void UpdateBrushStamp ()
         {
-            BrushStamp = ProvideBrushStamp ();
+            brushStamp = ProvideBrushStamp ();
+            new ComputeTint (BrushStamp, tintColor).Execute();
             NotifyPropertyChanged ("BrushStamp");
         }
         public BrushSnapshot AsSnapshot () => new BrushSnapshot (this);
 
         public void Dispose ()
         {
-            BrushStamp.Release ();
+            brushStamp?.Release ();
             Dispose_Internal ();
         }
         protected virtual void Dispose_Internal () { }
