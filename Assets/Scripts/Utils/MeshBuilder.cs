@@ -7,7 +7,7 @@ namespace SurfaceEdit
     {
         public static MeshData BuildQuad (Vector2 size)
         {
-            size.Clamp (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
+            size.ClampNew (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
 
             var vertices = new List<Vector3> ();
             var triangles = new List<int> ();
@@ -37,7 +37,7 @@ namespace SurfaceEdit
 
         public static MeshData BuildPlane (Vector2 size, Vector2Int pointsCount)
         {
-            size.Clamp (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
+            size.ClampNew (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
             pointsCount.Clamp (new Vector2Int (1, 1), new Vector2Int (4096, 4096));
 
             var distanceBetweenPoints = size / pointsCount;

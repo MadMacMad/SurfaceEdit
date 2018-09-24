@@ -8,7 +8,7 @@ namespace SurfaceEdit.Brushes
         public Vector2 PercentageSize
         {
             get => percentageSize;
-            set => SetProperty (ref percentageSize, value, false, v => v.Clamp01 ());
+            set => SetProperty (ref percentageSize, value, false, v => v.Clamp01New ());
         }
         private Vector2 percentageSize;
 
@@ -41,7 +41,7 @@ namespace SurfaceEdit.Brushes
 
         protected Brush (Vector2 percentageSize, float percentageIntervals)
         {
-            percentageSize.Clamp (Vector2.zero, new Vector2 (float.MaxValue, float.MaxValue));
+            percentageSize.ClampNew (Vector2.zero, new Vector2 (float.MaxValue, float.MaxValue));
             percentageIntervals = Mathf.Clamp (percentageIntervals, .00001f, 10f);
 
             this.percentageSize = percentageSize;

@@ -72,7 +72,7 @@ namespace SurfaceEdit
         //     });
         //}
 
-        public static Vector2 Clamp (this Vector2 vector, Vector2 min, Vector2 max)
+        public static Vector2 ClampNew (this Vector2 vector, Vector2 min, Vector2 max)
         {
             var newVector = vector;
 
@@ -89,8 +89,25 @@ namespace SurfaceEdit
             return newVector;
         }
 
-        public static Vector2 Clamp01 (this Vector2 vector)
-            => vector.Clamp (Vector2.zero, Vector2.one);
+        public static Vector2 Clamp01New (this Vector2 vector)
+            => vector.ClampNew (Vector2.zero, Vector2.one);
+
+        public static Vector2Int ClampNew (this Vector2Int vector, Vector2Int min, Vector2Int max)
+        {
+            var newVector = vector;
+
+            if ( newVector.x < min.x )
+                newVector.x = min.x;
+            else if ( newVector.x > max.x )
+                newVector.x = max.x;
+
+            if ( newVector.y < min.y )
+                newVector.y = min.y;
+            else if ( newVector.y > max.y )
+                newVector.y = max.y;
+
+            return newVector;
+        }
 
         public static IEnumerable<Enum> GetFlags (this Enum e) 
             => Enum.GetValues (e.GetType ()).Cast<Enum> ().Where (e.HasFlag);
