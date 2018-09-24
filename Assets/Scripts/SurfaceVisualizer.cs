@@ -97,7 +97,11 @@ namespace SurfaceEdit
                 surface.Textures.TryGetValue(renderedChannel, out RenderTexture texture);
                 if ( texture == null )
                     texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x2), renderedChannel, false).Provide();
+                surface.Textures.TryGetValue (TextureChannel.Height, out RenderTexture height);
+                if ( height == null )
+                    height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x2), TextureChannel.Height, false).Provide ();
                 renderer.material.SetTexture ("_MainTex", texture);
+                renderer.material.SetTexture ("_Displacement", height);
             }
 
             renderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
