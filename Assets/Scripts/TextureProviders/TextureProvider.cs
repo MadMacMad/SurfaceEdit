@@ -32,6 +32,13 @@ namespace SurfaceEdit.TextureProviders
         {
             Assert.ArgumentNotNull (texture, nameof (texture));
 
+            if ( !isCacheTexture )
+            {
+                Debug.LogWarning ($"{nameof (TextureProvider)}.isCacheTexture is set to false. New texture will be loaded");
+                initialTexture?.Release ();
+                initialTexture = null;
+            }
+
             Provide ();
 
             new ComputeCopy (initialTexture, texture).Execute ();
