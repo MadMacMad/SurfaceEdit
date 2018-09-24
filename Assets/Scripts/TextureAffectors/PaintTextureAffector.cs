@@ -24,7 +24,15 @@ namespace SurfaceEdit.TextureAffectors
             var material = paintEntry.brushSnapshot.material;
 
             var go = new GameObject ("PaintEntry");
-            go.AddComponent<MeshRenderer> ().material = material;
+
+            var renderer = go.AddComponent<MeshRenderer> ();
+            renderer.material = material;
+            renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+            renderer.receiveShadows = false;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.allowOcclusionWhenDynamic = false;
+
             go.AddComponent<MeshFilter> ().mesh = paintEntry.Mesh;
 
             var objectWidth = paintEntry.BrushPositions.Count * distanceBetweenBrushes;
