@@ -31,6 +31,6 @@ namespace SurfaceEdit.Brushes
         }
         
         protected override RenderTexture ProvideBrushStamp ()
-            => new ComputeRoundBrushCreate (Resolution.Value, hardness).Execute ();
+            => new ComputeRoundBrushCreate (Resolution.AsInt, hardness).Execute ();
     }
 }

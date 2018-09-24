@@ -2,17 +2,32 @@
 
 namespace SurfaceEdit
 {
+    public sealed class ImmutableTextureResolution
+    {
+        public readonly int AsInt;
+        public readonly TextureResolutionEnum AsEnum;
+        public readonly Vector2Int AsVector;
+
+        public ImmutableTextureResolution (TextureResolutionEnum resolution)
+        {
+            AsEnum = resolution;
+            AsVector = TextureResolutionEnumToVector (resolution);
+            AsInt = (int)resolution;
+        }
+        private Vector2Int TextureResolutionEnumToVector (TextureResolutionEnum resolution)
+            => new Vector2Int ((int)resolution, (int)resolution);
+    }
     public sealed class TextureResolution : PropertyChangedNotifier
     {
-        public int Value { get; private set; }
+        public int AsInt { get; private set; }
         public TextureResolutionEnum AsEnum { get; private set; }
-        public Vector2Int Vector { get; private set; }
+        public Vector2Int AsVector { get; private set; }
 
         public TextureResolution (TextureResolutionEnum resolution)
         {
             AsEnum = resolution;
-            Vector = TextureResolutionEnumToVector (resolution);
-            Value = (int)resolution;
+            AsVector = TextureResolutionEnumToVector (resolution);
+            AsInt = (int)resolution;
         }
 
         public void SetResolution (TextureResolutionEnum resolution)
@@ -20,11 +35,14 @@ namespace SurfaceEdit
             if ( resolution != AsEnum )
             {
                 AsEnum = resolution;
-                Vector = TextureResolutionEnumToVector (resolution);
-                Value = (int)resolution;
-                NotifyPropertyChanged (nameof (Vector));
+                AsVector = TextureResolutionEnumToVector (resolution);
+                AsInt = (int)resolution;
+                NotifyPropertyChanged (nameof (AsVector));
             }
         }
+
+        public ImmutableTextureResolution ToImmutable ()
+            => new ImmutableTextureResolution (AsEnum);
 
         private Vector2Int TextureResolutionEnumToVector (TextureResolutionEnum resolution)
             => new Vector2Int ((int)resolution, (int)resolution);

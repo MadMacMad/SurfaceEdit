@@ -56,9 +56,9 @@ namespace SurfaceEdit.TextureProviders
         private RenderTexture ProvideAdjustScale ()
         {
             var texture = Provide_Internal ();
-            if ( texture.width != resolution.Value || texture.height != resolution.Value )
+            if ( texture.width != resolution.AsInt || texture.height != resolution.AsInt )
             {
-                var result = new ComputeRescaleStupid (texture, resolution.Vector).Execute ();
+                var result = new ComputeRescaleStupid (texture, resolution.AsVector).Execute ();
                 texture.Release ();
                 return result;
             }

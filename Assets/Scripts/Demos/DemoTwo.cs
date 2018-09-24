@@ -230,7 +230,7 @@ namespace SurfaceEdit.Demos
             }
 
             ui1.text =
-                $"Working resolution: {resolution.Value + " x " + resolution.Value}\n" +
+                $"Working resolution: {resolution.AsInt + " x " + resolution.AsInt}\n" +
                 $"Brush color: {( isBrushBlack ? "Black" : "White" )}\n" +
                 $"Brush size: {brush.PercentageSize.x}\n" +
                 $"Brush hardness: {( brush as DefaultRoundBrush ).Hardness}\n" +

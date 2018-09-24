@@ -26,7 +26,7 @@ namespace SurfaceEdit.TextureProviders
         }
         private RenderTexture ProvideSolidColorRenderTexture(Color color)
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (resolution.Vector);
+            var renderTexture = Utils.CreateAndAllocateRenderTexture (resolution.AsVector);
             return new ComputeFillWithColor (renderTexture, color).Execute();
         }
     }
