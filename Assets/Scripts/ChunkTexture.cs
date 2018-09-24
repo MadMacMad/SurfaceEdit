@@ -1,9 +1,10 @@
-﻿using SurfaceEdit.TextureProviders;
+﻿using System;
+using SurfaceEdit.TextureProviders;
 using UnityEngine;
 
 namespace SurfaceEdit
 {
-    public sealed class ChunkTexture
+    public sealed class ChunkTexture : NeedUpdateNotifier, IDisposable
     {
         public TextureResolution TextureResolution { get; private set; }
         public ImmutableTextureResolution ChunkResolution { get; private set; }
@@ -33,10 +34,19 @@ namespace SurfaceEdit
                     ChunkResolution = TextureResolution.ToImmutable();
                     ChunksCount = new Vector2Int (TextureResolution.AsInt / ChunkResolution.AsInt, TextureResolution.AsInt / ChunkResolution.AsInt);
                 }
-
-                RenderTexture.Release ();
+                
                 RenderTexture = this.provider.Provide ();
+                NotifyNeedUpdate ();
             };
+        }
+
+        public void Reset()
+            => provider.Override (RenderTexture);
+
+        public void Dispose ()
+        {
+            provider.Dispose ();
+            RenderTexture.Release ();
         }
 
         public static implicit operator RenderTexture(ChunkTexture chunkTexture)
