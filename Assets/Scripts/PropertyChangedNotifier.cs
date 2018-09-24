@@ -4,9 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace SurfaceEdit
 {
-    public delegate void NeedUpdateEventHandler (object sender, EventArgs eventArgs);
 
-    public abstract class PropertyChangedNotifier : INotifyPropertyChanged
+    public abstract class PropertyChangedNotifier : INotifyPropertyChanged, INotifyNeedUpdate
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event NeedUpdateEventHandler NeedUpdate;
