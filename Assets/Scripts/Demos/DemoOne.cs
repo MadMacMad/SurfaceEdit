@@ -31,7 +31,9 @@ namespace SurfaceEdit.Demos
             var channels = new TextureChannelCollection ();
             channels.AddChannel (TextureChannel.Albedo);
 
-            surface = new Surface (new TextureResolution(TextureResolutionEnum.x2048), channels);
+            var chunkResolution = new ImmutableTextureResolution (TextureResolutionEnum.x128);
+
+            surface = new Surface (new TextureResolution(TextureResolutionEnum.x2048), chunkResolution, channels);
 
             taff = new PaintTextureAffector (UndoRedoRegister.Instance);
             fillAffector = new ColorFillTextureAffector (UndoRedoRegister.Instance, new Color (0, 0, 0, 1));

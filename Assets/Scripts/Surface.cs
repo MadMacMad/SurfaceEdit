@@ -10,13 +10,13 @@ namespace SurfaceEdit
     {
         public IReadOnlyCollection<TextureChannel> Channels => channels.List;
 
-        public IReadOnlyDictionary<TextureChannel, RenderTexture> Textures => textures;
-        private Dictionary<TextureChannel, RenderTexture> textures = new Dictionary<TextureChannel, RenderTexture> ();
-
-        private Dictionary<TextureChannel, TextureProvider> providers = new Dictionary<TextureChannel, TextureProvider>();
+        public IReadOnlyDictionary<TextureChannel, ChunkTexture> Textures => textures;
+        private Dictionary<TextureChannel, ChunkTexture> textures = new Dictionary<TextureChannel, ChunkTexture> ();
 
         private TextureChannelCollection channels;
-        private TextureResolution resolution;
+
+        private TextureResolution textureResolution;
+        private ImmutableTextureResolution chunkResolution;
         
         public void RecreateBlankSurface(TextureChannelCollection newChannels)
         {
@@ -26,9 +26,10 @@ namespace SurfaceEdit
                 {
                     channels.AddChannel (newChannel);
 
-                    var provider = new BlankChannelTextureProvider (resolution, newChannel);
-                    providers.Add (newChannel, provider);
-                    textures.Add (newChannel, provider.Provide());
+                    var provider = new BlankChannelTextureProvider (textureResolution, newChannel);
+                    var chunkTexture = new ChunkTexture (provider, chunkResolution);
+                    textures.Add (newChannel, chunkTexture);
+                    chunkTexture.NeedUpdate += (s, e) => NotifyNeedUpdate ();
                 }
             }
 
@@ -36,25 +37,22 @@ namespace SurfaceEdit
             {
                 if (!newChannels.List.Contains(channel))
                 {
-                    var provider = providers[channel];
-                    provider.Dispose ();
-                    providers.Remove (channel);
-
-                    var texture = textures[channel];
-                    texture.Release ();
+                    textures[channel].Dispose ();
                     textures.Remove (channel);
                 }
             }
         }
 
-        public Surface (TextureResolution resolution, TextureChannelCollection channels)
+        public Surface (TextureResolution textureResolution, ImmutableTextureResolution chunkResolution, TextureChannelCollection channels)
         {
-            Assert.ArgumentNotNull (resolution, nameof (resolution));
+            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
+            Assert.ArgumentNotNull (chunkResolution, nameof (chunkResolution));
             Assert.ArgumentNotNull (channels, nameof (channels));
 
             this.channels = channels;
-            this.resolution = resolution;
-            
+            this.textureResolution = textureResolution;
+            this.chunkResolution = chunkResolution;
+
             CreateTextures ();
         }
 
@@ -62,22 +60,19 @@ namespace SurfaceEdit
         {
             foreach ( var channel in channels.List )
             {
-                var provider = new BlankChannelTextureProvider (resolution, channel);
-                provider.NeedUpdate += (s, e) =>
-                {
-                    textures[provider.textureChannel] = provider.Provide ();
-                    NotifyNeedUpdate ();
-                };
-                providers.Add (channel, provider);
-                textures.Add (channel, provider.Provide ());
+                var provider = new BlankChannelTextureProvider (textureResolution, channel);
+                var chunkTexture = new ChunkTexture (provider, chunkResolution);
+                textures.Add (channel, chunkTexture);
+
+                chunkTexture.NeedUpdate += (s, e) => NotifyNeedUpdate ();
             }
         }
         
-        public Dictionary<TextureChannel, RenderTexture> SelectTextures (IEnumerable<TextureChannel> selectionList)
+        public Dictionary<TextureChannel, ChunkTexture> SelectTextures (IEnumerable<TextureChannel> selectionList)
         {
             Assert.ArgumentNotNull (selectionList, nameof(selectionList));
 
-            var result = new Dictionary<TextureChannel, RenderTexture> ();
+            var result = new Dictionary<TextureChannel, ChunkTexture> ();
 
             foreach(var channel in selectionList)
             {
@@ -95,20 +90,17 @@ namespace SurfaceEdit
         {
             Assert.ArgumentNotNull (selectionList, nameof (selectionList));
 
-            foreach ( var s in selectionList.Distinct().ToList() )
-                providers[s].Override (textures[s]);
+            foreach ( var s in selectionList.Distinct ().ToList () )
+                textures[s].Reset ();
         }
         public void ResetAll ()
         {
-            foreach ( var pair in providers )
-                pair.Value.Override (textures[pair.Key]);
+            foreach ( var pair in textures )
+                pair.Value.Reset ();
         }
         public void Dispose()
         {
             foreach(var pair in textures)
-                pair.Value.Release ();
-
-            foreach ( var pair in providers )
                 pair.Value.Dispose ();
         }
     }

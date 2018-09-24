@@ -22,7 +22,8 @@ namespace SurfaceEdit.Demos
         private TextMeshProUGUI ui1;
         private TextMeshProUGUI ui2;
 
-        private TextureResolution resolution;
+        private TextureResolution textureResolution;
+        private ImmutableTextureResolution chunkResolution;
 
 
         private void Start ()
@@ -40,37 +41,38 @@ namespace SurfaceEdit.Demos
             this.channels = channels.List.ToList();
             this.channels.Remove (TextureChannel.Mask);
 
-            resolution = new TextureResolution (TextureResolutionEnum.x2048);
+            textureResolution = new TextureResolution (TextureResolutionEnum.x2048);
+            chunkResolution = new ImmutableTextureResolution (TextureResolutionEnum.x128);
 
-            layerStack = new LayerStack (UndoRedoRegister.Instance, resolution, channels);
+            layerStack = new LayerStack (UndoRedoRegister.Instance, textureResolution, chunkResolution, channels);
             
             layer1 = layerStack.CreateLayer ();
 
-            var albedoFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Mud/Albedo"));
+            var albedoFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Mud/Albedo"));
             layer1.AddSurfaceAffector (albedoFill1, TextureChannel.Albedo);
 
-            var normalFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Mud/Normal"));
+            var normalFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Mud/Normal"));
             layer1.AddSurfaceAffector (normalFill1, TextureChannel.Normal);
 
-            var heightFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Mud/Height"));
+            var heightFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Mud/Height"));
             layer1.AddSurfaceAffector (heightFill1, TextureChannel.Height);
 
-            var roughnessFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Mud/Roughness"));
+            var roughnessFill1 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Mud/Roughness"));
             layer1.AddSurfaceAffector (roughnessFill1, TextureChannel.Roughness);
 
             layer2 = layerStack.CreateLayer ();
             layer2.BlendType = LayerBlendType.AlphaBlend;
             
-            var albedoFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Cobblestone/Albedo"));
+            var albedoFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Cobblestone/Albedo"));
             layer2.AddSurfaceAffector (albedoFill2, TextureChannel.Albedo);
 
-            var normalFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Cobblestone/Normal"));
+            var normalFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Cobblestone/Normal"));
             layer2.AddSurfaceAffector (normalFill2, TextureChannel.Normal);
 
-            var heightFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Cobblestone/Height"));
+            var heightFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Cobblestone/Height"));
             layer2.AddSurfaceAffector (heightFill2, TextureChannel.Height);
 
-            var roughnessFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (resolution, "Textures/Standard/Mud/Roughness"));
+            var roughnessFill2 = new TextureFillTextureAffector (UndoRedoRegister.Instance, new ResourcesTextureProvider (textureResolution, "Textures/Standard/Mud/Roughness"));
             layer2.AddSurfaceAffector (roughnessFill2, TextureChannel.Roughness);
 
             var paintTextureAffector = new PaintTextureAffector (UndoRedoRegister.Instance);
@@ -137,22 +139,22 @@ namespace SurfaceEdit.Demos
             }
             if (Input.GetKeyDown(KeyCode.E))
             {
-                var currentResolutionIndex = (int)resolution.AsEnum;
+                var currentResolutionIndex = (int)textureResolution.AsEnum;
                 var previousIndex = currentResolutionIndex / 2;
                 if ( previousIndex >= (int)TextureResolutionEnum.x2 )
                 {
                     var newResolution = (TextureResolutionEnum)previousIndex;
-                    resolution.SetResolution (newResolution);
+                    textureResolution.SetResolution (newResolution);
                 }
             }
             else if ( Input.GetKeyDown (KeyCode.R) )
             {
-                var currentIndex = (int)resolution.AsEnum;
+                var currentIndex = (int)textureResolution.AsEnum;
                 var nextIndex = currentIndex * 2;
                 if ( nextIndex <= (int)TextureResolutionEnum.x4096 )
                 {
                     var newResolution = (TextureResolutionEnum)nextIndex;
-                    resolution.SetResolution (newResolution);
+                    textureResolution.SetResolution (newResolution);
                 }
             }
 
@@ -230,7 +232,7 @@ namespace SurfaceEdit.Demos
             }
 
             ui1.text =
-                $"Working resolution: {resolution.AsInt + " x " + resolution.AsInt}\n" +
+                $"Working resolution: {textureResolution.AsInt + " x " + textureResolution.AsInt}\n" +
                 $"Brush color: {( isBrushBlack ? "Black" : "White" )}\n" +
                 $"Brush size: {brush.PercentageSize.x}\n" +
                 $"Brush hardness: {( brush as DefaultRoundBrush ).Hardness}\n" +

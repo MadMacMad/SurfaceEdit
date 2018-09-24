@@ -6,7 +6,7 @@ namespace SurfaceEdit
 {
     public sealed class LayerStack : PropertyChangedRegistrator, IDisposable
     {
-        public TextureResolution Resolution { get; private set; }
+        public TextureResolution TextureResolution { get; private set; }
         public TextureChannelCollection Channels { get; private set; }
 
         public IReadOnlyCollection<Layer> Layers => layers.AsReadOnly ();
@@ -17,17 +17,17 @@ namespace SurfaceEdit
         private Surface collectorSurface;
         private Surface layerSurface;
         
-        public LayerStack (UndoRedoRegister undoRedoRegister, TextureResolution resolution, TextureChannelCollection channels)
+        public LayerStack (UndoRedoRegister undoRedoRegister, TextureResolution textureResolution, ImmutableTextureResolution chunkResolution, TextureChannelCollection channels)
             : base (undoRedoRegister)
         {
-            Assert.ArgumentNotNull (resolution, nameof (resolution));
+            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
             Assert.ArgumentNotNull (channels, nameof (channels));
 
-            Resolution = resolution;
+            TextureResolution = textureResolution;
             Channels = channels;
 
-            collectorSurface = new Surface (resolution, Channels);
-            layerSurface = new Surface (resolution, Channels);
+            collectorSurface = new Surface (textureResolution, chunkResolution, Channels);
+            layerSurface = new Surface (textureResolution, chunkResolution, Channels);
             
             Channels.PropertyChanged += Update;
         }

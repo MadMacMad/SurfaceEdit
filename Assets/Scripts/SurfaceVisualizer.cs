@@ -94,12 +94,17 @@ namespace SurfaceEdit
             else
             {
                 renderer.material.shader = textureShader;
-                surface.Textures.TryGetValue(renderedChannel, out RenderTexture texture);
+
+                surface.Textures.TryGetValue(renderedChannel, out ChunkTexture chunkTexture);
+                var texture = chunkTexture?.RenderTexture;
                 if ( texture == null )
                     texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x2), renderedChannel, false).Provide();
-                surface.Textures.TryGetValue (TextureChannel.Height, out RenderTexture height);
+
+                surface.Textures.TryGetValue (TextureChannel.Height, out ChunkTexture chunkHeight);
+                var height = chunkHeight?.RenderTexture;
                 if ( height == null )
                     height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x2), TextureChannel.Height, false).Provide ();
+
                 renderer.material.SetTexture ("_MainTex", texture);
                 renderer.material.SetTexture ("_Displacement", height);
             }
