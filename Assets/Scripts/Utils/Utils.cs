@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 
 namespace SurfaceEdit
 {
     public static class Utils
     {
-        public static RenderTexture CreateAndAllocateRenderTexture (int width, int height)
+        public static RenderTexture CreateRenderTexture (int width, int height)
         {
             //Debug.Log ("Render Texture Allocated (Width: " + width + ", Height: " + height + ")");
             RenderTexture renderTexture = new RenderTexture (width, height, 0, RenderTextureFormat.ARGB32)
@@ -17,14 +16,14 @@ namespace SurfaceEdit
             return renderTexture;
         }
 
-        public static RenderTexture CreateAndAllocateRenderTexture (int size)
+        public static RenderTexture CreateRenderTexture (int size)
         {
-            return CreateAndAllocateRenderTexture (size, size);
+            return CreateRenderTexture (size, size);
         }
 
-        public static RenderTexture CreateAndAllocateRenderTexture (Vector2Int size)
+        public static RenderTexture CreateRenderTexture (Vector2Int size)
         {
-            return CreateAndAllocateRenderTexture (size.x, size.y);
+            return CreateRenderTexture (size.x, size.y);
         }
 
         public static Object InstantiateAtSpecificScene (Object original, Vector3 position, Quaternion rotation, Scene scene, int layerID, GameObject parent = null)

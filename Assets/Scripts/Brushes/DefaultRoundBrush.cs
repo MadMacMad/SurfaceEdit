@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SurfaceEdit.Brushes
 {
@@ -22,7 +21,7 @@ namespace SurfaceEdit.Brushes
             this.hardness = Mathf.Clamp01 (hardness);
             Resolution = resolution;
 
-            Resolution.PropertyChanged += (s, e) => UpdateBrushStamp();
+            Resolution.Changed += (s, e) => UpdateBrushStamp();
             PropertyChanged += (s, e) =>
             {
                 if ( e?.propertyName == "Hardness" )

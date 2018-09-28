@@ -37,7 +37,8 @@ namespace SurfaceEdit
         private Vector2 lastPosition;
 
         private BrushSnapshot brushSnapshot;
-        private List<Vector3> brushPositions = new List<Vector3>();
+
+        private PaintEntry temporaryPaintEntry;
 
         private void Awake ()
         {
@@ -61,18 +62,18 @@ namespace SurfaceEdit
                 if ( !triggerEntry.isPositionValid )
                     return;
 
-                var newPosition = triggerEntry.paintPosition;
+                var newPosition = triggerEntry.paintPosition - currentBrush.PercentageSize / 2;
 
                 // On first trigger always paint.
                 if ( !isTriggeredLastFrame )
                 {
                     isTriggeredLastFrame = true;
                     lastPosition = newPosition;
-
-                    brushPositions.Add (newPosition);
+                    
                     brushSnapshot = currentBrush.AsSnapshot ();
 
-                    OnPaintTemporary (new PaintEntry (brushSnapshot, brushPositions));
+                    temporaryPaintEntry = new PaintEntry (brushSnapshot, new List<Vector3> () { newPosition });
+                    OnPaintTemporary (temporaryPaintEntry);
                     return;
                 }
 
@@ -90,10 +91,8 @@ namespace SurfaceEdit
                     var point = lastPosition + movement.normalized * currentBrush.RealIntervals;
                     // lastPosition is set to point. We ignore the rest of the movement because it is not enough to contain one more point.
                     lastPosition = point;
-
-                    brushPositions.Add (point);
-                    var paintEntry = new PaintEntry (brushSnapshot, brushPositions);
-                    OnPaintTemporary (paintEntry);
+                    
+                    temporaryPaintEntry.AddBrushPositions (new List<Vector3> () { point });
                 }
                 // Movement is enough to paint several times in a line.
                 else
@@ -101,20 +100,13 @@ namespace SurfaceEdit
                     var points = DivideLineSegmentIntoPoints (lastPosition, newPosition, currentBrush.RealIntervals);
                     // lastPosition is set to last point. We ignore the rest of the movement because it is not enough to contain one more point.
                     lastPosition = points.Last ();
-
-                    brushPositions.AddRange (points);
-
-                    var paintEntry = new PaintEntry (brushSnapshot, brushPositions);
-                    OnPaintTemporary (paintEntry);
+                    temporaryPaintEntry.AddBrushPositions (points);
                 }
             }
             else
             {
                 if ( isTriggeredLastFrame )
-                {
-                    OnPaintFinal (new PaintEntry (brushSnapshot, brushPositions));
-                    brushPositions.Clear ();
-                }
+                    OnPaintFinal (temporaryPaintEntry);
 
                 isTriggeredLastFrame = false;
             }

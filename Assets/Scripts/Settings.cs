@@ -4,6 +4,6 @@ namespace SurfaceEdit
 {
     public static class Settings
     {
-        public static readonly int affectorRendererStationLayerID = LayerMask.NameToLayer ("AffectorRendererStation");
+        public static readonly int rendererStationLayerID = LayerMask.NameToLayer ("RendererStation");
     }
 }

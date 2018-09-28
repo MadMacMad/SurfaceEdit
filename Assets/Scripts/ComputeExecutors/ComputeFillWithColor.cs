@@ -2,28 +2,13 @@
 
 namespace SurfaceEdit
 {
-    public class ComputeFillWithColor : ComputeExecutor<RenderTexture>
+    public class ComputeFillWithColor : PartTextureComputeExecutor
     {
-        private RenderTexture texture;
-        private Color color;
-
-        public ComputeFillWithColor (RenderTexture texture, Color color) : base("Shaders/Compute/FillWithColor")
+        public ComputeFillWithColor (RenderTexture texture, Color color) : base(texture, "Shaders/Compute/FillWithColor")
         {
-            Assert.ArgumentNotNull (texture, nameof (texture));
-
-            this.texture = texture;
-            this.color = color;
-        }
-
-        public override RenderTexture Execute ()
-        {
-            shader.SetTexture (DefaultFunctionID, "Result", texture);
+            shader.SetTexture (ShaderFunctionID, "Result", texture);
             shader.SetFloats ("TextureSize", texture.width, texture.height);
-            shader.SetFloats ("Color", color.r, color.g, color.b, color.a);
-
-            AutoDispatchDefaultShaderFunction (texture.width, texture.height);
-
-            return texture;
+            shader.SetColor ("Color", color);
         }
     }
 }

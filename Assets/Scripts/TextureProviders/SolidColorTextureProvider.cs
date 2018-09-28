@@ -13,7 +13,7 @@ namespace SurfaceEdit.TextureProviders
 
         protected override RenderTexture Provide_Internal ()
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (resolution.AsVector);
+            var renderTexture = Utils.CreateRenderTexture (resolution.AsVector);
             renderTexture = new ComputeFillWithColor (renderTexture, color).Execute ();
             return renderTexture;
         }

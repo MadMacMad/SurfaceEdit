@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using SurfaceEdit.TextureAffectors;
+using SurfaceEdit.SurfaceAffectors;
+using UnityEngine;
 
 namespace SurfaceEdit
 {
-    public class Layer : PropertyChangedRegistrator, IDisposable
+    public class Layer : PropertyChangedRegistrator, INotifyNeedRender, IDisposable
     {
+        public event NeedRenderEventHandler NeedRender;
+
+        protected void NotifyNeedRender (RenderContext renderContext)
+            => NeedRender?.Invoke (this, new NeedRenderEventArgs(renderContext));
+        
+        public ProgramContext Context { get; private set; }
+
         public LayerBlendType BlendType
         {
             get => blendType;
@@ -13,46 +21,49 @@ namespace SurfaceEdit
         }
         private LayerBlendType blendType = LayerBlendType.HeightBlend;
 
-        public IReadOnlyCollection<TextureChannel> Channels => channels.AsReadOnly();
-        private List<TextureChannel> channels = new List<TextureChannel>();
+        public IReadOnlyCollection<Channel> Channels => channels.AsReadOnly();
+        private List<Channel> channels = new List<Channel>();
 
-        public IReadOnlyCollection<SurfaceAffector> SurfaceAffectors => surfaceAffectors.AsReadOnly();
-        private List<SurfaceAffector> surfaceAffectors = new List<SurfaceAffector> ();
+        public IReadOnlyCollection<SurfaceAffector> Affectors => affectors.AsReadOnly();
+        private List<SurfaceAffector> affectors = new List<SurfaceAffector> ();
         
-        public Layer (UndoRedoRegister undoRedoRegister) : base (undoRedoRegister) { }
+        public Layer (ProgramContext context) : base (context?.UndoRedoRegister)
+        {
+            Assert.ArgumentNotNull (context, nameof (context));
 
-        public void Process(Surface surface)
+            Context = context;
+        }
+        
+        public void Process(Surface surface, RenderContext renderContext)
         {
             Assert.ArgumentNotNull (surface, nameof (surface));
-
-            foreach ( var affector in surfaceAffectors )
-                affector.Affect (surface);
+            Assert.ArgumentNotNull (renderContext, nameof (renderContext));
+            
+            foreach ( var affector in affectors )
+                affector.AffectSurface (surface, renderContext);
         }
-
-        public void AddSurfaceAffector (TextureAffector textureAffector, TextureChannel channel)
-        => AddSurfaceAffector (textureAffector.ToSurfaceAffector (channel));
-
-        public void AddSurfaceAffector(SurfaceAffector surfaceAffector)
+        
+        public void AddAffector(SurfaceAffector affector)
         {
-            if (!surfaceAffectors.Contains(surfaceAffector))
+            if (!affectors.Contains(affector))
             {
-                surfaceAffector.NeedUpdate += OnChildNeedUpdate;
-                surfaceAffectors.Add (surfaceAffector);
-                NotifyNeedUpdate ();
+                affector.NeedRender += OnAffectorNeedRender;
+                affectors.Add (affector);
+                NotifyNeedRender (new RenderContext(affector.AffectedChannels.ToImmutable(), RenderCovering.Full));
             }
         }
-        public void RemoveSurfaceAffector (SurfaceAffector surfaceAffector) 
+        public void RemoveAffector (SurfaceAffector affector) 
         {
-            if ( surfaceAffectors.Contains (surfaceAffector) )
+            if ( affectors.Contains (affector) )
             {
-                surfaceAffector.NeedUpdate -= OnChildNeedUpdate;
-                surfaceAffectors.Remove(surfaceAffector);
-                NotifyNeedUpdate ();
+                affector.NeedRender -= OnAffectorNeedRender;
+                affectors.Remove(affector);
+                NotifyNeedRender (new RenderContext(affector.AffectedChannels.ToImmutable(), RenderCovering.Full));
             }
         }
 
-        private void OnChildNeedUpdate(object sender, EventArgs eventArgs)
-            => NotifyNeedUpdate ();
+        private void OnAffectorNeedRender (object sender, NeedRenderEventArgs eventArgs)
+            => NotifyNeedRender (eventArgs.renderContext);
 
         public void Dispose()
         {

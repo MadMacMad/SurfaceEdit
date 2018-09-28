@@ -1,6 +1,6 @@
 ﻿#pragma kernel CSMain
 
-float2 MaxTextureSize;
+float2 TextureSize;
 float BottomTextureHeightFactor;
 float TopTextureHeightFactor;
 float DepthFactor;
@@ -11,6 +11,9 @@ Texture2D<float4> TopTexture;
 Texture2D<float4> BottomTextureHeight;
 Texture2D<float4> TopTextureHeight;
 Texture2D<float4> Mask;
+
+int2 RenderOrigin;
+int2 RenderSize;
 
 SamplerState LinearMirrorSampler;
 
@@ -30,10 +33,12 @@ float4 HeightBlend(float4 texture1, float4 height1, float4 texture2, float4 heig
 [numthreads(32, 32, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	if (id.x > MaxTextureSize.x || id.y > MaxTextureSize.y)
+	if (id.x > RenderSize.x || id.y > RenderSize.y)
 		return;
 
-	float2 uv = float2(id.xy / MaxTextureSize);
+	id = uint3(id.x + RenderOrigin.x, id.y + RenderOrigin.y, 0);
+
+	float2 uv = float2(id.xy / TextureSize);
 
 	float maskValue = Mask.SampleLevel(LinearMirrorSampler, uv, 0).x;
 

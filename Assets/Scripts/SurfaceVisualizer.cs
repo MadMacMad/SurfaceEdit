@@ -7,13 +7,13 @@ namespace SurfaceEdit
 {
     public class SurfaceVisualizer : PropertyChangedRegistrator, IDisposable
     {
-        private static Dictionary<TextureChannel, string> channelPropertyPair = new Dictionary<TextureChannel, string> ()
+        private static Dictionary<Channel, string> channelPropertyPair = new Dictionary<Channel, string> ()
         {
-            { TextureChannel.Albedo, "_MainTex" },
-            { TextureChannel.Normal, "_Normal" },
-            { TextureChannel.Roughness, "_Roughness" },
-            { TextureChannel.Metallic, "_Metallic" },
-            { TextureChannel.Height, "_Displacement" }
+            { Channel.Albedo, "_MainTex" },
+            { Channel.Normal, "_Normal" },
+            { Channel.Roughness, "_Roughness" },
+            { Channel.Metallic, "_Metallic" },
+            { Channel.Height, "_Displacement" }
         };
         private static Shader surfaceShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementShader");
         private static Shader textureShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementTextureShader");
@@ -46,19 +46,19 @@ namespace SurfaceEdit
         }
         private SurfaceRenderMode renderMode;
 
-        public TextureChannel RenderedChannel
+        public Channel RenderedChannel
         {
             get => renderedChannel;
             set => SetProperty (ref renderedChannel, value, renderMode == SurfaceRenderMode.Channel);
         }
-        private TextureChannel renderedChannel = TextureChannel.Albedo;
+        private Channel renderedChannel = Channel.Albedo;
 
         private GameObject go;
         private Renderer renderer;
 
         private Surface surface;
 
-        public SurfaceVisualizer (UndoRedoRegister undoRedoRegister, Surface surface, Vector2 worldSize, SurfaceRenderMode renderMode = SurfaceRenderMode.Surface) : base (undoRedoRegister)
+        public SurfaceVisualizer (UndoRedoRegister undoRedoRegister, Surface surface, SurfaceRenderMode renderMode = SurfaceRenderMode.Surface) : base (undoRedoRegister)
         {
             Assert.ArgumentNotNull (surface, nameof (surface));
 
@@ -69,15 +69,24 @@ namespace SurfaceEdit
 
             go.transform.Rotate (90, 0, 0);
 
-            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (worldSize, new Vector2Int (128, 128)).ConvertToMesh ();
+            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (Vector2.one, new Vector2Int (128, 128)).ConvertToMesh ();
             var collider = go.AddComponent<BoxCollider> ();
             collider.size = new Vector3 (1, 1, .01f);
             collider.center = new Vector3 (.5f, .5f, 0);
 
             renderer = go.AddComponent<MeshRenderer> ();
 
+            var go2 = new GameObject ("Base Level Plane");
+            go2.transform.Translate (0, -0.01f, 0);
+            go2.transform.Rotate (90, 0, 0);
+            go2.AddComponent<MeshFilter> ().mesh = go.GetComponent<MeshFilter>().mesh;
+            var renderer2 = go2.AddComponent<MeshRenderer> ();
+            renderer2.material.shader = Shader.Find ("SurfaceEdit/Unlit/Transparent");
+            renderer2.material.mainTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x2), new Color (.5f, .5f, .5f, .5f), false).Provide ();
+
             Update ();
-            NeedUpdate += Update;
+            Changed += Update;
+            surface.Context.Changed += (s, e) => UnityUpdateRegistrator.Instance.OnUpdateRegisterOneTimeAction (() => Update ());
         }
 
         public void Update () => Update (null, null);
@@ -95,15 +104,15 @@ namespace SurfaceEdit
             {
                 renderer.material.shader = textureShader;
 
-                surface.Textures.TryGetValue(renderedChannel, out ChunkTexture chunkTexture);
-                var texture = chunkTexture?.RenderTexture;
+                surface.Textures.TryGetValue(renderedChannel, out ProviderTexture providerTexture);
+                var texture = providerTexture?.RenderTexture;
                 if ( texture == null )
                     texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x2), renderedChannel, false).Provide();
 
-                surface.Textures.TryGetValue (TextureChannel.Height, out ChunkTexture chunkHeight);
-                var height = chunkHeight?.RenderTexture;
+                surface.Textures.TryGetValue (Channel.Height, out ProviderTexture providerHeight);
+                var height = providerHeight?.RenderTexture;
                 if ( height == null )
-                    height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x2), TextureChannel.Height, false).Provide ();
+                    height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x2), Channel.Height, false).Provide ();
 
                 renderer.material.SetTexture ("_MainTex", texture);
                 renderer.material.SetTexture ("_Displacement", height);

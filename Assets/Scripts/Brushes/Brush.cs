@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SurfaceEdit.Brushes
 {
-    public abstract class Brush : PropertyChangedNotifier, IDisposable
+    public abstract class Brush : ObjectChangedNotifier, IDisposable
     {
         public Vector2 PercentageSize
         {

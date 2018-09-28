@@ -5,6 +5,9 @@ namespace SurfaceEdit
 {
     public static class MeshBuilder
     {
+        // TODO: FIX BuildPlane
+
+
         public static MeshData BuildQuad (Vector2 size)
         {
             size.ClampNew (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
@@ -37,8 +40,10 @@ namespace SurfaceEdit
 
         public static MeshData BuildPlane (Vector2 size, Vector2Int pointsCount)
         {
-            size.ClampNew (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
+            size = size.ClampNew (new Vector2 (.1f, .1f), new Vector2 (float.MaxValue, float.MaxValue));
             pointsCount.Clamp (new Vector2Int (1, 1), new Vector2Int (4096, 4096));
+
+            pointsCount += Vector2Int.one;
 
             var distanceBetweenPoints = size / pointsCount;
             var vertices = new List<Vector3> ();

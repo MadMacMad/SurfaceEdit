@@ -2,41 +2,19 @@
 
 namespace SurfaceEdit
 {
-    public class ComputeCopy : ComputeExecutor<RenderTexture>
+    public class ComputeCopy : PartTextureComputeExecutor
     {
-        private Texture sourceTexture;
-        private RenderTexture destinationTexture;
+        public ComputeCopy (Texture2D source, RenderTexture destination)     : this(source as Texture, destination) { }
+        public ComputeCopy (RenderTexture source, RenderTexture destination) : this(source as Texture, destination) { }
 
-        public ComputeCopy (Texture2D source, RenderTexture destination) : base("Shaders/Compute/Copy")
+        private ComputeCopy(Texture source, RenderTexture destination) : base(destination, "Shaders/Compute/Copy")
         {
             Assert.ArgumentNotNull (source, nameof (source));
-            Assert.ArgumentNotNull (destination, nameof (destination));
+            Assert.ArgumentTrue (source.IsHasEqualSize (destination), "Texture sizes are not equals");
 
-            sourceTexture = source;
-            destinationTexture = destination;
-        }
-
-        public ComputeCopy (RenderTexture source, RenderTexture destination) : base ("Shaders/Compute/Copy")
-        {
-            Assert.ArgumentNotNull (source, nameof (source));
-            Assert.ArgumentNotNull (destination, nameof (destination));
-
-            sourceTexture = source;
-            destinationTexture = destination;
-        }
-
-        public override RenderTexture Execute ()
-        {
-            if ( sourceTexture == destinationTexture )
-                return destinationTexture;
-
-            shader.SetTexture (DefaultFunctionID, "Result", destinationTexture);
-            shader.SetTexture (DefaultFunctionID, "Texture", sourceTexture);
-            shader.SetFloats ("TextureSize", sourceTexture.width, sourceTexture.height);
-
-            AutoDispatchDefaultShaderFunction (sourceTexture.width, sourceTexture.height);
-
-            return destinationTexture;
+            shader.SetTexture (ShaderFunctionID, "Result", destination);
+            shader.SetTexture (ShaderFunctionID, "Texture", source);
+            shader.SetFloats ("TextureSize", source.width, source.height);
         }
     }
 }

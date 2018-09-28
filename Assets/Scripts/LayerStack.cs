@@ -1,75 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using SurfaceEdit.TextureProviders;
 using UnityEngine;
 
 namespace SurfaceEdit
 {
     public sealed class LayerStack : PropertyChangedRegistrator, IDisposable
     {
-        public TextureResolution TextureResolution { get; private set; }
-        public TextureChannelCollection Channels { get; private set; }
+        public ProgramContext Context { get; private set; }
 
         public IReadOnlyCollection<Layer> Layers => layers.AsReadOnly ();
         private List<Layer> layers = new List<Layer> ();
 
-        public Surface ResultSurface => collectorSurface;
-
-        private Surface collectorSurface;
+        public Surface ResultSurface { get; private set; }
         private Surface layerSurface;
         
-        public LayerStack (UndoRedoRegister undoRedoRegister, TextureResolution textureResolution, ImmutableTextureResolution chunkResolution, TextureChannelCollection channels)
-            : base (undoRedoRegister)
+        public LayerStack (ProgramContext context)
+            : base (context?.UndoRedoRegister)
         {
-            Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
-            Assert.ArgumentNotNull (channels, nameof (channels));
+            Assert.ArgumentNotNull (context, nameof (context));
 
-            TextureResolution = textureResolution;
-            Channels = channels;
+            Context = context;
 
-            collectorSurface = new Surface (textureResolution, chunkResolution, Channels);
-            layerSurface = new Surface (textureResolution, chunkResolution, Channels);
+            ResultSurface = new Surface (context);
+            layerSurface = new Surface (context);
             
-            Channels.PropertyChanged += Update;
+            Context.Changed += (s, e) => RequestRender(this, new RenderContext(Context.Channels.ToImmutable(), RenderCovering.Full));
         }
 
         public Layer CreateLayer ()
         {
-            var layer = new Layer (undoRedoRegister);
-            layer.NeedUpdate += Update;
+            var layer = new Layer (Context);
+            layer.NeedRender += (s, e) => RequestRender(s, e.renderContext);
             layers.Add (layer);
-            RequestRender ();
+            RequestRender (this, new RenderContext(Context.Channels.ToImmutable()));
             return layer;
         }
-
-        private void Update (object sender = null, EventArgs args = null)
-        {
-            RequestRender ();
-        }
-
+        
         private bool renderRequestedThisFrame = false;
 
-        public void RequestRender ()
+        public void RequestRender (object sender, RenderContext renderContext)
         {
             if ( !renderRequestedThisFrame )
             {
-                UnityUpdateRegistrator.Instance.OnUpdateRegisterOneTimeAction (RenderImmidiate);
+                UnityUpdateRegistrator.Instance.OnUpdateRegisterOneTimeAction (() => RenderImmidiate(renderContext));
                 renderRequestedThisFrame = true;
             }
         }
-        public void RenderImmidiate()
+        public void RenderImmidiate(RenderContext renderContext)
         {
             renderRequestedThisFrame = false;
-            collectorSurface.ResetAll ();
+            ResultSurface.Reset (renderContext);
             int index = 0;
             foreach ( var layer in Layers )
             {
                 if ( index == 0 )
-                    layer.Process (collectorSurface);
+                    layer.Process (ResultSurface, renderContext);
                 else
                 {
-                    layerSurface.ResetAll ();
-                    layer.Process (layerSurface);
-                    SurfaceCombiner.CombineSurfaces (collectorSurface, layerSurface, layer.BlendType);
+                    layerSurface.Reset (renderContext);
+                    layer.Process (layerSurface, renderContext);
+
+                    SurfaceCombiner.CombineSurfaces (Context, renderContext, ResultSurface, layerSurface, layer.BlendType);
                 }
                 index++;
             }
@@ -77,7 +70,7 @@ namespace SurfaceEdit
 
         public void Dispose ()
         {
-            collectorSurface.Dispose ();
+            ResultSurface.Dispose ();
             layerSurface.Dispose ();
         }
     }

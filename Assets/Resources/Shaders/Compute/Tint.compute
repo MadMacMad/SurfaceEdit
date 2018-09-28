@@ -5,11 +5,16 @@ float2 TextureSize;
 
 float4 TintColor;
 
+int2 RenderOrigin;
+int2 RenderSize;
+
 [numthreads(32, 32, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	if (id.x > TextureSize.x || id.y > TextureSize.y)
+	if (id.x > RenderSize.x || id.y > RenderSize.y)
 		return;
+
+	id = uint3(id.x + RenderOrigin.x, id.y + RenderOrigin.y, 0);
 
 	Result[id.xy] = Result.Load(id) * TintColor;
 }

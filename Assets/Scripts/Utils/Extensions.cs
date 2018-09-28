@@ -23,7 +23,7 @@ namespace SurfaceEdit
 
         public static RenderTexture ConvertToRenderTexture (this Texture2D texture)
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (texture.width, texture.height);
+            var renderTexture = Utils.CreateRenderTexture (texture.width, texture.height);
             new ComputeCopy (texture, renderTexture).Execute ();
             return renderTexture;
         }
@@ -37,7 +37,7 @@ namespace SurfaceEdit
 
         public static RenderTexture Copy (this RenderTexture texture)
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (texture.width, texture.height);
+            var renderTexture = Utils.CreateRenderTexture (texture.width, texture.height);
             new ComputeCopy (texture, renderTexture).Execute();
             return renderTexture;
         }
@@ -115,16 +115,15 @@ namespace SurfaceEdit
         public static void SetColor(this ComputeShader shader, string name, Color color)
             => shader.SetFloats (name, color.r, color.g, color.b, color.a);
 
-        public static void SetVector (this ComputeShader shader, string name, Vector2 vector)
-            => shader.SetFloats (name, vector.x, vector.y);
+        public static bool IsHasEqualSize (this Texture texture, params Texture[] other)
+        {
+            foreach(var otherTexture in other)
+                if ( otherTexture.width != otherTexture.width || otherTexture.height != otherTexture.height )
+                    return false;
+            return true;
+        }
 
-        public static void SetVector (this ComputeShader shader, string name, Vector3 vector)
-            => shader.SetFloats (name, vector.x, vector.y, vector.z);
-
-        public static void SetVector (this ComputeShader shader, string name, Vector2Int vector)
-            => shader.SetInts (name, vector.x, vector.y);
-
-        public static void SetVector (this ComputeShader shader, string name, Vector3Int vector)
-            => shader.SetInts (name, vector.x, vector.y, vector.z);
+        public static Vector2Int GetVectorSize (this Texture texture)
+            => new Vector2Int (texture.width, texture.height);
     }
 }

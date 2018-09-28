@@ -46,7 +46,7 @@
 
 		void vert(inout appdata v)
 		{
-			float rawDisp = tex2Dlod(_Displacement, float4(v.texcoord.xy, 0, 0)).r - 0.5;
+			float rawDisp = tex2Dlod(_Displacement, float4(v.texcoord.xy, 0, 0)).r - .6;
 			float d = rawDisp * _DisplacementIntensity;
 			v.vertex.xyz += v.normal * d;
 		}

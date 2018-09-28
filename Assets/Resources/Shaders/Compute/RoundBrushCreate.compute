@@ -3,7 +3,7 @@
 RWTexture2D<float4> Result;
 
 float2 BrushCenter;
-float Size;
+float Resolution;
 float Hardness;
 
 static const float PI = 3.14159265f;
@@ -21,10 +21,10 @@ float smoothstep(float t)
 [numthreads(32, 32, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	if (id.x > Size || id.y > Size)
+	if (id.x > Resolution || id.y > Resolution)
 		return;
 
-	float Radius = Size / 2;
+	float Radius = Resolution / 2;
 	float value = distance(BrushCenter, id.xy);
 	float time = 0;
 	if (value < max(0.001, Hardness - .007) * Radius)

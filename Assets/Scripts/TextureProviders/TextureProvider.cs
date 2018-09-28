@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SurfaceEdit.TextureProviders
 {
-    public abstract class TextureProvider : PropertyChangedNotifier, IDisposable
+    public abstract class TextureProvider : ObjectChangedNotifier, IDisposable
     {
         public readonly TextureResolution resolution;
 
@@ -21,14 +21,14 @@ namespace SurfaceEdit.TextureProviders
             this.resolution = resolution;
             this.isCacheTexture = isCacheTexture;
 
-            resolution.PropertyChanged += (s, e) =>
+            resolution.Changed += (s, e) =>
             {
                 isNeedReprovide = true;
-                NotifyNeedUpdate ();
+                NotifyChanged ();
             };
         }
 
-        public void Override (RenderTexture texture)
+        public void Override (RenderTexture texture, Vector2Int origin, Vector2Int size)
         {
             Assert.ArgumentNotNull (texture, nameof (texture));
 
@@ -41,7 +41,10 @@ namespace SurfaceEdit.TextureProviders
 
             Provide ();
 
-            new ComputeCopy (initialTexture, texture).Execute ();
+            var compute = new ComputeCopy (initialTexture, texture);
+            compute.Size = size;
+            compute.Origin = origin;
+            compute.Execute ();
         }
 
         public RenderTexture Provide ()

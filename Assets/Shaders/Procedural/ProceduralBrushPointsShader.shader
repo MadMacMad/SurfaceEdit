@@ -46,7 +46,7 @@
 			VertexOutput vert(VertexData v)
 			{
 				VertexOutput o;
-				o.position = v.position - float4(_QuadScaleX * .5, _QuadScaleY * .5, 0, 0);
+				o.position = v.position;
 				return o;
 			}
 			

@@ -5,28 +5,24 @@ namespace SurfaceEdit
     public class ComputeRoundBrushCreate : ComputeExecutor<RenderTexture>
     {
         private int resolution;
-        private float hardnessFactor;
 
-        public ComputeRoundBrushCreate (int resolution, float hardnessFactor) : base ("Shaders/Compute/RoundBrushCreate")
+        public ComputeRoundBrushCreate (int resolution, float hardness) : base ("Shaders/Compute/RoundBrushCreate")
         {
-            resolution = Mathf.Clamp (resolution, 1, 4096);
-            hardnessFactor = Mathf.Clamp01 (hardnessFactor);
+            this.resolution = Mathf.Clamp (resolution, 1, 4096);
+            hardness = Mathf.Clamp01 (hardness);
 
-            this.resolution = resolution;
-            this.hardnessFactor = hardnessFactor;
+            shader.SetFloats ("BrushCenter", this.resolution / 2f, this.resolution / 2f);
+            shader.SetFloat ("Resolution", this.resolution);
+            shader.SetFloat ("Hardness", hardness);
         }
 
         public override RenderTexture Execute ()
         {
-            var renderTexture = Utils.CreateAndAllocateRenderTexture (resolution);
+            var renderTexture = Utils.CreateRenderTexture (resolution);
 
-            shader.SetTexture (DefaultFunctionID, "Result", renderTexture);
-            shader.SetFloats ("BrushCenter", resolution / 2f, resolution / 2f);
-            shader.SetFloat ("Size", resolution);
-            shader.SetFloat ("Hardness", hardnessFactor);
+            shader.SetTexture (ShaderFunctionID, "Result", renderTexture);
 
-            AutoDispatchDefaultShaderFunction (renderTexture.width, renderTexture.height);
-            
+            DispatchShader (renderTexture.width, renderTexture.height);
             return renderTexture;
         }
     }

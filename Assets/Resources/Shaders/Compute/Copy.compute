@@ -4,6 +4,9 @@ RWTexture2D<float4> Result;
 
 Texture2D<float4> Texture;
 
+int2 RenderOrigin;
+int2 RenderSize;
+
 float2 TextureSize;
 
 SamplerState LinearMirrorSampler;
@@ -14,7 +17,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	if (id.x > TextureSize.x || id.y > TextureSize.y)
 		return;
 
-	float2 uv = float2(id.xy / TextureSize);
+	int2 newID = int2(id.x + RenderOrigin.x, id.y + RenderOrigin.y);
 
-	Result[id.xy] = Texture.SampleLevel(LinearMirrorSampler, uv, 0);
+	float2 uv = float2(newID / TextureSize);
+
+	Result[newID] = Texture.SampleLevel(LinearMirrorSampler, uv, 0);
 }

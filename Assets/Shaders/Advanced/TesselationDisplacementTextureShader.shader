@@ -14,58 +14,68 @@
 		Tags { "RenderType" = "Opaque" }
 		LOD 100
 
-		CGPROGRAM
-		#pragma surface surf Lambert fullforwardshadows vertex:vert tessellate:tess nolightmap addshadow 
-
-		#pragma target 5.0
-
-		#include "Tessellation.cginc"
-
-		struct appdata
+		Pass
 		{
-			float4 vertex : POSITION;
-			float4 tangent : TANGENT;
-			float3 normal : NORMAL;
-			float2 texcoord : TEXCOORD0;
-		};
+			CGPROGRAM
 
-		struct Input
-		{
-			float2 uv_MainTex;
-		};
+			#pragma tessellate tess  
+			#pragma vertex vert
+			#pragma fragment frag
 
-		sampler2D _MainTex;
-		sampler2D _Displacement;
+			#pragma target 5.0
 
-		float _DisplacementIntensity;
-		float _TesselationMultiplier;
+			#include "Tessellation.cginc"
 
-		float _InvertNormal;
-		float _IsNormal;
+			sampler2D _MainTex;
+			sampler2D _Displacement;
 
-		void vert(inout appdata v)
-		{
-			float rawDisp = tex2Dlod(_Displacement, float4(v.texcoord.xy, 0, 0)).r - 0.5;
-			float d = rawDisp * _DisplacementIntensity;
-			v.vertex.xyz += v.normal * d;
+			float _DisplacementIntensity;
+			float _TesselationMultiplier;
+
+			float _InvertNormal;
+			float _IsNormal;
+
+			float4 tess()
+			{
+				return _TesselationMultiplier;
+			}
+
+			struct appdata_t
+			{
+				float4 vertex : POSITION;
+				float3 normal : NORMAL;
+				float2 texcoord : TEXCOORD0;
+			};
+
+			struct v2f
+			{
+				float4 vertex : SV_POSITION;
+				float2 texcoord : TEXCOORD0;
+			};
+
+			v2f vert(appdata_t v)
+			{
+				v2f o;
+
+				float rawDisp = tex2Dlod(_Displacement, float4(v.texcoord.xy, 0, 0)).r - .6;
+				float d = rawDisp * _DisplacementIntensity;
+
+				o.vertex = UnityObjectToClipPos(v.vertex + v.normal * d);
+				o.texcoord = v.texcoord;
+				return o;
+			}
+
+			half4 frag(v2f i) : SV_Target
+			{
+				half4 value = tex2D(_MainTex, i.texcoord);
+				if (_IsNormal == 1)
+					if (_InvertNormal == 1)
+						value.g = 1 - value.g;
+				return value;
+			}
+
+			ENDCG
 		}
-
-		float4 tess()
-		{
-			return _TesselationMultiplier;
-		}
-
-		void surf (Input IN, inout SurfaceOutput o)
-		{
-			half4 value = tex2D(_MainTex, IN.uv_MainTex);
-			if (_IsNormal == 1)
-				if (_InvertNormal == 1)
-					value.g = 1 - value.g;
-			o.Albedo = value.rgb * value.a + float4(1, 0, 1, 1) * (1 - value.a);
-			o.Specular = 0;
-			o.Gloss = 0;
-		}
-		ENDCG
 	}
 	FallBack "Diffuse"
 }

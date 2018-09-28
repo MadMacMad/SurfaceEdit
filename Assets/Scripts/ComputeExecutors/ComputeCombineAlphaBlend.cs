@@ -1,39 +1,22 @@
-﻿using SurfaceEdit.TextureProviders;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SurfaceEdit
 {
-    public class ComputeCombineAlphaBlend : ComputeExecutor<RenderTexture>
+    public class ComputeCombineAlphaBlend : PartTextureComputeExecutor
     {
-        private RenderTexture topTexture;
-        private RenderTexture bottomTexture;
-        private RenderTexture mask;
-
-        public ComputeCombineAlphaBlend(RenderTexture bottomTexture, RenderTexture topTexture, RenderTexture mask) : base("Shaders/Compute/AlphaBlend")
+        public ComputeCombineAlphaBlend(RenderTexture bottomTexture, RenderTexture topTexture, RenderTexture mask) : base(bottomTexture, "Shaders/Compute/AlphaBlend")
         {
             Assert.ArgumentNotNull (mask, nameof (mask));
             Assert.ArgumentNotNull (topTexture, nameof (topTexture));
-            Assert.ArgumentNotNull (bottomTexture, nameof (bottomTexture));
 
-            this.topTexture = topTexture;
-            this.bottomTexture = bottomTexture;
-            this.mask = mask;
-        }
+            Assert.ArgumentTrue (bottomTexture.IsHasEqualSize (topTexture, mask), "Texture sizes are not equal");
 
-        public override RenderTexture Execute ()
-        {
-            var maxTextureSize = new Vector2Int (Mathf.Max (topTexture.width, bottomTexture.width), Mathf.Max (topTexture.height, bottomTexture.height));
+            shader.SetTexture (ShaderFunctionID, "BottomTexture", bottomTexture);
+            shader.SetTexture (ShaderFunctionID, "TopTexture", topTexture);
 
-            shader.SetTexture (DefaultFunctionID, "BottomTexture", bottomTexture);
-            shader.SetTexture (DefaultFunctionID, "TopTexture", topTexture);
+            shader.SetTexture (ShaderFunctionID, "Mask", mask);
 
-            shader.SetTexture (DefaultFunctionID, "Mask", mask);
-
-            shader.SetFloats ("MaxTextureSize", maxTextureSize.x, maxTextureSize.y);
-
-            AutoDispatchDefaultShaderFunction (maxTextureSize.x, maxTextureSize.y);
-
-            return bottomTexture;
+            shader.SetFloats ("TextureSize", bottomTexture.width, bottomTexture.height);
         }
     }
 }

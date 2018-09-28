@@ -48,6 +48,7 @@ namespace SurfaceEdit
             camera.nearClipPlane = -100000000;
             camera.enabled = false;
             camera.cullingMask = LayerMask.GetMask(LayerMask.LayerToName(stationLayerID));
+            camera.useOcclusionCulling = false;
 
             texturePlane = Utils.CreateNewGameObjectAtSpecificScene ("Texture Plane", scene, stationLayerID, rootObject);
             texturePlane.transform.position = new Vector3 (0, 0, .2f);
@@ -65,7 +66,7 @@ namespace SurfaceEdit
         private void UseIt_Internal(GameObject go, float width, bool isTemporary)
         {
             Assert.ArgumentNotNull (go, nameof (go));
-            Assert.ArgumentTrue (width >= 0, nameof (width) + " is less then 0");
+            width = Mathf.Clamp (width, 0, 10000);
 
             if ( temporaryObject != null)
                 GameObject.DestroyImmediate (temporaryObject);
@@ -96,13 +97,24 @@ namespace SurfaceEdit
             }
         }
 
-        public void Render(RenderTexture texture)
+        public void Render(RenderTexture texture, Vector2Int pixelPosition, Vector2Int pixelSize)
         {
             Assert.ArgumentNotNull (texture, nameof (texture));
-            
+
+            var textureSize = (Vector2)texture.GetVectorSize ();
+
+            var originNormalized = pixelPosition / textureSize;
+            var sizeNormalized = pixelSize / textureSize;
+
+            var rect = new Rect (originNormalized, sizeNormalized);
+
             texturePlaneRenderer.material.mainTexture = texture;
             camera.targetTexture = texture;
-            
+
+            camera.rect = rect;
+            camera.transform.position = rect.center;
+            camera.orthographicSize = rect.height / 2f;
+
             rootObject.SetActive (true);
             camera.Render ();
             rootObject.SetActive (false);
