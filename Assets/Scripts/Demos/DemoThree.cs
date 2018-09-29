@@ -113,8 +113,8 @@ namespace SurfaceEdit.Demos
             {
                 paintTextureAffector.PaintFinal (e);
             };
-            ui1 = GameObject.Find ("UI1").GetComponent<TextMeshProUGUI>();
-            ui2 = GameObject.Find ("UI2").GetComponent<TextMeshProUGUI>();
+            ui1 = GameObject.Find ("UI1")?.GetComponent<TextMeshProUGUI>();
+            ui2 = GameObject.Find ("UI2")?.GetComponent<TextMeshProUGUI>();
             sun = GameObject.Find ("Sun");
             skyboxMaterial = Resources.Load ("Materials/Skybox") as Material;
             rotation = skyboxMaterial.GetVector ("_Euler").x;
@@ -219,24 +219,24 @@ namespace SurfaceEdit.Demos
                     surfaceVisualizer.RenderMode = SurfaceVisualizer.SurfaceRenderMode.Surface;
             }
 
-            ui1.text =
-                $"Working resolution: {textureResolution.AsInt + " x " + textureResolution.AsInt}\n" +
-                $"Brush color: {( isBrushBlack ? "Black" : "White" )}\n" +
-                $"Brush size: {brush.PercentageSize.x}\n" +
-                $"Brush hardness: {( brush as DefaultRoundBrush ).Hardness}\n" +
-                $"Brush pressure: {pressure}";
+            //ui1.text =
+            //    $"Working resolution: {textureResolution.AsInt + " x " + textureResolution.AsInt}\n" +
+            //    $"Brush color: {( isBrushBlack ? "Black" : "White" )}\n" +
+            //    $"Brush size: {brush.PercentageSize.x}\n" +
+            //    $"Brush hardness: {( brush as DefaultRoundBrush ).Hardness}\n" +
+            //    $"Brush pressure: {pressure}";
 
-            ui2.text =
-                $"Press E and R to change\n" +
-                $"Press X to change\n" +
-                $"Press [ and ] to change\n" +
-                $"Press up arrow and down arrow to change\n" +
-                $"Press left arrow and right arrow to change\n" +
-                $"Press Ctrl + Z for undo\n" +
-                $"Press Ctrl + Shift + Z for undo\n" +
-                $"Press Shift + RMB to rotate skybox\n" +
-                $"Press C to change channel to view\n" +
-                $"Press V to view surface";
+            //ui2.text =
+            //    $"Press E and R to change\n" +
+            //    $"Press X to change\n" +
+            //    $"Press [ and ] to change\n" +
+            //    $"Press up arrow and down arrow to change\n" +
+            //    $"Press left arrow and right arrow to change\n" +
+            //    $"Press Ctrl + Z for undo\n" +
+            //    $"Press Ctrl + Shift + Z for undo\n" +
+            //    $"Press Shift + RMB to rotate skybox\n" +
+            //    $"Press C to change channel to view\n" +
+            //    $"Press V to view surface";
         }
     }
 }
