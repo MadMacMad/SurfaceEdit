@@ -51,7 +51,7 @@ namespace SurfaceEdit
             }
         }
 
-        private void SetResolution(TextureResolutionEnum resolution)
+        public void SetResolution(TextureResolutionEnum resolution)
         {
             AsEnum = resolution;
             AsVector = TextureResolutionEnumToVector (resolution);

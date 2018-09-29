@@ -120,6 +120,11 @@ namespace SurfaceEdit.Demos
             rotation = skyboxMaterial.GetVector ("_Euler").x;
             
             layerStack.ResultSurface.Changed += (s, e) => surfaceVisualizer.Update ();
+
+            GameObject.Find ("TextureResolution").GetComponentInChildren<TMP_Dropdown> ().onValueChanged.AddListener (i =>
+            {
+                textureResolution.SetResolution ((TextureResolutionEnum)Mathf.Pow(2, i + 9));
+            });
         }
 
         private bool isBrushBlack = false;
@@ -141,10 +146,6 @@ namespace SurfaceEdit.Demos
                 isBrushBlack = !isBrushBlack;
                 brush.TintColor = isBrushBlack ? Color.black * new Color (1, 1, 1, pressure) : Color.white * new Color (1, 1, 1, pressure);
             }
-            if (Input.GetKeyDown(KeyCode.E))
-                textureResolution.DecreaseResolution ();
-            else if ( Input.GetKeyDown (KeyCode.R) )
-                textureResolution.IncreaseResolution ();
 
             if ( Input.GetKeyDown (KeyCode.LeftBracket) )
                 brush.PercentageSize = brush.PercentageSize - new Vector2 (.05f, .05f);

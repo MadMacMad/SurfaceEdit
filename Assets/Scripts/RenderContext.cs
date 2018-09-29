@@ -32,60 +32,67 @@ namespace SurfaceEdit
         public ProgramContext Context { get; private set; }
         
         public IReadOnlyCollection<Vector2Int> PixelPositions { get; private set; }
-        private List<Vector2Int> pixelPositions;
+        private List<Vector2Int> pixelPositions = new List<Vector2Int>();
 
-        private List<Vector2Int> chunkPositions;
+        private List<Vector2Int> chunkPositions = new List<Vector2Int>();
 
-        private Vector2Int chunkResolution;
-
-        private Vector2 textureResolution;
-
+        private int chunkResolution;
+        
+        private int textureResolution;
+        
+        // TODO: Fix this. Chunk positions may degrade if you change texture resolution many times
         public ChunksToRender (ProgramContext context)
         {
             Assert.ArgumentNotNull (context, nameof (context));
 
             Context = context;
-
-            chunkPositions = new List<Vector2Int> ();
-
-            pixelPositions = new List<Vector2Int> ();
+            
             PixelPositions = pixelPositions.AsReadOnly ();
 
-            chunkResolution = Context.ChunkResolution.AsVector;
-            textureResolution = Context.TextureResolution.AsVector;
+            chunkResolution = Context.ChunkResolution.AsInt;
+
+            textureResolution = Context.TextureResolution.AsInt;
 
             context.TextureResolution.Changed += (s, e) =>
             {
                 var lastTextureResolution = textureResolution;
-                textureResolution = Context.TextureResolution.AsVector;
-
-                var newChunkPositions = new List<Vector2Int> ();
-
-                if ( lastTextureResolution.x < textureResolution.x )
+                textureResolution = Context.TextureResolution.AsInt;
+                if ( chunkPositions.Count > 0 )
                 {
+                    var newChunkPositions = new List<Vector2Int> ();
+
+                    while ( lastTextureResolution != textureResolution )
+                    {
+                        if ( lastTextureResolution < textureResolution )
+                        {
+                            foreach ( var position in chunkPositions )
+                            {
+                                var newPosition = position * 2;
+                                newChunkPositions.Add (newPosition);
+                                newChunkPositions.Add (new Vector2Int (newPosition.x + 1, newPosition.y));
+                                newChunkPositions.Add (new Vector2Int (newPosition.x, newPosition.y + 1));
+                                newChunkPositions.Add (new Vector2Int (newPosition.x + 1, newPosition.y + 1));
+                            }
+                            lastTextureResolution *= 2;
+                        }
+                        else
+                        {
+                            foreach ( var position in chunkPositions )
+                            {
+                                var newPosition = new Vector2Int (Mathf.FloorToInt (position.x / 2), Mathf.FloorToInt (position.y / 2));
+                                if ( !newChunkPositions.Contains (newPosition) )
+                                    newChunkPositions.Add (newPosition);
+                            }
+                            lastTextureResolution /= 2;
+                        }
+                        chunkPositions.Clear ();
+                        chunkPositions.AddRange (newChunkPositions);
+                        newChunkPositions.Clear ();
+                    }
+                    pixelPositions.Clear ();
                     foreach ( var position in chunkPositions )
-                    {
-                        var newPosition = position * 2;
-                        newChunkPositions.Add (newPosition);
-                        newChunkPositions.Add (new Vector2Int (newPosition.x + 1, newPosition.y));
-                        newChunkPositions.Add (new Vector2Int (newPosition.x, newPosition.y + 1));
-                        newChunkPositions.Add (new Vector2Int (newPosition.x + 1, newPosition.y + 1));
-                    }
+                        pixelPositions.Add (position * chunkResolution);
                 }
-                else
-                {
-                    foreach(var position in chunkPositions)
-                    {
-                        var newPosition = new Vector2Int(Mathf.FloorToInt(position.x / 2), Mathf.FloorToInt (position.y / 2));
-                        if (!newChunkPositions.Contains(newPosition))
-                            newChunkPositions.Add (newPosition);
-                    }
-                }
-                
-                chunkPositions = newChunkPositions;
-                pixelPositions.Clear ();
-                foreach (var position in chunkPositions)
-                    pixelPositions.Add (position * chunkResolution);
             };
         }
         
@@ -101,6 +108,9 @@ namespace SurfaceEdit
             pixelPositions.Add (chunkPosition * chunkResolution);
         }
     }
+
+
+
     public enum RenderCovering
     {
         Full,
