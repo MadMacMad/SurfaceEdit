@@ -82,7 +82,7 @@ namespace SurfaceEdit
             go2.AddComponent<MeshFilter> ().mesh = go.GetComponent<MeshFilter>().mesh;
             var renderer2 = go2.AddComponent<MeshRenderer> ();
             renderer2.material.shader = Shader.Find ("SurfaceEdit/Unlit/Transparent");
-            renderer2.material.mainTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x2), new Color (.5f, .5f, .5f, .5f), false).Provide ();
+            renderer2.material.mainTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), new Color (.5f, .5f, .5f, .5f), false).Provide ();
 
             Update ();
             Changed += Update;
@@ -107,12 +107,12 @@ namespace SurfaceEdit
                 surface.Textures.TryGetValue(renderedChannel, out ProviderTexture providerTexture);
                 var texture = providerTexture?.RenderTexture;
                 if ( texture == null )
-                    texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x2), renderedChannel, false).Provide();
+                    texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x32), renderedChannel, false).Provide();
 
                 surface.Textures.TryGetValue (Channel.Height, out ProviderTexture providerHeight);
                 var height = providerHeight?.RenderTexture;
                 if ( height == null )
-                    height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x2), Channel.Height, false).Provide ();
+                    height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x32), Channel.Height, false).Provide ();
 
                 renderer.material.SetTexture ("_MainTex", texture);
                 renderer.material.SetTexture ("_Displacement", height);

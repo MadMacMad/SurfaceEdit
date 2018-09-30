@@ -44,7 +44,7 @@ namespace SurfaceEdit
         {
             var currentResolutionIndex = (int)AsEnum;
             var previousIndex = currentResolutionIndex / 2;
-            if ( previousIndex >= (int)TextureResolutionEnum.x2 )
+            if ( previousIndex >= (int)TextureResolutionEnum.x32 )
             {
                 var newResolution = (TextureResolutionEnum)previousIndex;
                 SetResolution (newResolution);
@@ -67,10 +67,6 @@ namespace SurfaceEdit
     }
     public enum TextureResolutionEnum : int
     {
-        x2      = 2,
-        x4      = 4,
-        x8      = 8,
-        x16     = 16,
         x32     = 32,
         x64     = 64,
         x128    = 128,

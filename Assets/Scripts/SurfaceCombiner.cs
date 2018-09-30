@@ -11,7 +11,7 @@ namespace SurfaceEdit
 
         static SurfaceCombiner()
         {
-            whiteTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x4), Color.white, false).Provide();
+            whiteTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), Color.white, false).Provide();
         }
 
         public static void CombineSurfaces(ProgramContext context, RenderContext renderContext, Surface bottomSurface, Surface topSurface, LayerBlendType blendType)
