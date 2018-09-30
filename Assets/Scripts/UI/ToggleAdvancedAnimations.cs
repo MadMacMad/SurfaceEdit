@@ -11,13 +11,15 @@ namespace SurfaceEdit
 
         [Space(10)]
         public string normalOn = "NormalOn";
-        public string highlightedOn = "HighlightedOn";
-        public string pressedOn = "PressedOn";
+        public string highlightedOn = "NormalOn";
+        public string pressedOn = "NormalOn";
+        public string disabledOn = "NormalOn";
 
         [Space(10)]
         public string normalOff = "NormalOff";
-        public string highlightedOff = "HighlightedOff";
-        public string pressedOff = "PressedOff";
+        public string highlightedOff = "NormalOff";
+        public string pressedOff = "NormalOff";
+        public string disabledOff = "NormalOff";
 
         private Toggle toggle;
 
@@ -41,12 +43,14 @@ namespace SurfaceEdit
                 triggers.normalTrigger = normalOn;
                 triggers.highlightedTrigger = highlightedOn;
                 triggers.pressedTrigger = pressedOn;
+                triggers.disabledTrigger = disabledOn;
             }
             else
             {
                 triggers.normalTrigger = normalOff;
                 triggers.highlightedTrigger = highlightedOff;
                 triggers.pressedTrigger = pressedOff;
+                triggers.disabledTrigger = disabledOff;
             }
             toggle.animationTriggers = triggers;
 
@@ -62,10 +66,12 @@ namespace SurfaceEdit
             toggle.animator.ResetTrigger (normalOn);
             toggle.animator.ResetTrigger (highlightedOn);
             toggle.animator.ResetTrigger (pressedOn);
+            toggle.animator.ResetTrigger (disabledOn);
 
             toggle.animator.ResetTrigger (normalOff);
             toggle.animator.ResetTrigger (highlightedOff);
             toggle.animator.ResetTrigger (pressedOff);
+            toggle.animator.ResetTrigger (disabledOff);
         }
     }
 }
