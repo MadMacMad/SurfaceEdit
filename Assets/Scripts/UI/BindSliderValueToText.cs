@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using TMPro;
 using UnityEngine.UI;
 
@@ -22,14 +21,16 @@ namespace SurfaceEdit
             text = GetComponent<TextMeshProUGUI> ();
             if ( slider != null )
             {
-                slider.onValueChanged.AddListener (v =>
-                {
-                    if ( !discardFraction )
-                        text.text = ( v * multiplier ).ToString ();
-                    else
-                        text.text = Mathf.FloorToInt (v * multiplier).ToString ();
-                });
+                slider.onValueChanged.AddListener (UpdateText);
+                UpdateText (slider.value);
             }
+        }
+        private void UpdateText(float value)
+        {
+            if ( !discardFraction )
+                text.text = ( value * multiplier ).ToString ();
+            else
+                text.text = Mathf.FloorToInt (value * multiplier).ToString ();
         }
     }
 }

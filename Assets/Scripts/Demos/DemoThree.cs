@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using SurfaceEdit.Brushes;
 using SurfaceEdit.SurfaceAffectors;
 using SurfaceEdit.TextureProviders;
@@ -121,10 +120,10 @@ namespace SurfaceEdit.Demos
             
             layerStack.ResultSurface.Changed += (s, e) => surfaceVisualizer.Update ();
 
-            GameObject.Find ("TextureResolution").GetComponentInChildren<TMP_Dropdown> ().onValueChanged.AddListener (i =>
-            {
-                textureResolution.SetResolution ((TextureResolutionEnum)Mathf.Pow(2, i + 9));
-            });
+            //GameObject.Find ("TextureResolution").GetComponentInChildren<TMP_Dropdown> ().onValueChanged.AddListener (i =>
+            //{
+            //    textureResolution.SetResolution ((TextureResolutionEnum)Mathf.Pow(2, i + 9));
+            //});
         }
 
         private bool isBrushBlack = false;

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using SurfaceEdit.TextureProviders;
-using UnityEngine;
 
 namespace SurfaceEdit
 {
