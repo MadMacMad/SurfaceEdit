@@ -10,7 +10,6 @@ namespace SurfaceEdit
     public class BindSliderValueToText : MonoBehaviour
     {
         public Slider slider;
-        [Range(0, 100)]
         public float multiplier;
         public bool discardFraction;
 

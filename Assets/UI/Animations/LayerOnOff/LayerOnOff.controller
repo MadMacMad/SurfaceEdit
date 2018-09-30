@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Tab
+  m_Name: LayerOnOff
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: NormalOn
@@ -104,7 +104,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: b9e658a9ad790224d87ad31078329204, type: 2}
+  m_Motion: {fileID: 7400000, guid: 6ca2de9c7808a9544a0177f274877bed, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -130,7 +130,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 5076bb34e695aff47830eeb12c9f4657, type: 2}
+  m_Motion: {fileID: 7400000, guid: 92596c9108c812a4e8784dde49cb47c8, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
