@@ -5,7 +5,7 @@ using SurfaceEdit.Commands;
 
 namespace SurfaceEdit
 {
-    public class UndoRedoRegister : UnitySingleton<UndoRedoRegister>
+    public class UndoRedoRegister
     {
         private Func<bool> undoTrigger;
         private Func<bool> redoTrigger;
@@ -13,6 +13,11 @@ namespace SurfaceEdit
         private Stack<ICommand> undoStack = new Stack<ICommand>();
         private Stack<ICommand> redoSrack = new Stack<ICommand>();
         
+        public UndoRedoRegister()
+        {
+            UnityUpdateRegistrator.Instance.OnUpdate += Update;
+        }
+
         public void SetUndoTrigger (Func<bool> undoTrigger)
         {
             this.undoTrigger = undoTrigger;

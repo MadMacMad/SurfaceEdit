@@ -29,8 +29,10 @@ namespace SurfaceEdit.Demos
         
         private void Start ()
         {
-            UndoRedoRegister.Instance.SetUndoTrigger (() => Input.GetKey (KeyCode.LeftControl) && (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown(KeyCode.F)));
-            UndoRedoRegister.Instance.SetRedoTrigger (() => Input.GetKey (KeyCode.LeftControl) && Input.GetKey (KeyCode.LeftShift) && (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown (KeyCode.F)));
+            var undoRedoRegister = new UndoRedoRegister ();
+
+            undoRedoRegister.SetUndoTrigger (() => Input.GetKey (KeyCode.LeftControl) && (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown(KeyCode.F)));
+            undoRedoRegister.SetRedoTrigger (() => Input.GetKey (KeyCode.LeftControl) && Input.GetKey (KeyCode.LeftShift) && (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown (KeyCode.F)));
 
             var channels = new Channels ();
             channels.AddChannel (Channel.Albedo);
@@ -46,7 +48,7 @@ namespace SurfaceEdit.Demos
             textureResolution = new TextureResolution (TextureResolutionEnum.x2048);
             chunkResolution = new ImmutableTextureResolution (TextureResolutionEnum.x256);
 
-            var context = new ProgramContext (UndoRedoRegister.Instance, channels, textureResolution, chunkResolution);
+            var context = new ProgramContext (undoRedoRegister, channels, textureResolution, chunkResolution);
 
             layerStack = new LayerStack (context);
             
@@ -83,18 +85,19 @@ namespace SurfaceEdit.Demos
 
             layer2.AddAffector (paintTextureAffector);
 
-            surfaceVisualizer = new SurfaceVisualizer (UndoRedoRegister.Instance, layerStack.ResultSurface);
+            surfaceVisualizer = new SurfaceVisualizer (undoRedoRegister, layerStack.ResultSurface);
             surfaceVisualizer.DisplacementIntensity = .2f;
             surfaceVisualizer.TesselationMultiplier = 4;
             surfaceVisualizer.InvertNormal = true;
-            UndoRedoRegister.Instance.Reset ();
+            undoRedoRegister.Reset ();
 
             brush = new DefaultRoundBrush (new TextureResolution (TextureResolutionEnum.x128), .15f, .25f, 0);
 
             brush.TintColor = isBrushBlack ? Color.black * new Color (1, 1, 1, pressure) : Color.white * new Color (1, 1, 1, pressure);
 
-            PaintingManager.Instance.CurrentBrush = brush;
-            PaintingManager.Instance.PaintTrigger += () =>
+            var paintingManager = new PaintingManager (brush);
+            
+            paintingManager.PaintTrigger += () =>
             {
                 if ( Input.GetKey (KeyCode.Mouse0) && !Input.GetKey (KeyCode.LeftAlt) )
                 {
@@ -104,11 +107,11 @@ namespace SurfaceEdit.Demos
                 }
                 return new PaintingManager.PaintTriggerEntry (false, false, Vector2.zero);
             };
-            PaintingManager.Instance.OnPaintTemporary = e =>
+            paintingManager.OnPaintTemporary = e =>
             {
                 paintTextureAffector.PaintTemporary (e);
             };
-            PaintingManager.Instance.OnPaintFinal = e =>
+            paintingManager.OnPaintFinal = e =>
             {
                 paintTextureAffector.PaintFinal (e);
             };
@@ -196,6 +199,7 @@ namespace SurfaceEdit.Demos
                 }
                 lastFrameRotation = true;
             }
+
             else
             {
                 lastFrameRotation = false;

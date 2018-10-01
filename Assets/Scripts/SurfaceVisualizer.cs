@@ -86,7 +86,7 @@ namespace SurfaceEdit
 
             Update ();
             Changed += Update;
-            surface.Context.Changed += (s, e) => UnityUpdateRegistrator.Instance.OnUpdateRegisterOneTimeAction (() => Update ());
+            surface.Context.Changed += (s, e) => UnityUpdateRegistrator.Instance.RegisterOneTimeActionOnUpdate (() => Update ());
         }
 
         public void Update () => Update (null, null);
@@ -117,6 +117,7 @@ namespace SurfaceEdit
                 renderer.material.SetTexture ("_MainTex", texture);
                 renderer.material.SetTexture ("_Displacement", height);
             }
+
 
             renderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
             renderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);

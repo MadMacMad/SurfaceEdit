@@ -41,7 +41,7 @@ namespace SurfaceEdit
         {
             if ( !renderRequestedThisFrame )
             {
-                UnityUpdateRegistrator.Instance.OnUpdateRegisterOneTimeAction (() => RenderImmidiate(renderContext));
+                UnityUpdateRegistrator.Instance.RegisterOneTimeActionOnUpdate (() => RenderImmidiate(renderContext));
                 renderRequestedThisFrame = true;
             }
         }

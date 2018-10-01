@@ -7,26 +7,26 @@ using UnityEngine;
 
 namespace SurfaceEdit
 {
-    public class PaintingManager : UnitySingleton<PaintingManager>, INotifyPropertyChanged
+    public class PaintingManager : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged ([CallerMemberName] string propertyName = "")
             => PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 
-        public Brush CurrentBrush
+        public Brush Brush
         {
-            get => currentBrush;
+            get => brush;
             set
             {
                 if ( value != null )
                 {
-                    currentBrush.Dispose();
-                    currentBrush = value;
+                    brush.Dispose();
+                    brush = value;
                     NotifyPropertyChanged ();
                 }
             }
         }
-        private Brush currentBrush;
+        private Brush brush;
 
         public Func<PaintTriggerEntry> PaintTrigger;
 
@@ -40,12 +40,15 @@ namespace SurfaceEdit
 
         private PaintEntry temporaryPaintEntry;
 
-        private void Awake ()
+        public PaintingManager(Brush brush)
         {
-            currentBrush = new DefaultRoundBrush (new TextureResolution(TextureResolutionEnum.x64), .1f, .1f, .8f);
+            Assert.ArgumentNotNull (brush, nameof (brush));
+            this.brush = brush;
 
             PropertyChanged += ResetPaint;
-            currentBrush.PropertyChanged += ResetPaint;
+            this.brush.PropertyChanged += ResetPaint;
+
+            UnityUpdateRegistrator.Instance.OnUpdate += Update;
         }
 
         private void ResetPaint (object sender, EventArgs eventArgs)
@@ -62,7 +65,7 @@ namespace SurfaceEdit
                 if ( !triggerEntry.isPositionValid )
                     return;
 
-                var newPosition = triggerEntry.paintPosition - currentBrush.PercentageSize / 2;
+                var newPosition = triggerEntry.paintPosition - brush.PercentageSize / 2;
 
                 // On first trigger always paint.
                 if ( !isTriggeredLastFrame )
@@ -70,7 +73,7 @@ namespace SurfaceEdit
                     isTriggeredLastFrame = true;
                     lastPosition = newPosition;
                     
-                    brushSnapshot = currentBrush.AsSnapshot ();
+                    brushSnapshot = brush.AsSnapshot ();
 
                     temporaryPaintEntry = new PaintEntry (brushSnapshot, new List<Vector3> () { newPosition });
                     OnPaintTemporary (temporaryPaintEntry);
@@ -81,14 +84,14 @@ namespace SurfaceEdit
                 var distance = movement.magnitude;
 
                 // If movement is not enough to paint at least once.
-                if ( distance < currentBrush.RealIntervals )
+                if ( distance < brush.RealIntervals )
                     return;
 
                 // If movement is enough to paint only one time.
-                if ( distance < currentBrush.RealIntervals * 2 )
+                if ( distance < brush.RealIntervals * 2 )
                 {
                     // Point belongs to movement vector and it is put from the lastPosition point at a distance equals to the intervals between the brush entries.
-                    var point = lastPosition + movement.normalized * currentBrush.RealIntervals;
+                    var point = lastPosition + movement.normalized * brush.RealIntervals;
                     // lastPosition is set to point. We ignore the rest of the movement because it is not enough to contain one more point.
                     lastPosition = point;
                     
@@ -97,7 +100,7 @@ namespace SurfaceEdit
                 // Movement is enough to paint several times in a line.
                 else
                 {
-                    var points = DivideLineSegmentIntoPoints (lastPosition, newPosition, currentBrush.RealIntervals);
+                    var points = DivideLineSegmentIntoPoints (lastPosition, newPosition, brush.RealIntervals);
                     // lastPosition is set to last point. We ignore the rest of the movement because it is not enough to contain one more point.
                     lastPosition = points.Last ();
                     temporaryPaintEntry.AddBrushPositions (points);
