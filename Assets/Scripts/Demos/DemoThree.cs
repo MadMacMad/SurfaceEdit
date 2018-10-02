@@ -31,8 +31,19 @@ namespace SurfaceEdit.Demos
         {
             var undoRedoRegister = new UndoRedoRegister ();
 
-            undoRedoRegister.SetUndoTrigger (() => Input.GetKey (KeyCode.LeftControl) && (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown(KeyCode.F)));
-            undoRedoRegister.SetRedoTrigger (() => Input.GetKey (KeyCode.LeftControl) && Input.GetKey (KeyCode.LeftShift) && (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown (KeyCode.F)));
+            var inputManager = new InputManager ();
+
+            var chain = new InputTriggerConflictChain (
+                new InputTriggerKeyCombination (undoRedoRegister.Undo)
+                    .WhenKeyPress (KeyCode.LeftControl)
+                    .WhenAnyKeyDown (KeyCode.Z, KeyCode.F),
+
+                new InputTriggerKeyCombination (undoRedoRegister.Redo)
+                    .WhenKeyPress (KeyCode.LeftControl)
+                    .WhenKeyPress (KeyCode.LeftShift)
+                    .WhenAnyKeyDown (KeyCode.Z, KeyCode.F));
+
+            inputManager.AddTrigger (chain);
 
             var channels = new Channels ();
             channels.AddChannel (Channel.Albedo);
@@ -121,7 +132,7 @@ namespace SurfaceEdit.Demos
             skyboxMaterial = Resources.Load ("Materials/Skybox") as Material;
             rotation = skyboxMaterial.GetVector ("_Euler").x;
             
-            layerStack.ResultSurface.Changed += (s, e) => surfaceVisualizer.Update ();
+            //layerStack.ResultSurface.Changed += (s, e) => surfaceVisualizer.Update ();
 
             //GameObject.Find ("TextureResolution").GetComponentInChildren<TMP_Dropdown> ().onValueChanged.AddListener (i =>
             //{

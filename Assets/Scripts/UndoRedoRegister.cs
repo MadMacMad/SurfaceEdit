@@ -7,26 +7,9 @@ namespace SurfaceEdit
 {
     public class UndoRedoRegister
     {
-        private Func<bool> undoTrigger;
-        private Func<bool> redoTrigger;
-
         private Stack<ICommand> undoStack = new Stack<ICommand>();
         private Stack<ICommand> redoSrack = new Stack<ICommand>();
         
-        public UndoRedoRegister()
-        {
-            UnityUpdateRegistrator.Instance.OnUpdate += Update;
-        }
-
-        public void SetUndoTrigger (Func<bool> undoTrigger)
-        {
-            this.undoTrigger = undoTrigger;
-        }
-        public void SetRedoTrigger (Func<bool> redoTrigger)
-        {
-            this.redoTrigger = redoTrigger;
-        }
-
         public void Reset()
         {
             foreach ( var c in redoSrack )
@@ -72,15 +55,7 @@ namespace SurfaceEdit
         {
             Logger.Log ($"{DateTime.Now.ToShortTimeString ()} {actionType.ToString()}({command.GetType ().Name}):\n{command.ToString ()}");
         }
-
-        private void Update ()
-        {
-            if ( redoTrigger () )
-                Redo ();
-            else if ( undoTrigger () )
-                Undo ();
-        }
-
+        
         private enum ActionType
         {
             DO,
