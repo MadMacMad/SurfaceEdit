@@ -1,30 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using SurfaceEdit.Brushes;
 using UnityEngine;
 
 namespace SurfaceEdit
 {
     public class Bootstrap : MonoBehaviour
     {
-        private UndoRedoRegister undoRedoRegister;
+        private UndoRedoManager undoRedoManager;
+        private InputManager inputManager;
 
         private void Start ()
         {
-            undoRedoRegister = new UndoRedoRegister ();
+            undoRedoManager = new UndoRedoManager ();
 
             var inputManager = new InputManager ();
 
             var chain = new InputTriggerConflictChain (
-                new InputTriggerKeyCombination (undoRedoRegister.Undo)
+                new InputTriggerKeyCombination (undoRedoManager.Undo)
                     .WhenKeyPress (KeyCode.LeftControl)
                     .WhenAnyKeyDown (KeyCode.Z, KeyCode.F),
 
-                new InputTriggerKeyCombination (undoRedoRegister.Redo)
+                new InputTriggerKeyCombination (undoRedoManager.Redo)
                     .WhenKeyPress (KeyCode.LeftControl)
                     .WhenKeyPress (KeyCode.LeftShift)
                     .WhenAnyKeyDown (KeyCode.Z, KeyCode.F));
 
             inputManager.AddTrigger (chain);
+            
+            var paintingManager = new PaintingManager ();
         }
     }
 }

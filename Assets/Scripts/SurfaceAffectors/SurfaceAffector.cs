@@ -15,7 +15,7 @@ namespace SurfaceEdit.SurfaceAffectors
 
         public Channels AffectedChannels { get; private set; }
 
-        public SurfaceAffector (ProgramContext context, Channels affectedChannels) : base (context?.UndoRedoRegister)
+        public SurfaceAffector (ProgramContext context, Channels affectedChannels) : base (context?.UndoRedoManager)
         {
             Assert.ArgumentNotNull (context, nameof (context));
             Assert.ArgumentNotNull (affectedChannels, nameof (affectedChannels));

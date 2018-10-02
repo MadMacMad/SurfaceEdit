@@ -66,7 +66,7 @@ namespace SurfaceEdit
 
         private Channels channels;
 
-        public SurfaceVisualizer (UndoRedoRegister undoRedoRegister, Surface surface, SurfaceRenderMode renderMode = SurfaceRenderMode.Surface) : base (undoRedoRegister)
+        public SurfaceVisualizer (UndoRedoManager undoRedoManager, Surface surface, SurfaceRenderMode renderMode = SurfaceRenderMode.Surface) : base (undoRedoManager)
         {
             Assert.ArgumentNotNull (surface, nameof (surface));
 

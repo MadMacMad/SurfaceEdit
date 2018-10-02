@@ -29,16 +29,16 @@ namespace SurfaceEdit.Demos
         
         private void Start ()
         {
-            var undoRedoRegister = new UndoRedoRegister ();
+            var undoRedoManager = new UndoRedoManager ();
 
             var inputManager = new InputManager ();
 
             var chain = new InputTriggerConflictChain (
-                new InputTriggerKeyCombination (undoRedoRegister.Undo)
+                new InputTriggerKeyCombination (undoRedoManager.Undo)
                     .WhenKeyPress (KeyCode.LeftControl)
                     .WhenAnyKeyDown (KeyCode.Z, KeyCode.F),
 
-                new InputTriggerKeyCombination (undoRedoRegister.Redo)
+                new InputTriggerKeyCombination (undoRedoManager.Redo)
                     .WhenKeyPress (KeyCode.LeftControl)
                     .WhenKeyPress (KeyCode.LeftShift)
                     .WhenAnyKeyDown (KeyCode.Z, KeyCode.F));
@@ -59,7 +59,7 @@ namespace SurfaceEdit.Demos
             textureResolution = new TextureResolution (TextureResolutionEnum.x2048);
             chunkResolution = new ImmutableTextureResolution (TextureResolutionEnum.x256);
 
-            var context = new ProgramContext (undoRedoRegister, channels, textureResolution, chunkResolution);
+            var context = new ProgramContext (undoRedoManager, channels, textureResolution, chunkResolution);
 
             layerStack = new LayerStack (context);
             
@@ -96,11 +96,11 @@ namespace SurfaceEdit.Demos
 
             layer2.AddAffector (paintTextureAffector);
 
-            surfaceVisualizer = new SurfaceVisualizer (undoRedoRegister, layerStack.ResultSurface);
+            surfaceVisualizer = new SurfaceVisualizer (undoRedoManager, layerStack.ResultSurface);
             surfaceVisualizer.DisplacementIntensity = .2f;
             surfaceVisualizer.TesselationMultiplier = 4;
             surfaceVisualizer.InvertNormal = true;
-            undoRedoRegister.Reset ();
+            undoRedoManager.Reset ();
 
             brush = new DefaultRoundBrush (new TextureResolution (TextureResolutionEnum.x128), .15f, .25f, 0);
 

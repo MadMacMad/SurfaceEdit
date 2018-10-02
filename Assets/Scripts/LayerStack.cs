@@ -14,7 +14,7 @@ namespace SurfaceEdit
         private Surface layerSurface;
         
         public LayerStack (ProgramContext context)
-            : base (context?.UndoRedoRegister)
+            : base (context?.UndoRedoManager)
         {
             Assert.ArgumentNotNull (context, nameof (context));
 

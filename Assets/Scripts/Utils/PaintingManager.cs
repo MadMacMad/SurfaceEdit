@@ -40,6 +40,7 @@ namespace SurfaceEdit
 
         private PaintEntry temporaryPaintEntry;
 
+        public PaintingManager() : this(new DefaultRoundBrush(new TextureResolution(TextureResolutionEnum.x128), .05f, .25f, 0)) { }
         public PaintingManager(Brush brush)
         {
             Assert.ArgumentNotNull (brush, nameof (brush));

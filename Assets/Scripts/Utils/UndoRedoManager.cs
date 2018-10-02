@@ -5,7 +5,7 @@ using SurfaceEdit.Commands;
 
 namespace SurfaceEdit
 {
-    public class UndoRedoRegister
+    public class UndoRedoManager
     {
         private Stack<ICommand> undoStack = new Stack<ICommand>();
         private Stack<ICommand> redoSrack = new Stack<ICommand>();

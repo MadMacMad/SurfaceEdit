@@ -4,7 +4,7 @@ namespace SurfaceEdit
 {
     public class ProgramContext : ObjectChangedNotifier
     {
-        public UndoRedoRegister UndoRedoRegister { get; private set; }
+        public UndoRedoManager UndoRedoManager { get; private set; }
         public Channels Channels { get; private set; }
         public TextureResolution TextureResolution { get; private set; }
         public ImmutableTextureResolution ChunkResolution { get; private set; }
@@ -14,17 +14,17 @@ namespace SurfaceEdit
         private ImmutableTextureResolution initialChunkResolution;
 
         public ProgramContext (
-            UndoRedoRegister undoRedoRegister,
+            UndoRedoManager undoRedoManager,
             Channels channels,
             TextureResolution textureResolution,
             ImmutableTextureResolution chunkResolution)
         {
-            Assert.ArgumentNotNull (undoRedoRegister, nameof (undoRedoRegister));
+            Assert.ArgumentNotNull (undoRedoManager, nameof (undoRedoManager));
             Assert.ArgumentNotNull (channels, nameof (channels));
             Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
             Assert.ArgumentNotNull (chunkResolution, nameof (chunkResolution));
 
-            UndoRedoRegister = undoRedoRegister;
+            UndoRedoManager = undoRedoManager;
             Channels = channels;
             TextureResolution = textureResolution;
 

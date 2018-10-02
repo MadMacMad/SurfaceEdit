@@ -26,7 +26,7 @@ namespace SurfaceEdit
         public IReadOnlyCollection<SurfaceAffector> Affectors => affectors.AsReadOnly();
         private List<SurfaceAffector> affectors = new List<SurfaceAffector> ();
         
-        public Layer (ProgramContext context) : base (context?.UndoRedoRegister)
+        public Layer (ProgramContext context) : base (context?.UndoRedoManager)
         {
             Assert.ArgumentNotNull (context, nameof (context));
 

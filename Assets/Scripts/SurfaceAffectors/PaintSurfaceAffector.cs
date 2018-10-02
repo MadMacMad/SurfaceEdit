@@ -62,7 +62,7 @@ namespace SurfaceEdit.SurfaceAffectors
                 var chunksToRender = CalculateChunksToRender (entry.brushSnapshot.percentageSize, entry.BrushPositions);
                 var renderContext = CalculateRenderContext (chunksToRender);
                 var command = new PaintCommand (rendererStation, go, objectWidth, () => NotifyNeedRender(renderContext));
-                undoRedoRegister.Do (command);
+                undoRedoManager.Do (command);
             }
         }
 
