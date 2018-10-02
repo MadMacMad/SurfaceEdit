@@ -125,5 +125,29 @@ namespace SurfaceEdit
 
         public static Vector2Int GetVectorSize (this Texture texture)
             => new Vector2Int (texture.width, texture.height);
+
+        public static Dictionary<TKey, TValue> AddRange<TKey, TValue> (this Dictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> range, DictionaryAddRangeMode mode)
+        {
+            Assert.ArgumentNotNull (range, nameof (range));
+
+            foreach ( var pair in range )
+            {
+                if (dict.ContainsKey(pair.Key))
+                    if ( mode == DictionaryAddRangeMode.OverrideDuplicates )
+                    {
+                        dict.Remove (pair.Key);
+                        dict.Add (pair.Key, pair.Value);
+                    }
+                else
+                    dict.Add (pair.Key, pair.Value);
+            }
+            return dict;
+        }
+
+        public enum DictionaryAddRangeMode
+        {
+            OverrideDuplicates,
+            IgnoreDuplicates
+        }
     }
 }
