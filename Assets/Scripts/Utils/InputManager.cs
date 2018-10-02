@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace SurfaceEdit
 {
+    // TODO: It seems that in the future I will need to rewrite this entire file to support user-changeable input settings with support for key combinations
+    // because now key combination conflicts are configured manually.
+
     public sealed class InputManager
     {
         private List<InputTrigger> Triggers = new List<InputTrigger> ();
@@ -93,11 +96,11 @@ namespace SurfaceEdit
     /// <summary>
     /// Class for handling one key combination.
     /// </summary>
-    public class InputTriggerSingle : InputTrigger
+    public class InputTriggerKeyCombination : InputTrigger
     {
         public List<IInputTriggerEntry> Entries { get; private set; } = new List<IInputTriggerEntry> ();
 
-        public InputTriggerSingle (Action callback = null) : base(callback) { }
+        public InputTriggerKeyCombination (Action callback = null) : base(callback) { }
 
         public override bool IsTriggered (out Action callback)
         {
@@ -110,49 +113,49 @@ namespace SurfaceEdit
             return true;
         }
         
-        public InputTriggerSingle WhenKeyPress (KeyCode key)
+        public InputTriggerKeyCombination WhenKeyPress (KeyCode key)
         {
             Entries.Add (new KeyInputTriggerEntry (key, KeyTriggerType.Press));
             return this;
         }
-        public InputTriggerSingle WhenKeyDown (KeyCode key)
+        public InputTriggerKeyCombination WhenKeyDown (KeyCode key)
         {
             Entries.Add (new KeyInputTriggerEntry (key, KeyTriggerType.Down));
             return this;
         }
-        public InputTriggerSingle WhenKeyUp (KeyCode key)
+        public InputTriggerKeyCombination WhenKeyUp (KeyCode key)
         {
             Entries.Add (new KeyInputTriggerEntry (key, KeyTriggerType.Up));
             return this;
         }
 
-        public InputTriggerSingle WhenAnyKeyPress (params KeyCode[] keys)
+        public InputTriggerKeyCombination WhenAnyKeyPress (params KeyCode[] keys)
         {
             Entries.Add (new AnyKeyInputTriggerEntry (KeyTriggerType.Press, keys));
             return this;
         }
-        public InputTriggerSingle WhenAnyKeyDown (params KeyCode[] keys)
+        public InputTriggerKeyCombination WhenAnyKeyDown (params KeyCode[] keys)
         {
             Entries.Add (new AnyKeyInputTriggerEntry (KeyTriggerType.Down, keys));
             return this;
         }
-        public InputTriggerSingle WhenAnyKeyUp (params KeyCode[] keys)
+        public InputTriggerKeyCombination WhenAnyKeyUp (params KeyCode[] keys)
         {
             Entries.Add (new AnyKeyInputTriggerEntry (KeyTriggerType.Up, keys));
             return this;
         }
 
-        public InputTriggerSingle WhenEveryKeyPress (params KeyCode[] keys)
+        public InputTriggerKeyCombination WhenEveryKeyPress (params KeyCode[] keys)
         {
             Entries.Add (new EveryKeyInputTriggerEntry (KeyTriggerType.Press, keys));
             return this;
         }
-        public InputTriggerSingle WhenEveryKeyDown (params KeyCode[] keys)
+        public InputTriggerKeyCombination WhenEveryKeyDown (params KeyCode[] keys)
         {
             Entries.Add (new EveryKeyInputTriggerEntry (KeyTriggerType.Down, keys));
             return this;
         }
-        public InputTriggerSingle WhenEveryKeyUp (params KeyCode[] keys)
+        public InputTriggerKeyCombination WhenEveryKeyUp (params KeyCode[] keys)
         {
             Entries.Add (new EveryKeyInputTriggerEntry (KeyTriggerType.Up, keys));
             return this;
