@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace SurfaceEdit
@@ -26,7 +28,7 @@ namespace SurfaceEdit
             return CreateRenderTexture (size.x, size.y);
         }
 
-        public static Object InstantiateAtSpecificScene (Object original, Vector3 position, Quaternion rotation, Scene scene, int layerID, GameObject parent = null)
+        public static UnityEngine.Object InstantiateAtSpecificScene (UnityEngine.Object original, Vector3 position, Quaternion rotation, Scene scene, int layerID, GameObject parent = null)
         {
             Assert.ArgumentNotNull (original, nameof (original));
 
@@ -57,6 +59,24 @@ namespace SurfaceEdit
 
             SceneManager.SetActiveScene (currentScene);
             return obj;
+        }
+
+        private static Dictionary<Type, int> enumCounts = new Dictionary<Type, int> ();
+
+        public static int EnumCount<T> () where T : struct, IConvertible
+        {
+            var type = typeof (T);
+
+            Assert.ArgumentTrue (type.IsEnum, type.Name + " is not enum");
+
+            if ( !enumCounts.ContainsKey (type) )
+            {
+                var count = Enum.GetValues (type).Length;
+                enumCounts.Add (type, count);
+                return count;
+            }
+
+            return enumCounts[type];
         }
     }
 }
