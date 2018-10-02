@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SurfaceEdit.TextureProviders;
 using UnityEngine;
 
@@ -17,6 +18,9 @@ namespace SurfaceEdit
         };
         private static Shader surfaceShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementShader");
         private static Shader textureShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementTextureShader");
+
+        private static RenderTexture blankHeightTexture =
+            new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x32),Channel.Height, false) .Provide ();
 
         public float DisplacementIntensity
         {
@@ -46,17 +50,21 @@ namespace SurfaceEdit
         }
         private SurfaceRenderMode renderMode;
 
-        public Channel RenderedChannel
+        public Channel ChannelToRender
         {
-            get => renderedChannel;
-            set => SetProperty (ref renderedChannel, value, renderMode == SurfaceRenderMode.Channel);
+            get => channelToRender;
+            set => SetPropertyValidate (ref channelToRender, value, renderMode == SurfaceRenderMode.Channel,
+                                        c => new Tuple<bool, Channel> (channels.List.Contains(c), c));
         }
-        private Channel renderedChannel = Channel.Albedo;
+        private Channel channelToRender = Channel.Albedo;
 
-        private GameObject go;
-        private Renderer renderer;
+        private GameObject surfacePlane;
+        private GameObject baseLevelPlane;
+        private Renderer surfacePlaneRenderer;
 
         private Surface surface;
+
+        private Channels channels;
 
         public SurfaceVisualizer (UndoRedoRegister undoRedoRegister, Surface surface, SurfaceRenderMode renderMode = SurfaceRenderMode.Surface) : base (undoRedoRegister)
         {
@@ -65,74 +73,120 @@ namespace SurfaceEdit
             this.renderMode = renderMode;
             this.surface = surface;
 
-            go = new GameObject ("Surface Visualzation Plane");
+            channels = surface.Context.Channels;
 
-            go.transform.Rotate (90, 0, 0);
+            CreateSurfacePlane ();
+            CreateBaseLevelPlane ();
 
-            go.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (Vector2.one, new Vector2Int (128, 128)).ConvertToMesh ();
-            var collider = go.AddComponent<BoxCollider> ();
+            Update ();
+            Changed += (s, e) => Update ();
+            surface.Context.Changed += (s, e) => UnityUpdateRegistrator.Instance.RegisterOneTimeActionOnUpdate (Update);
+        }
+
+        private void CreateSurfacePlane ()
+        {
+            surfacePlane = new GameObject ("SurfacePlane");
+
+            surfacePlane.transform.Rotate (90, 0, 0);
+
+            surfacePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (Vector2.one, new Vector2Int (128, 128)).ConvertToMesh ();
+
+            surfacePlaneRenderer = surfacePlane.AddComponent<MeshRenderer> ();
+        }
+        private void CreateBaseLevelPlane ()
+        {
+            baseLevelPlane = new GameObject ("BaseLevelPlane");
+
+            baseLevelPlane.transform.Rotate (90, 0, 0);
+
+            baseLevelPlane.AddComponent<MeshFilter> ().mesh = surfacePlane.GetComponent<MeshFilter> ().mesh;
+            var baseLevelRenderer = baseLevelPlane.AddComponent<MeshRenderer> ();
+            baseLevelRenderer.material.shader = Shader.Find ("SurfaceEdit/Unlit/Transparent");
+
+            var collider = baseLevelPlane.AddComponent<BoxCollider> ();
             collider.size = new Vector3 (1, 1, .01f);
             collider.center = new Vector3 (.5f, .5f, 0);
 
-            renderer = go.AddComponent<MeshRenderer> ();
+            var greyTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), new Color (.5f, .5f, .5f, .5f), false)
+                .Provide ()
+                .ConvertToTextureAndRelease ();
 
-            var go2 = new GameObject ("Base Level Plane");
-            go2.transform.Translate (0, -0.01f, 0);
-            go2.transform.Rotate (90, 0, 0);
-            go2.AddComponent<MeshFilter> ().mesh = go.GetComponent<MeshFilter>().mesh;
-            var renderer2 = go2.AddComponent<MeshRenderer> ();
-            renderer2.material.shader = Shader.Find ("SurfaceEdit/Unlit/Transparent");
-            renderer2.material.mainTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), new Color (.5f, .5f, .5f, .5f), false).Provide ();
-
-            Update ();
-            Changed += Update;
-            surface.Context.Changed += (s, e) => UnityUpdateRegistrator.Instance.RegisterOneTimeActionOnUpdate (() => Update ());
+            baseLevelRenderer.material.mainTexture = greyTexture;
         }
 
-        public void Update () => Update (null, null);
-
-        private void Update (object sender = null, EventArgs eventArgs = null)
+        public void Update ()
         {
             if ( renderMode == SurfaceRenderMode.Surface )
             {
-                renderer.material.shader = surfaceShader;
+                surfacePlaneRenderer.material.shader = surfaceShader;
                 foreach ( var pair in surface.Textures )
                     if ( channelPropertyPair.ContainsKey (pair.Key) )
-                        renderer.material.SetTexture (channelPropertyPair[pair.Key], pair.Value);
+                        surfacePlaneRenderer.material.SetTexture (channelPropertyPair[pair.Key], pair.Value);
             }
             else
             {
-                renderer.material.shader = textureShader;
+                surfacePlaneRenderer.material.shader = textureShader;
 
-                surface.Textures.TryGetValue(renderedChannel, out ProviderTexture providerTexture);
-                var texture = providerTexture?.RenderTexture;
-                if ( texture == null )
-                    texture = new BlankChannelTextureProvider (new TextureResolution(TextureResolutionEnum.x32), renderedChannel, false).Provide();
+                surface.Textures.TryGetValue (channelToRender, out ProviderTexture providerTexture);
+                var texture = providerTexture.RenderTexture;
 
                 surface.Textures.TryGetValue (Channel.Height, out ProviderTexture providerHeight);
-                var height = providerHeight?.RenderTexture;
-                if ( height == null )
-                    height = new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x32), Channel.Height, false).Provide ();
+                var height = providerHeight?.RenderTexture ?? blankHeightTexture;
 
-                renderer.material.SetTexture ("_MainTex", texture);
-                renderer.material.SetTexture ("_Displacement", height);
+                surfacePlaneRenderer.material.SetTexture ("_MainTex", texture);
+                surfacePlaneRenderer.material.SetTexture ("_Displacement", height);
             }
 
+            surfacePlaneRenderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
+            surfacePlaneRenderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);
+            surfacePlaneRenderer.material.SetFloat ("_InvertNormal", ( invertNormal ) ? 1 : 0);
+        }
 
-            renderer.material.SetFloat ("_TesselationMultiplier", tesselationMultiplier);
-            renderer.material.SetFloat ("_DisplacementIntensity", displacementIntensity);
-            renderer.material.SetFloat ("_InvertNormal", ( invertNormal ) ? 1 : 0);
+        public void CycleChannelToRenderNext ()
+        {
+            var newChannelID = (int)channelToRender + 1;
+            Channel newChannel = default;
+            var maxID = Utils.EnumCount<Channel> ();
+            do
+            {
+                if ( newChannelID >= maxID )
+                    newChannelID = 0;
+
+                newChannel = (Channel)newChannelID;
+                newChannelID += 1;
+            }
+            while ( !channels.List.Contains (newChannel) );
+
+            ChannelToRender = newChannel;
+        }
+        public void CycleChannelToRenderPrevious ()
+        {
+            var newChannelID = (int)channelToRender - 1;
+            Channel newChannel = default;
+            var maxID = Utils.EnumCount<Channel> ();
+            do
+            {
+                if ( newChannelID < 0 )
+                    newChannelID = maxID;
+
+                newChannel = (Channel)newChannelID;
+                newChannelID -= 1;
+            }
+            while ( !channels.List.Contains (newChannel) );
+
+            ChannelToRender = newChannel;
         }
 
         public void Dispose ()
         {
-            GameObject.Destroy (go);
+            GameObject.Destroy (surfacePlane);
+            GameObject.Destroy (baseLevelPlane);
         }
+    }
 
-        public enum SurfaceRenderMode
-        {
-            Surface,
-            Channel
-        }
+    public enum SurfaceRenderMode
+    {
+        Surface,
+        Channel
     }
 }

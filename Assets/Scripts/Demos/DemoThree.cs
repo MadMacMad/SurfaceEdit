@@ -172,56 +172,18 @@ namespace SurfaceEdit.Demos
                 brush.TintColor = isBrushBlack ? Color.black * new Color(1, 1, 1, pressure) : Color.white * new Color (1, 1, 1, pressure);
             }
 
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Mouse1))
-            {
-                var mousePosition = (Vector2)Input.mousePosition;
-
-                if ( !lastFrameRotation )
-                    lastMousePosition = mousePosition;
-
-                else if (mousePosition != lastMousePosition )
-                {
-                    var difference = mousePosition - lastMousePosition;
-
-                    sun.transform.Rotate (0, difference.x, 0, Space.World);
-                    rotation += difference.x;
-
-                    skyboxMaterial.SetVector ("_Euler", new Vector3 (0, rotation, 0));
-
-                    var r = skyboxMaterial.GetVector ("_Euler");
-                    var q = Quaternion.Euler (r.x, r.y, r.z);
-                    var m = Matrix4x4.TRS (Vector3.zero, q, Vector3.one);
-                    skyboxMaterial.SetVector ("_Rotation1", m.GetRow (0));
-                    skyboxMaterial.SetVector ("_Rotation2", m.GetRow (1));
-                    skyboxMaterial.SetVector ("_Rotation3", m.GetRow (2));
-
-                    lastMousePosition = mousePosition;
-                }
-                lastFrameRotation = true;
-            }
-
-            else
-            {
-                lastFrameRotation = false;
-            }
-
             if (Input.GetKeyDown(KeyCode.C))
             {
-                if (surfaceVisualizer.RenderMode != SurfaceVisualizer.SurfaceRenderMode.Channel)
-                    surfaceVisualizer.RenderMode = SurfaceVisualizer.SurfaceRenderMode.Channel;
-                var currentChannel = surfaceVisualizer.RenderedChannel;
-                var currentIndex = channels.IndexOf(currentChannel);
-                var newIndex = currentIndex + 1;
-                if ( newIndex >= channels.Count )
-                    newIndex = 0;
-                var newChannel = channels[newIndex];
-                surfaceVisualizer.RenderedChannel = newChannel;
+                if (surfaceVisualizer.RenderMode != SurfaceRenderMode.Channel)
+                {
+                    surfaceVisualizer.RenderMode = SurfaceRenderMode.Channel;
+                    surfaceVisualizer.ChannelToRender = Channel.Albedo;
+                }
+                else
+                    surfaceVisualizer.CycleChannelToRenderNext ();
             }
             else if (Input.GetKeyDown(KeyCode.V))
-            {
-                if ( surfaceVisualizer.RenderMode != SurfaceVisualizer.SurfaceRenderMode.Surface )
-                    surfaceVisualizer.RenderMode = SurfaceVisualizer.SurfaceRenderMode.Surface;
-            }
+                surfaceVisualizer.RenderMode = SurfaceRenderMode.Surface;
 
             //ui1.text =
             //    $"Working resolution: {textureResolution.AsInt + " x " + textureResolution.AsInt}\n" +
