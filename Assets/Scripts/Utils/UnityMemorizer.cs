@@ -30,7 +30,7 @@ namespace SurfaceEdit
         public T GetValue(string name)
         {
             Assert.ArgumentTrue (!string.IsNullOrEmpty (name), nameof (name) + " is null of empty!");
-            Assert.ArgumentTrue (getters.ContainsKey (name), "The Memorized value named " + nameof (name) + " does not exist!");
+            Assert.ArgumentTrue (getters.ContainsKey (name), "The Memorized value named " + name + " does not exist!");
 
             return values[name];
         }

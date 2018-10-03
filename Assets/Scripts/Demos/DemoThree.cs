@@ -29,8 +29,9 @@ namespace SurfaceEdit.Demos
         
         private void Start ()
         {
+            UnityMemorizer<Vector3>.Instance.Memorize ("mousePosition", () => Input.mousePosition);
             var undoRedoManager = new UndoRedoManager ();
-
+            
             var inputManager = new InputManager ();
 
             var undoTrigger = new KeyCombination ()
@@ -138,9 +139,22 @@ namespace SurfaceEdit.Demos
             ui1 = GameObject.Find ("UI1")?.GetComponent<TextMeshProUGUI>();
             ui2 = GameObject.Find ("UI2")?.GetComponent<TextMeshProUGUI>();
             sun = GameObject.Find ("Sun");
-            skyboxMaterial = Resources.Load ("Materials/Skybox") as Material;
-            rotation = skyboxMaterial.GetVector ("_Euler").x;
-            
+
+            SkyboxManager.Instance.SetSkyboxCubeMap (Resources.Load ("Textures/Cubemaps/DefaultCubeMap") as Cubemap);
+
+            var skyboxRotationTrigger = new KeyCombination ()
+                .Shift ()
+                .Key (KeyCode.Mouse0, KeyTriggerType.Press)
+                .AddTriggeredCallback (() =>
+                {
+                    var lastMousePosition = UnityMemorizer<Vector3>.Instance.GetValue ("mousePosition");
+                    var mousePosition = Input.mousePosition;
+                    var rotation = mousePosition.x - lastMousePosition.x;
+                    SkyboxManager.Instance.RotateSkyBoxIncremental (rotation);
+                });
+
+            inputManager.AddTrigger (skyboxRotationTrigger);
+
             //layerStack.ResultSurface.Changed += (s, e) => surfaceVisualizer.Update ();
 
             //GameObject.Find ("TextureResolution").GetComponentInChildren<TMP_Dropdown> ().onValueChanged.AddListener (i =>
