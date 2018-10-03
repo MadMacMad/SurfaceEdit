@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace SurfaceEdit
 {
@@ -8,6 +9,16 @@ namespace SurfaceEdit
         {
             if ( !value )
                 throw new ArgumentException (message);
+        }
+        public static void SoftTrue(bool value, string message)
+        {
+            if ( !value )
+                Debug.LogError (message);
+        }
+        public static void SoftNotNull<T> (T obj, string name) where T : class
+        {
+            if ( obj is null || obj == null )
+                Debug.LogError (name + " is null");
         }
         public static void ArgumentNotNull<T>(T obj, string name) where T : class
         {
