@@ -12,6 +12,7 @@ namespace SurfaceEdit
         {
             skyboxMaterial = new Material (Shader.Find ("SkyboxPlus/Cubemap"));
             RenderSettings.skybox = skyboxMaterial;
+            SetSkyboxBlurAmount (1.5f);
         }
 
         public void RotateSkyBoxIncremental (float rotation, bool rotateLight = true)
@@ -33,7 +34,7 @@ namespace SurfaceEdit
 
         public void SetSkyboxCubeMap (Cubemap cubemap)
         {
-            skyboxMaterial.mainTexture = cubemap;
+            skyboxMaterial.SetTexture("_Tex", cubemap);
             RenderSettings.customReflection = cubemap;
         }
         
@@ -43,14 +44,7 @@ namespace SurfaceEdit
         public void SetSkyboxBlurAmount(float amount)
         {
             amount = Mathf.Clamp (amount, 0, 10);
-
-            if (amount == 0)
-                skyboxMaterial.SetFloat ("_Lod", 0);
-            else
-            {
-                skyboxMaterial.SetFloat ("_Lod", 1);
-                skyboxMaterial.SetFloat ("_LodLevel", amount);
-            }
+            skyboxMaterial.SetFloat ("_LodLevel", amount);
         }
         public void SetSkyboxExposure(float amount)
         {

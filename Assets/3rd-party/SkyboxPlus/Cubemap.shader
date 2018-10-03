@@ -13,7 +13,6 @@ Shader "SkyboxPlus/Cubemap"
         [Gamma] _Exposure("-", Range(0, 8)) = 1
         _Saturation("-", Range(0, 2)) = 1
 
-        [Toggle] _Lod("-", Float) = 0
         _LodLevel("-", Range(0, 10)) = 0
     }
     CGINCLUDE
@@ -54,11 +53,7 @@ Shader "SkyboxPlus/Cubemap"
 
     fixed4 frag(v2f i) : SV_Target
     {
-#ifdef _LOD_ON
         half4 tex = texCUBElod(_Tex, float4(i.texcoord, _LodLevel));
-#else
-        half4 tex = texCUBE(_Tex, i.texcoord);
-#endif
         half3 c = DecodeHDR(tex, _Tex_HDR);
         c *= _Tint.rgb * unity_ColorSpaceDouble.rgb * _Exposure;
         c = lerp((half3)Luminance(c), c, _Saturation);
