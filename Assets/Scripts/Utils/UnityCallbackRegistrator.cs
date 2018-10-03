@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace SurfaceEdit
 {
-    public class UnityUpdateRegistrator : UnitySingleton<UnityUpdateRegistrator>
+    public class UnityCallbackRegistrator : UnitySingleton<UnityCallbackRegistrator>
     {
         public event Action OnUpdate;
+        public event Action OnLateUpdate;
 
         private List<Action> oneTimeActions = new List<Action> ();
 
@@ -22,6 +23,10 @@ namespace SurfaceEdit
                     action?.Invoke();
                 oneTimeActions.Clear ();
             }
+        }
+        private void LateUpdate ()
+        {
+            OnLateUpdate?.Invoke ();
         }
     }
 }

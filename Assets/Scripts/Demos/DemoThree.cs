@@ -33,17 +33,20 @@ namespace SurfaceEdit.Demos
 
             var inputManager = new InputManager ();
 
-            var chain = new InputTriggerConflictChain (
-                new InputTriggerKeyCombination (undoRedoManager.Undo)
-                    .WhenKeyPress (KeyCode.LeftControl)
-                    .WhenAnyKeyDown (KeyCode.Z, KeyCode.F),
+            var undoTrigger = new KeyCombination ()
+                .Ctrl ()
+                .Key (KeyCode.Z)
+                .AddTriggeredCallback (undoRedoManager.Undo);
 
-                new InputTriggerKeyCombination (undoRedoManager.Redo)
-                    .WhenKeyPress (KeyCode.LeftControl)
-                    .WhenKeyPress (KeyCode.LeftShift)
-                    .WhenAnyKeyDown (KeyCode.Z, KeyCode.F));
+            inputManager.AddTrigger (undoTrigger);
 
-            inputManager.AddTrigger (chain);
+            var redoTrigger = new KeyCombination ()
+                .Ctrl ()
+                .Shift ()
+                .Key (KeyCode.Z)
+                .AddTriggeredCallback (undoRedoManager.Redo);
+
+            inputManager.AddTrigger (redoTrigger);
 
             var channels = new Channels ();
             channels.AddChannel (Channel.Albedo);
@@ -107,17 +110,23 @@ namespace SurfaceEdit.Demos
             brush.TintColor = isBrushBlack ? Color.black * new Color (1, 1, 1, pressure) : Color.white * new Color (1, 1, 1, pressure);
 
             var paintingManager = new PaintingManager (brush);
-            
-            paintingManager.PaintTrigger += () =>
-            {
-                if ( Input.GetKey (KeyCode.Mouse0) && !Input.GetKey (KeyCode.LeftAlt) )
+
+            var paintTrigger = new KeyCombination ()
+                .Key (KeyCode.Mouse0, KeyTriggerType.Press)
+                .AddTriggeredCallback (() =>
                 {
                     bool isHit = Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out RaycastHit hit);
-                    var point = new Vector2 (hit.point.x, hit.point.z);
-                    return new PaintingManager.PaintTriggerEntry (true, isHit, point);
-                }
-                return new PaintingManager.PaintTriggerEntry (false, false, Vector2.zero);
-            };
+
+                    if ( isHit )
+                    {
+                        var point = new Vector2 (hit.point.x, hit.point.z);
+                        paintingManager.PaintTriggered (point);
+                    }
+                })
+                .AddNotTriggeredCallback (paintingManager.PaintNotTriggered);
+
+            inputManager.AddTrigger (paintTrigger);
+
             paintingManager.OnPaintTemporary = e =>
             {
                 paintTextureAffector.PaintTemporary (e);

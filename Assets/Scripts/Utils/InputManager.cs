@@ -4,16 +4,13 @@ using UnityEngine;
 
 namespace SurfaceEdit
 {
-    // TODO: It seems that in the future I will need to rewrite this entire file to support user-changeable input settings with support for key combinations
-    // because now key combination conflicts are configured manually.
-
     public sealed class InputManager
     {
         private List<InputTrigger> Triggers = new List<InputTrigger> ();
 
         public InputManager ()
         {
-            UnityUpdateRegistrator.Instance.OnUpdate += Update;
+            UnityCallbackRegistrator.Instance.OnUpdate += Update;
         }
         
         public void AddTrigger(InputTrigger trigger)
@@ -31,259 +28,115 @@ namespace SurfaceEdit
         private void Update ()
         {
             foreach ( var trigger in Triggers )
-                if ( trigger.IsTriggered (out Action callback) )
-                    callback?.Invoke ();
+                trigger.Trigger ();
         }
     }
     
     public abstract class InputTrigger
     {
-        public Action callback;
+        public Action triggeredCallback;
+        public Action notTriggeredCallback;
 
-        public InputTrigger(Action callback)
+        public InputTrigger AddTriggeredCallback(Action callback)
         {
-            this.callback = callback;
-        }
-
-        public InputTrigger AddCallback(Action callback)
-        {
-            this.callback += callback;
+            triggeredCallback += callback;
             return this;
         }
-        public InputTrigger RemoveCallback(Action callback)
+        public InputTrigger RemoveTriggeredCallback(Action callback)
         {
-            this.callback -= callback;
+            triggeredCallback -= callback;
             return this;
         }
 
-        public abstract bool IsTriggered (out Action callback);
+        public InputTrigger AddNotTriggeredCallback (Action callback)
+        {
+            notTriggeredCallback += callback;
+            return this;
+        }
+        public InputTrigger RemoveNoyTriggeredCallback (Action callback)
+        {
+            notTriggeredCallback -= callback;
+            return this;
+        }
+
+        public void Trigger ()
+        {
+            if ( IsTriggered () )
+                triggeredCallback?.Invoke ();
+            else
+                notTriggeredCallback?.Invoke ();
+        }
+        protected abstract bool IsTriggered ();
     }
 
-    /// <summary>
-    /// Class for handling key combination conflicts. For example, we have Ctrl + Z key combination for undo and Ctrl + Shift + Z for redo.
-    /// If user will press Ctrl + Shift + Z redo operation will perform, but at the same time Ctrl + Z is pressed, so undo also will be performed.
-    /// This class allows us to perform only one operation (the last one) at the specific time. In the constructor you need to pass triggers in order of complexity.
-    /// For example Ctrl + Z will be the first, Ctrl + Shift + Z will be the second, Ctrl + Shift + Whatever + Z will be the third and so on.
-    /// </summary>
-    public class InputTriggerConflictChain : InputTrigger
+    public class KeyCombination : InputTrigger
     {
-        private List<InputTrigger> triggers = new List<InputTrigger> ();
-
-        public InputTriggerConflictChain (params InputTrigger[] triggers) : base(null)
-        {
-            if ( triggers != null )
-                this.triggers.AddRange (triggers);
-        }
-
-        // TODO: Add methods to add, rearrange and delete triggers 
-
-        public override bool IsTriggered (out Action callback)
-        {
-            InputTrigger lastTrigger = default;
-            callback = null;
-
-            foreach ( var trigger in triggers )
-                if ( trigger.IsTriggered (out Action triggerCallback) )
-                {
-                    lastTrigger = trigger;
-                    callback = triggerCallback;
-                }
-            
-            return lastTrigger != null;
-        }
-    }
-
-    /// <summary>
-    /// Class for handling one key combination.
-    /// </summary>
-    public class InputTriggerKeyCombination : InputTrigger
-    {
-        public List<IInputTriggerEntry> Entries { get; private set; } = new List<IInputTriggerEntry> ();
-
-        public InputTriggerKeyCombination (Action callback = null) : base(callback) { }
-
-        public override bool IsTriggered (out Action callback)
-        {
-            callback = this.callback;
-
-            foreach ( var entry in Entries )
-                if ( !entry.IsTriggered () )
-                    return false;
-
-            return true;
-        }
+        public KeyCode key = KeyCode.None;
+        public KeyTriggerType keyTriggerType = KeyTriggerType.Down;
+        public Fact ShiftFact = Fact.IsFalse;
+        public Fact CtrlFact = Fact.IsFalse;
+        public Fact AltFact = Fact.IsFalse;
         
-        public InputTriggerKeyCombination WhenKeyPress (KeyCode key)
-        {
-            Entries.Add (new KeyInputTriggerEntry (key, KeyTriggerType.Press));
-            return this;
-        }
-        public InputTriggerKeyCombination WhenKeyDown (KeyCode key)
-        {
-            Entries.Add (new KeyInputTriggerEntry (key, KeyTriggerType.Down));
-            return this;
-        }
-        public InputTriggerKeyCombination WhenKeyUp (KeyCode key)
-        {
-            Entries.Add (new KeyInputTriggerEntry (key, KeyTriggerType.Up));
-            return this;
-        }
-
-        public InputTriggerKeyCombination WhenAnyKeyPress (params KeyCode[] keys)
-        {
-            Entries.Add (new AnyKeyInputTriggerEntry (KeyTriggerType.Press, keys));
-            return this;
-        }
-        public InputTriggerKeyCombination WhenAnyKeyDown (params KeyCode[] keys)
-        {
-            Entries.Add (new AnyKeyInputTriggerEntry (KeyTriggerType.Down, keys));
-            return this;
-        }
-        public InputTriggerKeyCombination WhenAnyKeyUp (params KeyCode[] keys)
-        {
-            Entries.Add (new AnyKeyInputTriggerEntry (KeyTriggerType.Up, keys));
-            return this;
-        }
-
-        public InputTriggerKeyCombination WhenEveryKeyPress (params KeyCode[] keys)
-        {
-            Entries.Add (new EveryKeyInputTriggerEntry (KeyTriggerType.Press, keys));
-            return this;
-        }
-        public InputTriggerKeyCombination WhenEveryKeyDown (params KeyCode[] keys)
-        {
-            Entries.Add (new EveryKeyInputTriggerEntry (KeyTriggerType.Down, keys));
-            return this;
-        }
-        public InputTriggerKeyCombination WhenEveryKeyUp (params KeyCode[] keys)
-        {
-            Entries.Add (new EveryKeyInputTriggerEntry (KeyTriggerType.Up, keys));
-            return this;
-        }
-    }
-
-    public interface IInputTriggerEntry
-    {
-        bool IsTriggered ();
-    }
-
-    public class FuncInputTriggerEntry : IInputTriggerEntry
-    {
-        private Func<bool> func;
-
-        public FuncInputTriggerEntry(Func<bool> func)
-        {
-            Assert.ArgumentNotNull (func, nameof (func));
-
-            this.func = func;
-        }
-
-        public bool IsTriggered ()
-            => func ();
-    }
-    public class KeyInputTriggerEntry : IInputTriggerEntry
-    {
-        public KeyCode key;
-        public KeyTriggerType triggerType;
-
-        public KeyInputTriggerEntry (KeyCode key, KeyTriggerType triggerType)
+        public KeyCombination Key (KeyCode key, KeyTriggerType keyTriggerType = KeyTriggerType.Down)
         {
             this.key = key;
-            this.triggerType = triggerType;
+            this.keyTriggerType = keyTriggerType;
+            return this;
         }
-        public bool IsTriggered()
+        public KeyCombination Shift(Fact fact = Fact.IsTrue)
         {
-            switch ( triggerType )
+            ShiftFact = fact;
+            return this;
+        }
+        public KeyCombination Alt (Fact fact = Fact.IsTrue)
+        {
+            AltFact = fact;
+            return this;
+        }
+        public KeyCombination Ctrl (Fact fact = Fact.IsTrue)
+        {
+            CtrlFact = fact;
+            return this;
+        }
+
+        protected override bool IsTriggered ()
+        {
+            var isKeyTriggered = false;
+
+            if      ( keyTriggerType == KeyTriggerType.Down  ) isKeyTriggered = Input.GetKeyDown (key);
+            else if ( keyTriggerType == KeyTriggerType.Press ) isKeyTriggered = Input.GetKey (key);
+            else                                               isKeyTriggered = Input.GetKeyUp (key);
+
+            if ( !isKeyTriggered )
+                return false;
+
+            bool CheckTriggered(Fact fact, bool triggered)
             {
-                case KeyTriggerType.Press:
-                    if ( !Input.GetKey (key) )
-                        return false;
-                    break;
+                if ( fact == Fact.IsFalse && triggered )
+                    return false;
+                else if ( fact == Fact.IsTrue && !triggered )
+                    return false;
 
-                case KeyTriggerType.Down:
-                    if ( !Input.GetKeyDown (key) )
-                        return false;
-                    break;
-
-                case KeyTriggerType.Up:
-                    if ( !Input.GetKeyUp (key) )
-                        return false;
-                    break;
+                return true;
             }
-            return true;
+
+            var isShiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift);
+            if ( !CheckTriggered (ShiftFact, isShiftPressed) ) return false;
+
+            var isCtrlPressed = Input.GetKey(KeyCode.LeftControl) || Input.GetKey (KeyCode.RightControl);
+            if ( !CheckTriggered (CtrlFact, isCtrlPressed) ) return false;
+
+            var isAltPressed = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey (KeyCode.RightAlt);
+            return CheckTriggered (AltFact, isAltPressed);
         }
     }
-    public class AnyKeyInputTriggerEntry : IInputTriggerEntry
+
+    public enum Fact
     {
-        public List<KeyCode> Keys { get; private set; } = new List<KeyCode> ();
-        public KeyTriggerType triggerType;
-
-        public AnyKeyInputTriggerEntry(KeyTriggerType triggerType, params KeyCode[] keys)
-        {
-            this.triggerType = triggerType;
-            Keys.AddRange (keys);
-        }
-
-        public bool IsTriggered ()
-        {
-            foreach (var key in Keys)
-                switch ( triggerType )
-                {
-                    case KeyTriggerType.Press:
-                        if ( Input.GetKey (key) )
-                            return true;
-                        break;
-
-                    case KeyTriggerType.Down:
-                        if ( Input.GetKeyDown (key) )
-                            return true;
-                        break;
-
-                    case KeyTriggerType.Up:
-                        if ( Input.GetKeyUp (key) )
-                            return true;
-                        break;
-                }
-
-            return false;
-        }
+        IsTrue,
+        IsFalse,
+        Any
     }
-    public class EveryKeyInputTriggerEntry : IInputTriggerEntry
-    {
-        public List<KeyCode> Keys { get; private set; } = new List<KeyCode> ();
-        public KeyTriggerType triggerType;
-
-        public EveryKeyInputTriggerEntry (KeyTriggerType triggerType, params KeyCode[] keys)
-        {
-            this.triggerType = triggerType;
-            Keys.AddRange (keys);
-        }
-
-        public bool IsTriggered ()
-        {
-            foreach ( var key in Keys )
-                switch ( triggerType )
-                {
-                    case KeyTriggerType.Press:
-                        if ( !Input.GetKey (key) )
-                            return false;
-                        break;
-
-                    case KeyTriggerType.Down:
-                        if ( !Input.GetKeyDown (key) )
-                            return false;
-                        break;
-
-                    case KeyTriggerType.Up:
-                        if ( !Input.GetKeyUp (key) )
-                            return false;
-                        break;
-                }
-
-            return true;
-        }
-    }
-
     public enum KeyTriggerType
     {
         Press,

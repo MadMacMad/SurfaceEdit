@@ -27,12 +27,10 @@ namespace SurfaceEdit
             }
         }
         private Brush brush;
-
-        public Func<PaintTriggerEntry> PaintTrigger;
-
+        
         public Action<PaintEntry> OnPaintFinal;
         public Action<PaintEntry> OnPaintTemporary;
-
+        
         private bool isTriggeredLastFrame;
         private Vector2 lastPosition;
 
@@ -48,8 +46,6 @@ namespace SurfaceEdit
 
             PropertyChanged += ResetPaint;
             this.brush.PropertyChanged += ResetPaint;
-
-            UnityUpdateRegistrator.Instance.OnUpdate += Update;
         }
 
         private void ResetPaint (object sender, EventArgs eventArgs)
@@ -57,63 +53,55 @@ namespace SurfaceEdit
             isTriggeredLastFrame = false;
         }
 
-        private void Update ()
+        public void PaintTriggered (Vector2 paintPosition)
         {
-            var triggerEntry = PaintTrigger ();
+            var newPosition = paintPosition - brush.PercentageSize / 2;
 
-            if ( triggerEntry.isActivated )
+            // On first trigger always paint.
+            if ( !isTriggeredLastFrame )
             {
-                if ( !triggerEntry.isPositionValid )
-                    return;
-
-                var newPosition = triggerEntry.paintPosition - brush.PercentageSize / 2;
-
-                // On first trigger always paint.
-                if ( !isTriggeredLastFrame )
-                {
-                    isTriggeredLastFrame = true;
-                    lastPosition = newPosition;
+                isTriggeredLastFrame = true;
+                lastPosition = newPosition;
                     
-                    brushSnapshot = brush.AsSnapshot ();
+                brushSnapshot = brush.AsSnapshot ();
 
-                    temporaryPaintEntry = new PaintEntry (brushSnapshot, new List<Vector3> () { newPosition });
-                    OnPaintTemporary (temporaryPaintEntry);
-                    return;
-                }
-
-                var movement = newPosition - lastPosition;
-                var distance = movement.magnitude;
-
-                // If movement is not enough to paint at least once.
-                if ( distance < brush.RealIntervals )
-                    return;
-
-                // If movement is enough to paint only one time.
-                if ( distance < brush.RealIntervals * 2 )
-                {
-                    // Point belongs to movement vector and it is put from the lastPosition point at a distance equals to the intervals between the brush entries.
-                    var point = lastPosition + movement.normalized * brush.RealIntervals;
-                    // lastPosition is set to point. We ignore the rest of the movement because it is not enough to contain one more point.
-                    lastPosition = point;
-                    
-                    temporaryPaintEntry.AddBrushPositions (new List<Vector3> () { point });
-                }
-                // Movement is enough to paint several times in a line.
-                else
-                {
-                    var points = DivideLineSegmentIntoPoints (lastPosition, newPosition, brush.RealIntervals);
-                    // lastPosition is set to last point. We ignore the rest of the movement because it is not enough to contain one more point.
-                    lastPosition = points.Last ();
-                    temporaryPaintEntry.AddBrushPositions (points);
-                }
+                temporaryPaintEntry = new PaintEntry (brushSnapshot, new List<Vector3> () { newPosition });
+                OnPaintTemporary (temporaryPaintEntry);
+                return;
             }
+
+            var movement = newPosition - lastPosition;
+            var distance = movement.magnitude;
+
+            // If movement is not enough to paint at least once.
+            if ( distance < brush.RealIntervals )
+                return;
+
+            // If movement is enough to paint only one time.
+            if ( distance < brush.RealIntervals * 2 )
+            {
+                // Point belongs to movement vector and it is put from the lastPosition point at a distance equals to the intervals between the brush entries.
+                var point = lastPosition + movement.normalized * brush.RealIntervals;
+                // lastPosition is set to point. We ignore the rest of the movement because it is not enough to contain one more point.
+                lastPosition = point;
+                    
+                temporaryPaintEntry.AddBrushPositions (new List<Vector3> () { point });
+            }
+            // Movement is enough to paint several times in a line.
             else
             {
-                if ( isTriggeredLastFrame )
-                    OnPaintFinal (temporaryPaintEntry);
-
-                isTriggeredLastFrame = false;
+                var points = DivideLineSegmentIntoPoints (lastPosition, newPosition, brush.RealIntervals);
+                // lastPosition is set to last point. We ignore the rest of the movement because it is not enough to contain one more point.
+                lastPosition = points.Last ();
+                temporaryPaintEntry.AddBrushPositions (points);
             }
+        }
+        public void PaintNotTriggered()
+        {
+            if ( isTriggeredLastFrame )
+                OnPaintFinal (temporaryPaintEntry);
+
+            isTriggeredLastFrame = false;
         }
 
         private static List<Vector3> DivideLineSegmentIntoPoints (Vector2 startPosition, Vector2 endPosition, float distanceBetweenPoints)

@@ -80,7 +80,7 @@ namespace SurfaceEdit
 
             Update ();
             Changed += (s, e) => Update ();
-            surface.Context.Changed += (s, e) => UnityUpdateRegistrator.Instance.RegisterOneTimeActionOnUpdate (Update);
+            surface.Context.Changed += (s, e) => UnityCallbackRegistrator.Instance.RegisterOneTimeActionOnUpdate (Update);
         }
 
         private void CreateSurfacePlane ()
