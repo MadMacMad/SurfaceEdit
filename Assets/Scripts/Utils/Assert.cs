@@ -20,6 +20,11 @@ namespace SurfaceEdit
             if ( obj is null || obj == null )
                 Debug.LogError (name + " is null");
         }
+        public static void NotNull<T> (T obj, string name) where T : class
+        {
+            if ( obj is null || obj == null )
+                throw new Exception (name + " is null");
+        }
         public static void ArgumentNotNull<T>(T obj, string name) where T : class
         {
             if ( obj is null || obj == null )
