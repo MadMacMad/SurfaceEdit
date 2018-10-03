@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SurfaceEdit.Brushes;
 using SurfaceEdit.SurfaceAffectors;
 using SurfaceEdit.TextureProviders;
@@ -12,13 +13,15 @@ namespace SurfaceEdit
 {
     public class Bootstrap : MonoBehaviour
     {
+        public LayerStackViewData layerStackViewData;
+
         [Header ("Main Settings")]
         public TMP_Dropdown textureResolutionDropdown;
         //public TMP_Dropdown surfaceWorldSizeDropdown;
         public Slider skyboxRotationSlider;
         public Slider skyboxBlurSlider;
 
-        [Header("UI Brush Bettings")]
+        [Header ("UI Brush Settings")]
         public Slider brushSizeSlider;
         public Slider brushPressureSlider;
         public Slider brushHardnessSlider;
@@ -29,11 +32,15 @@ namespace SurfaceEdit
         private UndoRedoManager undoRedoManager;
         private PaintingManager paintingManager;
 
-        private LayerStack layerStack;
+        private LayerStack stack;
+        private Layer activeLayer;
 
         private SurfaceVisualizer surfaceVisualizer;
-        
+
         private InputManager inputManager;
+
+        
+        private LayerStackPresenter layerStackPresenter;
 
         private void Start ()
         {
@@ -44,15 +51,16 @@ namespace SurfaceEdit
 
             SetupProgramContext ();
 
-            layerStack = new LayerStack (context);
+            stack = new LayerStack (context);
             SetupSurfaceVisualizer ();
 
             SetupInputManager ();
 
+            SetupUI ();
+
             TemporarySetupLayersManually ();
 
             SetupSkyboxManager ();
-            SetupUI ();
         }
 
         private void SetupProgramContext ()
@@ -63,9 +71,9 @@ namespace SurfaceEdit
                 new ImmutableTextureResolution (TextureResolutionEnum.x256));
         }
 
-        private void SetupSurfaceVisualizer()
+        private void SetupSurfaceVisualizer ()
         {
-            surfaceVisualizer = new SurfaceVisualizer (undoRedoManager, layerStack.ResultSurface);
+            surfaceVisualizer = new SurfaceVisualizer (undoRedoManager, stack.ResultSurface);
             surfaceVisualizer.DisplacementIntensity = .2f;
             surfaceVisualizer.TesselationMultiplier = 4;
             surfaceVisualizer.InvertNormal = true;
@@ -79,7 +87,7 @@ namespace SurfaceEdit
             var undoTrigger = new KeyCombination ()
                 .Ctrl ()
                 .Key (KeyCode.Z)
-                .AddTriggeredCallback(undoRedoManager.Undo);
+                .AddTriggeredCallback (undoRedoManager.Undo);
 
             inputManager.AddTrigger (undoTrigger);
 
@@ -87,43 +95,54 @@ namespace SurfaceEdit
                 .Ctrl ()
                 .Shift ()
                 .Key (KeyCode.Z)
-                .AddTriggeredCallback(undoRedoManager.Redo);
+                .AddTriggeredCallback (undoRedoManager.Redo);
 
             inputManager.AddTrigger (redoTrigger);
 
             var skyboxRotationTrigger = new KeyCombination ()
                 .Shift ()
                 .Key (KeyCode.Mouse0, KeyTriggerType.Press)
-                .AddTriggeredCallback(() =>
-                {
-                    var lastMousePosition = UnityMemorizer<Vector3>.Instance.GetValue ("mousePosition");
-                    var mousePosition = Input.mousePosition;
-                    var rotation = mousePosition.x - lastMousePosition.x;
-                    SkyboxManager.Instance.RotateSkyBoxIncremental (rotation);
-                });
+                .AddTriggeredCallback (() =>
+                 {
+                     var lastMousePosition = UnityMemorizer<Vector3>.Instance.GetValue ("mousePosition");
+                     var mousePosition = Input.mousePosition;
+                     var rotation = mousePosition.x - lastMousePosition.x;
+                     SkyboxManager.Instance.RotateSkyBoxIncremental (rotation);
+                 });
 
             inputManager.AddTrigger (skyboxRotationTrigger);
 
             var paintTrigger = new KeyCombination ()
                 .Key (KeyCode.Mouse0, KeyTriggerType.Press)
-                .AddTriggeredCallback(() =>
-                {
-                    bool isHit = Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out RaycastHit hit);
+                .AddTriggeredCallback (() =>
+                 {
+                     bool isHit = Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out RaycastHit hit);
 
-                    if ( isHit )
-                    {
-                        var point = new Vector2 (hit.point.x, hit.point.z);
-                        paintingManager.PaintTriggered (point);
-                    }
-                })
-                .AddNotTriggeredCallback(paintingManager.PaintNotTriggered);
+                     if ( isHit )
+                     {
+                         var point = new Vector2 (hit.point.x, hit.point.z);
+                         paintingManager.PaintTriggered (point);
+                     }
+                 })
+                .AddNotTriggeredCallback (paintingManager.PaintNotTriggered);
 
             inputManager.AddTrigger (paintTrigger);
+
+            var invertBrushColorTrigger = new KeyCombination ()
+                .Key (KeyCode.X)
+                .AddTriggeredCallback (() =>
+                 {
+                     var color = paintingManager.Brush.TintColor;
+                     var newColor = new Color (1f - color.r, 1f - color.g, 1f - color.b, color.a);
+                     paintingManager.Brush.TintColor = newColor;
+                 });
+
+            inputManager.AddTrigger (invertBrushColorTrigger);
         }
 
-        private void TemporarySetupLayersManually()
+        private void TemporarySetupLayersManually ()
         {
-            var layer1 = layerStack.CreateLayer ();
+            var layer1 = stack.CreateLayer ();
 
             var albedoFill1 = new TextureFillSurfaceAffector (context, Channel.Albedo, new ResourcesTextureProvider (context.TextureResolution, "Textures/Standard/Mud/Albedo"));
             layer1.AddAffector (albedoFill1);
@@ -134,7 +153,7 @@ namespace SurfaceEdit
             var heightFill1 = new TextureFillSurfaceAffector (context, Channel.Height, new ResourcesTextureProvider (context.TextureResolution, "Textures/Standard/Mud/Height"));
             layer1.AddAffector (heightFill1);
 
-            var layer2 = layerStack.CreateLayer ();
+            var layer2 = stack.CreateLayer ();
             layer2.BlendType = LayerBlendType.AlphaBlend;
 
             var albedoFill2 = new TextureFillSurfaceAffector (context, Channel.Albedo, new ResourcesTextureProvider (context.TextureResolution, "Textures/Standard/Bricks/Albedo"));
@@ -165,84 +184,70 @@ namespace SurfaceEdit
             SkyboxManager.Instance.SetSkyboxCubeMap (Resources.Load ("Textures/Cubemaps/DefaultCubeMap") as Cubemap);
         }
 
-        private void SetupUI()
+        private void SetupUI ()
         {
             SetupBrushSettings ();
             SetupMainSettings ();
 
-            void SetupBrushSettings()
+            layerStackPresenter = new LayerStackPresenter (layerStackViewData, stack);
+
+            void SetupBrushSettings ()
             {
-                Assert.SoftNotNull (brushSizeSlider, nameof (brushSizeSlider));
-                Assert.SoftNotNull (brushPressureSlider, nameof (brushPressureSlider));
-                Assert.SoftNotNull (brushHardnessSlider, nameof (brushHardnessSlider));
-                Assert.SoftNotNull (brushColorSlider, nameof (brushColorSlider));
+                Assert.NotNull (brushSizeSlider, nameof (brushSizeSlider));
+                Assert.NotNull (brushPressureSlider, nameof (brushPressureSlider));
+                Assert.NotNull (brushHardnessSlider, nameof (brushHardnessSlider));
+                Assert.NotNull (brushColorSlider, nameof (brushColorSlider));
 
-                if ( brushSizeSlider != null )
-                {
-                    brushSizeSlider.value = paintingManager.Brush.PercentageSize.x;
-                    brushSizeSlider.onValueChanged.AddListener (v => paintingManager.Brush.PercentageSize = new Vector2 (v, v));
-                }
+                brushSizeSlider.value = paintingManager.Brush.PercentageSize.x;
+                brushSizeSlider.onValueChanged.AddListener (v => paintingManager.Brush.PercentageSize = new Vector2 (v, v));
 
-                if ( brushPressureSlider != null )
+                brushPressureSlider.value = paintingManager.Brush.TintColor.a;
+                brushPressureSlider.onValueChanged.AddListener (v =>
                 {
-                    brushPressureSlider.value = paintingManager.Brush.TintColor.a;
-                    brushPressureSlider.onValueChanged.AddListener (v =>
-                    {
-                        var color = paintingManager.Brush.TintColor;
-                        color.a = v;
-                        paintingManager.Brush.TintColor = color;
-                    });
-                }
+                    var color = paintingManager.Brush.TintColor;
+                    color.a = v;
+                    paintingManager.Brush.TintColor = color;
+                });
+                
+                brushHardnessSlider.value = ( paintingManager.Brush as DefaultRoundBrush ).Hardness;
+                brushHardnessSlider.onValueChanged.AddListener (v => ( paintingManager.Brush as DefaultRoundBrush ).Hardness = v);
+                
+                brushColorSlider.value = paintingManager.Brush.TintColor.r;
+                paintingManager.Brush.PropertyChanged += (s, e) =>
+                {
+                    if ( e.propertyName == "TintColor" )
+                        brushColorSlider.value = paintingManager.Brush.TintColor.r;
+                };
+                brushColorSlider.onValueChanged.AddListener (v =>
+                {
+                    var alpha = paintingManager.Brush.TintColor.a;
+                    var color = new Color (v, v, v, alpha);
+                    paintingManager.Brush.TintColor = color;
+                });
 
-                if ( brushHardnessSlider != null )
-                {
-                    brushHardnessSlider.value = ( paintingManager.Brush as DefaultRoundBrush ).Hardness;
-                    brushHardnessSlider.onValueChanged.AddListener (v => ( paintingManager.Brush as DefaultRoundBrush ).Hardness = v);
-                }
-
-                if ( brushColorSlider != null )
-                {
-                    brushColorSlider.value = paintingManager.Brush.TintColor.r;
-                    brushColorSlider.onValueChanged.AddListener (v =>
-                    {
-                        var alpha = paintingManager.Brush.TintColor.a;
-                        var color = new Color (v, v, v, alpha);
-                        paintingManager.Brush.TintColor = color;
-                    });
-                }
             }
-            void SetupMainSettings()
+            void SetupMainSettings ()
             {
-                Assert.SoftNotNull (textureResolutionDropdown, nameof (textureResolutionDropdown));
-                //Assert.SoftNotNull (surfaceWorldSizeDropdown, nameof (surfaceWorldSizeDropdown));
-                Assert.SoftNotNull (skyboxRotationSlider, nameof (skyboxRotationSlider));
-                Assert.SoftNotNull (skyboxBlurSlider, nameof (skyboxBlurSlider));
+                Assert.NotNull (textureResolutionDropdown, nameof (textureResolutionDropdown));
+                //Assert.NotNull (surfaceWorldSizeDropdown, nameof (surfaceWorldSizeDropdown));
+                Assert.NotNull (skyboxRotationSlider, nameof (skyboxRotationSlider));
+                Assert.NotNull (skyboxBlurSlider, nameof (skyboxBlurSlider));
 
-                if (textureResolutionDropdown != null)
-                {
-                    textureResolutionDropdown.value = (int)Mathf.Log (context.TextureResolution.AsInt, 2) - 9;
-                    textureResolutionDropdown.onValueChanged.AddListener (v =>
-                     {
-                         var resolution = (TextureResolutionEnum)(Mathf.Pow(2, v + 9));
-                         context.TextureResolution.SetResolution (resolution);
-                     });
-                }
+                textureResolutionDropdown.value = (int)Mathf.Log (context.TextureResolution.AsInt, 2) - 9;
+                textureResolutionDropdown.onValueChanged.AddListener (v =>
+                 {
+                     var resolution = (TextureResolutionEnum)( Mathf.Pow (2, v + 9) );
+                     context.TextureResolution.SetResolution (resolution);
+                 });
+                
+                skyboxRotationSlider.value = Mathf.Clamp01 (SkyboxManager.Instance.Rotation / 360f);
+                SkyboxManager.Instance.OnRotate += ()
+                    => skyboxRotationSlider.value = Mathf.Clamp01 (SkyboxManager.Instance.Rotation / 360f);
+                skyboxRotationSlider.onValueChanged.AddListener (v => SkyboxManager.Instance.RotateSkybox (v * 360));
+                
+                skyboxBlurSlider.value = SkyboxManager.Instance.Blurriness;
+                skyboxBlurSlider.onValueChanged.AddListener (v => SkyboxManager.Instance.SetSkyboxBlurAmount (v));
 
-                if (skyboxRotationSlider != null)
-                {
-                    skyboxRotationSlider.value = Mathf.Clamp01(SkyboxManager.Instance.Rotation / 360f);
-
-                    SkyboxManager.Instance.OnRotate += ()
-                        => skyboxRotationSlider.value = Mathf.Clamp01 (SkyboxManager.Instance.Rotation / 360f);
-
-                    skyboxRotationSlider.onValueChanged.AddListener (v => SkyboxManager.Instance.RotateSkybox (v * 360));
-                }
-
-                if (skyboxBlurSlider != null)
-                {
-                    skyboxBlurSlider.value = SkyboxManager.Instance.Blurriness;
-                    skyboxBlurSlider.onValueChanged.AddListener (v => SkyboxManager.Instance.SetSkyboxBlurAmount (v));
-                }
             }
         }
     }
