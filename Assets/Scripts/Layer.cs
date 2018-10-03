@@ -10,7 +10,9 @@ namespace SurfaceEdit
 
         protected void NotifyNeedRender (RenderContext renderContext)
             => NeedRender?.Invoke (this, new NeedRenderEventArgs(renderContext));
-        
+     
+        public string ID { get; private set; }
+
         public ProgramContext Context { get; private set; }
 
         public LayerBlendType BlendType
@@ -31,6 +33,8 @@ namespace SurfaceEdit
             Assert.ArgumentNotNull (context, nameof (context));
 
             Context = context;
+
+            ID = Guid.NewGuid ().ToString ();
         }
         
         public void Process(Surface surface, RenderContext renderContext)

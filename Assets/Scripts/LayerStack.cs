@@ -7,12 +7,17 @@ namespace SurfaceEdit
     {
         public ProgramContext Context { get; private set; }
 
+        public event Action<Layer> OnLayerCreate;
+        public event Action<Layer> OnLayerDelete;
+
         public IReadOnlyCollection<Layer> Layers => layers.AsReadOnly ();
         private List<Layer> layers = new List<Layer> ();
 
         public Surface ResultSurface { get; private set; }
         private Surface layerSurface;
-        
+
+        private bool renderRequestedThisFrame = false;
+
         public LayerStack (ProgramContext context)
             : base (context?.UndoRedoManager)
         {
@@ -29,13 +34,33 @@ namespace SurfaceEdit
         public Layer CreateLayer ()
         {
             var layer = new Layer (Context);
-            layer.NeedRender += (s, e) => RequestRender(s, e.renderContext);
+            layer.NeedRender += RequestRenderByLayer;
             layers.Add (layer);
             RequestRender (this, new RenderContext(Context.Channels.ToImmutable()));
+            OnLayerCreate?.Invoke (layer);
             return layer;
         }
         
-        private bool renderRequestedThisFrame = false;
+        public void DeleteLayer(Layer layer)
+        {
+            if ( layer == null )
+                return;
+
+            if ( !layers.Contains (layer) )
+                return;
+
+            layer.NeedRender -= RequestRenderByLayer;
+            layer.Dispose ();
+
+            layers.Remove (layer);
+
+            RequestRender (this, new RenderContext (Context.Channels.ToImmutable ()));
+            OnLayerDelete?.Invoke (layer);
+        }
+
+        private void RequestRenderByLayer (object sender, NeedRenderEventArgs eventArgs)
+            => RequestRender (sender, eventArgs.renderContext);
+        
 
         public void RequestRender (object sender, RenderContext renderContext)
         {

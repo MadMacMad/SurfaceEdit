@@ -21,7 +21,7 @@ namespace SurfaceEdit
 
         private Toggle toggle;
 
-        private void Start ()
+        private void OnEnable ()
         {
             toggle = GetComponent<Toggle> ();
             toggle.onValueChanged.AddListener (OnToggleValueChanged);
