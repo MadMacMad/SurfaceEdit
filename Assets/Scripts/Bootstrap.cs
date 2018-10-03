@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SurfaceEdit.Brushes;
 using SurfaceEdit.SurfaceAffectors;
 using SurfaceEdit.TextureProviders;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,13 @@ namespace SurfaceEdit
 {
     public class Bootstrap : MonoBehaviour
     {
+        [Header ("Main Settings")]
+        public TMP_Dropdown textureResolutionDropdown;
+        //public TMP_Dropdown surfaceWorldSizeDropdown;
+        public Slider skyboxRotationSlider;
+        public Slider skyboxBlurSlider;
+
+        [Header("UI Brush Bettings")]
         public Slider brushSizeSlider;
         public Slider brushPressureSlider;
         public Slider brushHardnessSlider;
@@ -159,43 +167,82 @@ namespace SurfaceEdit
 
         private void SetupUI()
         {
-            Assert.SoftNotNull (brushSizeSlider, nameof (brushSizeSlider));
-            Assert.SoftNotNull (brushPressureSlider, nameof (brushPressureSlider));
-            Assert.SoftNotNull (brushHardnessSlider, nameof (brushHardnessSlider));
-            Assert.SoftNotNull (brushColorSlider, nameof (brushColorSlider));
+            SetupBrushSettings ();
+            SetupMainSettings ();
 
-            if ( brushSizeSlider != null )
+            void SetupBrushSettings()
             {
-                brushSizeSlider.value = paintingManager.Brush.PercentageSize.x;
-                brushSizeSlider.onValueChanged.AddListener (v => paintingManager.Brush.PercentageSize = new Vector2 (v, v));
-            }
+                Assert.SoftNotNull (brushSizeSlider, nameof (brushSizeSlider));
+                Assert.SoftNotNull (brushPressureSlider, nameof (brushPressureSlider));
+                Assert.SoftNotNull (brushHardnessSlider, nameof (brushHardnessSlider));
+                Assert.SoftNotNull (brushColorSlider, nameof (brushColorSlider));
 
-            if ( brushPressureSlider != null )
-            {
-                brushPressureSlider.value = paintingManager.Brush.TintColor.a;
-                brushPressureSlider.onValueChanged.AddListener (v =>
+                if ( brushSizeSlider != null )
                 {
-                    var color = paintingManager.Brush.TintColor;
-                    color.a = v;
-                    paintingManager.Brush.TintColor = color;
-                });
-            }
+                    brushSizeSlider.value = paintingManager.Brush.PercentageSize.x;
+                    brushSizeSlider.onValueChanged.AddListener (v => paintingManager.Brush.PercentageSize = new Vector2 (v, v));
+                }
 
-            if ( brushHardnessSlider != null )
-            {
-                brushHardnessSlider.value = (paintingManager.Brush as DefaultRoundBrush ).Hardness;
-                brushHardnessSlider.onValueChanged.AddListener (v => ( paintingManager.Brush as DefaultRoundBrush ).Hardness = v);
-            }
-
-            if ( brushColorSlider != null )
-            {
-                brushColorSlider.value = paintingManager.Brush.TintColor.r;
-                brushColorSlider.onValueChanged.AddListener (v =>
+                if ( brushPressureSlider != null )
                 {
-                    var alpha = paintingManager.Brush.TintColor.a;
-                    var color = new Color (v, v, v, alpha);
-                    paintingManager.Brush.TintColor = color;
-                });
+                    brushPressureSlider.value = paintingManager.Brush.TintColor.a;
+                    brushPressureSlider.onValueChanged.AddListener (v =>
+                    {
+                        var color = paintingManager.Brush.TintColor;
+                        color.a = v;
+                        paintingManager.Brush.TintColor = color;
+                    });
+                }
+
+                if ( brushHardnessSlider != null )
+                {
+                    brushHardnessSlider.value = ( paintingManager.Brush as DefaultRoundBrush ).Hardness;
+                    brushHardnessSlider.onValueChanged.AddListener (v => ( paintingManager.Brush as DefaultRoundBrush ).Hardness = v);
+                }
+
+                if ( brushColorSlider != null )
+                {
+                    brushColorSlider.value = paintingManager.Brush.TintColor.r;
+                    brushColorSlider.onValueChanged.AddListener (v =>
+                    {
+                        var alpha = paintingManager.Brush.TintColor.a;
+                        var color = new Color (v, v, v, alpha);
+                        paintingManager.Brush.TintColor = color;
+                    });
+                }
+            }
+            void SetupMainSettings()
+            {
+                Assert.SoftNotNull (textureResolutionDropdown, nameof (textureResolutionDropdown));
+                //Assert.SoftNotNull (surfaceWorldSizeDropdown, nameof (surfaceWorldSizeDropdown));
+                Assert.SoftNotNull (skyboxRotationSlider, nameof (skyboxRotationSlider));
+                Assert.SoftNotNull (skyboxBlurSlider, nameof (skyboxBlurSlider));
+
+                if (textureResolutionDropdown != null)
+                {
+                    textureResolutionDropdown.value = (int)Mathf.Log (context.TextureResolution.AsInt, 2) - 9;
+                    textureResolutionDropdown.onValueChanged.AddListener (v =>
+                     {
+                         var resolution = (TextureResolutionEnum)(Mathf.Pow(2, v + 9));
+                         context.TextureResolution.SetResolution (resolution);
+                     });
+                }
+
+                if (skyboxRotationSlider != null)
+                {
+                    skyboxRotationSlider.value = Mathf.Clamp01(SkyboxManager.Instance.Rotation / 360f);
+
+                    SkyboxManager.Instance.OnRotate += ()
+                        => skyboxRotationSlider.value = Mathf.Clamp01 (SkyboxManager.Instance.Rotation / 360f);
+
+                    skyboxRotationSlider.onValueChanged.AddListener (v => SkyboxManager.Instance.RotateSkybox (v * 360));
+                }
+
+                if (skyboxBlurSlider != null)
+                {
+                    skyboxBlurSlider.value = SkyboxManager.Instance.Blurriness;
+                    skyboxBlurSlider.onValueChanged.AddListener (v => SkyboxManager.Instance.SetSkyboxBlurAmount (v));
+                }
             }
         }
     }

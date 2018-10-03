@@ -1,9 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace SurfaceEdit
 {
     public class SkyboxManager : Singleton<SkyboxManager>
     {
+        public event Action OnRotate;
+
+        public float Rotation => skyboxMaterial.GetVector ("_Euler").y;
+        public float Blurriness => skyboxMaterial.GetFloat ("_LodLevel") / 10f;
+
         public GameObject light;
 
         private Material skyboxMaterial;
@@ -12,7 +18,7 @@ namespace SurfaceEdit
         {
             skyboxMaterial = new Material (Shader.Find ("SkyboxPlus/Cubemap"));
             RenderSettings.skybox = skyboxMaterial;
-            SetSkyboxBlurAmount (1.5f);
+            SetSkyboxBlurAmount (.2f);
         }
 
         public void RotateSkyBoxIncremental (float rotation, bool rotateLight = true)
@@ -20,6 +26,11 @@ namespace SurfaceEdit
 
         public void RotateSkybox(float rotation, bool rotateLight = true)
         {
+            if ( rotation > 360 )
+                rotation = rotation % 360;
+            else if ( rotation < 0 )
+                rotation = 360 - Mathf.Abs (rotation) % 360;
+
             var rotationVector = new Vector3 (0, rotation, 0);
             var quaterion = Quaternion.Euler (rotationVector.x, rotationVector.y, rotationVector.z);
             var matrix = Matrix4x4.TRS (Vector3.zero, quaterion, Vector3.one);
@@ -30,6 +41,8 @@ namespace SurfaceEdit
 
             if ( light != null )
                 light.transform.rotation = quaterion;
+
+            OnRotate?.Invoke ();
         }
 
         public void SetSkyboxCubeMap (Cubemap cubemap)
@@ -43,12 +56,12 @@ namespace SurfaceEdit
         
         public void SetSkyboxBlurAmount(float amount)
         {
-            amount = Mathf.Clamp (amount, 0, 10);
+            amount = Mathf.Lerp (0, 10, amount);
             skyboxMaterial.SetFloat ("_LodLevel", amount);
         }
         public void SetSkyboxExposure(float amount)
         {
-            amount = Mathf.Clamp (amount, 0, 8);
+            amount = Mathf.Lerp (0, 8, amount);
 
             skyboxMaterial.SetFloat ("_Exposure", amount);
         }
