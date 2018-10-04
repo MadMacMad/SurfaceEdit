@@ -61,12 +61,25 @@ namespace SurfaceEdit
             {
                 affector.NeedRender -= OnAffectorNeedRender;
                 affectors.Remove(affector);
+                affector.Dispose ();
                 NotifyNeedRender (new RenderContext(affector.AffectedChannels.ToImmutable(), RenderCovering.Full));
             }
         }
 
+        public void Reset()
+        {
+            foreach(var affector in affectors)
+            {
+                affector.NeedRender -= OnAffectorNeedRender;
+                affector.Dispose ();
+            }
+            affectors.Clear ();
+            NotifyNeedRender (new RenderContext (Context.Channels.ToImmutable (), RenderCovering.Full));
+        }
+
         private void OnAffectorNeedRender (object sender, NeedRenderEventArgs eventArgs)
             => NotifyNeedRender (eventArgs.renderContext);
+
 
         public void Dispose()
         {

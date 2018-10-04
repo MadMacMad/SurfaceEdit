@@ -19,11 +19,7 @@ namespace SurfaceEdit.Presenters
         private ContextMenuViewData data;
 
         private GameObject menu;
-
-        private bool anyKeyPressed = false;
-        private bool menuItemActivatedLastFrame = false;
-        private bool firstFrame = true;
-
+        
         public ContextMenuPresenter(ContextMenuViewData data, Vector3 position)
         {
             Assert.ArgumentNotNull (data, nameof (data));
@@ -51,7 +47,6 @@ namespace SurfaceEdit.Presenters
             {
                 callback ();
                 GameObject.Destroy (menu);
-                menuItemActivatedLastFrame = true;
                 Dispose ();
             });
         }

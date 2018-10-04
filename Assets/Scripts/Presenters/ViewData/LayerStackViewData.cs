@@ -13,6 +13,7 @@ namespace SurfaceEdit
         public GameObject layerPrefab;
         public Transform layersParent;
         public Button createLayerButton;
+        public Button createAffectorButton;
         public ToggleGroup layersToggleGroup;
     }
 }

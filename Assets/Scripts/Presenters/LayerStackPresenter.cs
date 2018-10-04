@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using SurfaceEdit.SurfaceAffectors;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +30,7 @@ namespace SurfaceEdit.Presenters
             this.contextMenuData = contextMenuData;
             this.stack = stack;
 
-            layerData.createLayerButton.onClick.AddListener (() => stack.CreateLayer());
+            layerData.createLayerButton.onClick.AddListener (() => AddAffector(activeLayer));
             stack.OnLayerCreate += OnLayerCreate;
             stack.OnLayerDelete += OnLayerDelete;
         }
@@ -57,6 +58,8 @@ namespace SurfaceEdit.Presenters
              {
                  var menu = new ContextMenuPresenter (contextMenuData, Input.mousePosition);
                  menu.AddMenuItem ("Delete", () => stack.DeleteLayer (layer));
+                 menu.AddMenuItem ("Reset", () => layer.Reset());
+                 menu.AddMenuItem ("Add Affector", () => AddAffector(layer));
              });
 
             var deleteButton = go.GetComponentsInChildren<Button> ().Where (b => b.gameObject.name == "Delete").First ();
@@ -72,6 +75,14 @@ namespace SurfaceEdit.Presenters
 
             if ( layerGOs.Count > 0 )
                 layerGOs.First ().Value.isOn = true;
+        }
+
+        private void AddAffector(Layer layer)
+        {
+            if ( layer == null )
+                return;
+
+            layer.AddAffector (new DummySurfaceAffector (stack.Context, stack.Context.Channels.Clone()));
         }
     }
 }
