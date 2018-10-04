@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace SurfaceEdit
 {
@@ -148,6 +149,14 @@ namespace SurfaceEdit
         {
             OverrideDuplicates,
             IgnoreDuplicates
+        }
+
+        public static void AddListener (this EventTrigger trigger, EventTriggerType eventType, Action<PointerEventData> listener)
+        {
+            var entry = new EventTrigger.Entry ();
+            entry.eventID = eventType;
+            entry.callback.AddListener (data => listener.Invoke ((PointerEventData)data));
+            trigger.triggers.Add (entry);
         }
     }
 }
