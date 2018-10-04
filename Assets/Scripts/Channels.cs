@@ -76,6 +76,9 @@ namespace SurfaceEdit
             }
         }
 
+        public Channels Clone ()
+            => new Channels (list);
+
         public ImmutableChannels ToImmutable ()
             => new ImmutableChannels (list);
 
