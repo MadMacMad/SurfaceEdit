@@ -15,13 +15,13 @@ namespace SurfaceEdit.TextureProviders
         {
             switch (textureChannel)
             {
-                case Channel.Albedo:             return ProvideSolidColorRenderTexture (Color.blue);
+                case Channel.Albedo:             return ProvideSolidColorRenderTexture (Color.white);
                 case Channel.Normal:             return ProvideSolidColorRenderTexture (new Color32 (128, 128, 255, 255));
                 case Channel.Metallic:           return ProvideSolidColorRenderTexture (Color.black);
                 case Channel.Roughness:          return ProvideSolidColorRenderTexture (Color.white);
                 case Channel.Height:             return ProvideSolidColorRenderTexture (new Color(.5f, .5f, .5f, 1));
                 case Channel.Mask:               return ProvideSolidColorRenderTexture (Color.black);
-                default:                                return ProvideSolidColorRenderTexture (Color.white);
+                default:                         return ProvideSolidColorRenderTexture (Color.white);
             }
         }
         private RenderTexture ProvideSolidColorRenderTexture(Color color)
