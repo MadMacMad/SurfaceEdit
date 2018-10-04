@@ -24,7 +24,7 @@ namespace SurfaceEdit
             var channels = new List<Channel> ();
             channels.AddRange(bottomSurface.Context.Channels.List);
 
-            Assert.ArgumentTrue (channels.Except (topSurface.Context.Channels.List.ToList()).Count () == 0, "Surfaces channels are not equlas");
+            Assert.ArgumentTrue (channels.Except (topSurface.Context.Channels.List.ToList()).Count () == 0, "Surfaces channels are not equals");
 
             if ( channels.Contains(Channel.Mask))
             {
