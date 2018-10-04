@@ -426,7 +426,7 @@ MonoBehaviour:
     m_Top: 15
     m_Bottom: 15
   m_ChildAlignment: 0
-  m_Spacing: 10
+  m_Spacing: 5
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -2992,6 +2992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerStackViewData: {fileID: 1943812059}
+  layerContextMenuViewData: {fileID: 1101721870}
   textureResolutionDropdown: {fileID: 1094909489}
   skyboxRotationSlider: {fileID: 1760204618}
   skyboxBlurSlider: {fileID: 1632050043}
@@ -3776,6 +3777,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b743370ac3e4ec2a1668f5455a8ef8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1101721869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1101721871}
+  - component: {fileID: 1101721870}
+  m_Layer: 0
+  m_Name: LayerContextMenuViewData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1101721870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101721869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728fe96deb128384e8ab7db10bbcc8cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contextMenuPrefab: {fileID: 884867406631099378, guid: 419c3f2c0fb8d424ebc7f85bd5c93fdc, type: 3}
+  contextMenuButtonPrefab: {fileID: 7373093056038965058, guid: 13a3d74f700c3a240bb0b51da5f54f60, type: 3}
+  canvas: {fileID: 1934395278}
+--- !u!4 &1101721871
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101721869}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1180969086 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3231257889716503473, guid: c6d74cae5cb617e48bd86033606b3da0, type: 3}
@@ -6400,7 +6447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a98a867e5877404d85c1e70b4a2d058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layerControlPrefab: {fileID: 8794497955371285133, guid: da6b41b2fdc83b44384a6116e70bbfae, type: 3}
+  layerPrefab: {fileID: 8794497955371285133, guid: da6b41b2fdc83b44384a6116e70bbfae, type: 3}
   layersParent: {fileID: 272516970}
   createLayerButton: {fileID: 1921968512}
   layersToggleGroup: {fileID: 272516973}

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SurfaceEdit
+namespace SurfaceEdit.Presenters
 {
     public sealed class LayerStackPresenter
     {
@@ -16,17 +16,20 @@ namespace SurfaceEdit
         private Dictionary<string, Toggle> layerGOs = new Dictionary<string, Toggle> ();
         private Layer activeLayer;
 
-        private LayerStackViewData data;
+        private LayerStackViewData layerData;
+        private ContextMenuViewData contextMenuData;
 
-        public LayerStackPresenter (LayerStackViewData data, LayerStack stack)
+        public LayerStackPresenter (LayerStackViewData layerData, ContextMenuViewData contextMenuData, LayerStack stack)
         {
-            Assert.NotNull (data, nameof (data));
+            Assert.NotNull (layerData, nameof (layerData));
+            Assert.NotNull (contextMenuData, nameof (contextMenuData));
             Assert.NotNull (stack, nameof (stack));
 
-            this.data = data;
+            this.layerData = layerData;
+            this.contextMenuData = contextMenuData;
             this.stack = stack;
 
-            data.createLayerButton.onClick.AddListener (() => stack.CreateLayer());
+            layerData.createLayerButton.onClick.AddListener (() => stack.CreateLayer());
             stack.OnLayerCreate += OnLayerCreate;
             stack.OnLayerDelete += OnLayerDelete;
         }
@@ -38,14 +41,23 @@ namespace SurfaceEdit
 
             activeLayer = layer;
 
+            foreach ( var pair in layerGOs )
+                pair.Value.isOn = false;
+
             layerGOs[layer.ID].isOn = true;
         }
         
         private void OnLayerCreate(Layer layer)
         {
-            var go = GameObject.Instantiate (data.layerControlPrefab, data.layersParent);
+            var go = GameObject.Instantiate (layerData.layerPrefab, layerData.layersParent);
             var toggle = go.GetComponent<Toggle> ();
-            toggle.group = data.layersToggleGroup;
+            toggle.group = layerData.layersToggleGroup;
+
+            go.GetComponent<MouseClickEventSender> ().OnRightClicked.AddListener(() =>
+             {
+                 var menu = new ContextMenuPresenter (contextMenuData, Input.mousePosition);
+                 menu.AddMenuItem ("Delete", () => stack.DeleteLayer (layer));
+             });
 
             var deleteButton = go.GetComponentsInChildren<Button> ().Where (b => b.gameObject.name == "Delete").First ();
             deleteButton.onClick.AddListener (() => stack.DeleteLayer(layer));

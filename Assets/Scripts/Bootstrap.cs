@@ -5,6 +5,7 @@ using System.Linq;
 using SurfaceEdit.Brushes;
 using SurfaceEdit.SurfaceAffectors;
 using SurfaceEdit.TextureProviders;
+using SurfaceEdit.Presenters;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace SurfaceEdit
     public class Bootstrap : MonoBehaviour
     {
         public LayerStackViewData layerStackViewData;
+        public ContextMenuViewData layerContextMenuViewData;
 
         [Header ("Main Settings")]
         public TMP_Dropdown textureResolutionDropdown;
@@ -68,7 +70,7 @@ namespace SurfaceEdit
             context = new ProgramContext (undoRedoManager,
                 new Channels (new List<Channel> () { Channel.Albedo, Channel.Normal, Channel.Height, Channel.Mask }),
                 new TextureResolution (TextureResolutionEnum.x2048),
-                new ImmutableTextureResolution (TextureResolutionEnum.x256));
+                new ImmutableTextureResolution (TextureResolutionEnum.x512));
         }
 
         private void SetupSurfaceVisualizer ()
@@ -189,7 +191,7 @@ namespace SurfaceEdit
             SetupBrushSettings ();
             SetupMainSettings ();
 
-            layerStackPresenter = new LayerStackPresenter (layerStackViewData, stack);
+            layerStackPresenter = new LayerStackPresenter (layerStackViewData, layerContextMenuViewData, stack);
 
             void SetupBrushSettings ()
             {

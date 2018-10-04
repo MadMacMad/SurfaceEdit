@@ -10,7 +10,7 @@ namespace SurfaceEdit
 {
     public sealed class LayerStackViewData : MonoBehaviour
     {
-        public GameObject layerControlPrefab;
+        public GameObject layerPrefab;
         public Transform layersParent;
         public Button createLayerButton;
         public ToggleGroup layersToggleGroup;
