@@ -6,7 +6,10 @@ namespace SurfaceEdit
     {
         private Vector2Int adjustedTextureSize;
 
-        public ComputeRescaleStupid (RenderTexture texture, Vector2Int adjustedTextureSize) : base("Shaders/Compute/RescaleStupid")
+        public ComputeRescaleStupid (RenderTexture texture, Vector2Int adjustedTextureSize) : this(texture as Texture, adjustedTextureSize) { }
+        public ComputeRescaleStupid (Texture2D texture, Vector2Int adjustedTextureSize) : this(texture as Texture, adjustedTextureSize) { }
+
+        private ComputeRescaleStupid (Texture texture, Vector2Int adjustedTextureSize) : base ("Shaders/Compute/RescaleStupid")
         {
             Assert.ArgumentNotNull (texture, nameof (texture));
 
