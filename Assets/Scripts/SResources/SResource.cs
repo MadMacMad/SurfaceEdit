@@ -8,7 +8,7 @@ namespace SurfaceEdit
         public string Name { get; private set; }
         public abstract Texture2D PreviewTexture { get; protected set; }
 
-        protected SResource (string name)
+        public SResource (string name)
         {
             Assert.ArgumentNotNullOrEmptry (name, nameof (name));
             Name = name;
