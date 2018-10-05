@@ -1,4 +1,4 @@
-### SurfaceEdit is an open-source software for processing photo scanned PBR surfaces.  
+### SurfaceEdit is an open-source software for processing photo-scanned PBR surfaces.  
 #### This processing includes:  
 1. Selecting the size of the surface in meters.  
 1. Setting the scale of the raw surface, immediately after baking, according to the size in the real world and the selected surface size.  
