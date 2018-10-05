@@ -30,7 +30,14 @@ namespace SurfaceEdit.Presenters
             this.contextMenuData = contextMenuData;
             this.stack = stack;
 
-            layerData.createLayerButton.onClick.AddListener (() => AddAffector(activeLayer));
+            layerData.createLayerButton.onClick.AddListener (() => stack.CreateLayer());
+
+            layerData.createAffectorButton.onClick.AddListener (() =>
+            {
+                if ( activeLayer != null )
+                    AddAffector (activeLayer);
+            });
+
             stack.OnLayerCreate += OnLayerCreate;
             stack.OnLayerDelete += OnLayerDelete;
         }
