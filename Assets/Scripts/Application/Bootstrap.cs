@@ -191,7 +191,7 @@ namespace SurfaceEdit
             var heightFill2 = new TextureFillAffector (context, Channel.Height, resourceManager.GetResources<Texture2DResource> ("Height")[1]);
             layer2.AddAffector (heightFill2);
 
-            var paintTextureAffector = new PaintAffector (context, Channel.Mask);
+            var paintTextureAffector = new PaintAffector (context, Channel.Mask, LayerMask.NameToLayer("RendererStation"));
 
             layer2.AddAffector (paintTextureAffector);
 

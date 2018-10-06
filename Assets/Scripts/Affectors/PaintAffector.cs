@@ -13,9 +13,9 @@ namespace SurfaceEdit.Affectors
 
         private PaintEntry temporaryPaintEntry;
 
-        public PaintAffector(ApplicationContext context, Channels affectedChannels) : base (context, affectedChannels)
+        public PaintAffector(ApplicationContext context, Channels affectedChannels, int rendererStationLayerID) : base (context, affectedChannels)
         {
-            rendererStation = new RendererStation (Settings.rendererStationLayerID);
+            rendererStation = new RendererStation (rendererStationLayerID);
         }
 
         public void PaintTemporary(PaintEntry entry) => Paint_Internal (entry, true);
