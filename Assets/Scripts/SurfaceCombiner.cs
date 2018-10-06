@@ -11,10 +11,10 @@ namespace SurfaceEdit
 
         static SurfaceCombiner()
         {
-            whiteTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), Color.white, false).Provide();
+            whiteTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), Color.white).Texture;
         }
 
-        public static void CombineSurfaces(ProgramContext context, RenderContext renderContext, Surface bottomSurface, Surface topSurface, LayerBlendType blendType)
+        public static void CombineSurfaces(ApplicationContext context, RenderContext renderContext, Surface bottomSurface, Surface topSurface, LayerBlendType blendType)
         {
             Assert.ArgumentNotNull (context, nameof (context));
             Assert.ArgumentNotNull (renderContext, nameof (renderContext));
@@ -67,7 +67,7 @@ namespace SurfaceEdit
             }
         }
 
-        private static void AlphaBlend (ProgramContext context, RenderContext renderContext, RenderTexture bottomTexture, RenderTexture topTexture, RenderTexture mask)
+        private static void AlphaBlend (ApplicationContext context, RenderContext renderContext, RenderTexture bottomTexture, RenderTexture topTexture, RenderTexture mask)
         {
             var compute = new ComputeCombineAlphaBlend (bottomTexture, topTexture, mask);
 

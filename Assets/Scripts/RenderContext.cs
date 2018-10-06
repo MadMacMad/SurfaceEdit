@@ -24,7 +24,7 @@ namespace SurfaceEdit
 
     public sealed class ChunksToRender
     {
-        public ProgramContext Context { get; private set; }
+        public ApplicationContext Context { get; private set; }
         
         public IReadOnlyCollection<Vector2Int> PixelPositions { get; private set; }
         private List<Vector2Int> pixelPositions = new List<Vector2Int>();
@@ -36,7 +36,7 @@ namespace SurfaceEdit
         private int textureResolution;
         
         // TODO: Fix this. Chunk positions may degrade if you change texture resolution many times
-        public ChunksToRender (ProgramContext context)
+        public ChunksToRender (ApplicationContext context)
         {
             Assert.ArgumentNotNull (context, nameof (context));
 

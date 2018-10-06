@@ -7,7 +7,7 @@ namespace SurfaceEdit.TextureProviders
     {
         private string textureLink;
 
-        public WebTextureProvider (TextureResolution resolution, string textureLink, bool cacheTexture = true) : base (resolution, cacheTexture)
+        public WebTextureProvider (TextureResolution resolution, string textureLink) : base (resolution)
         {
             this.textureLink = textureLink;
         }

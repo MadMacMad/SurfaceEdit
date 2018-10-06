@@ -20,7 +20,7 @@ namespace SurfaceEdit
         private static Shader textureShader = Shader.Find ("SurfaceEdit/Advanced/TesselationDisplacementTextureShader");
 
         private static RenderTexture blankHeightTexture =
-            new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x32),Channel.Height, false) .Provide ();
+            new BlankChannelTextureProvider (new TextureResolution (TextureResolutionEnum.x32),Channel.Height).Texture;
 
         public float DisplacementIntensity
         {
@@ -89,7 +89,7 @@ namespace SurfaceEdit
 
             surfacePlane.transform.Rotate (90, 0, 0);
 
-            surfacePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildPlane (Vector2.one, new Vector2Int (128, 128)).ConvertToMesh ();
+            surfacePlane.AddComponent<MeshFilter> ().mesh = MeshUtility.BuildPlane (Vector2.one, new Vector2Int (128, 128)).ConvertToMesh ();
 
             surfacePlaneRenderer = surfacePlane.AddComponent<MeshRenderer> ();
         }
@@ -107,9 +107,9 @@ namespace SurfaceEdit
             collider.size = new Vector3 (1, 1, .01f);
             collider.center = new Vector3 (.5f, .5f, 0);
 
-            var greyTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), new Color (.5f, .5f, .5f, .5f), false)
-                .Provide ()
-                .ConvertToTextureAndRelease ();
+            var greyTexture = new SolidColorTextureProvider (new TextureResolution (TextureResolutionEnum.x32), new Color (.5f, .5f, .5f, .5f))
+                .Texture
+                .ConvertToTexture2DAndRelease ();
 
             baseLevelRenderer.material.mainTexture = greyTexture;
         }
@@ -146,7 +146,7 @@ namespace SurfaceEdit
         {
             var newChannelID = (int)channelToRender + 1;
             Channel newChannel = default;
-            var maxID = Utils.EnumCount<Channel> ();
+            var maxID = MiscUtility.EnumCount<Channel> ();
             do
             {
                 if ( newChannelID >= maxID )
@@ -163,7 +163,7 @@ namespace SurfaceEdit
         {
             var newChannelID = (int)channelToRender - 1;
             Channel newChannel = default;
-            var maxID = Utils.EnumCount<Channel> ();
+            var maxID = MiscUtility.EnumCount<Channel> ();
             do
             {
                 if ( newChannelID < 0 )

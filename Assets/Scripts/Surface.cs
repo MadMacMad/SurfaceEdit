@@ -7,12 +7,12 @@ namespace SurfaceEdit
 {
     public sealed class Surface : ObjectChangedNotifier, IDisposable
     {
-        public ProgramContext Context { get; private set; }
+        public ApplicationContext Context { get; private set; }
 
         public IReadOnlyDictionary<Channel, ProviderTexture> Textures => textures;
         private Dictionary<Channel, ProviderTexture> textures = new Dictionary<Channel, ProviderTexture> ();
 
-        public Surface (ProgramContext context)
+        public Surface (ApplicationContext context)
         {
             Assert.ArgumentNotNull (context, nameof (context));
 

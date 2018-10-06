@@ -37,9 +37,9 @@ namespace SurfaceEdit
             stackedObjectsOffset = 0;
             id = Guid.NewGuid ().ToString ();
             scene = SceneManager.CreateScene (nameof (RendererStation) + " Scene with ID = " + id);
-            rootObject = Utils.CreateNewGameObjectAtSpecificScene ("Root", scene, stationLayerID);
+            rootObject = GameObjectUtility.CreateNewGameObjectAtSpecificScene ("Root", scene, stationLayerID);
 
-            camera = Utils.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID).AddComponent<Camera> ();
+            camera = GameObjectUtility.CreateNewGameObjectAtSpecificScene ("Camera", scene, stationLayerID).AddComponent<Camera> ();
             camera.transform.position = new Vector3 (.5f, .5f);
             camera.backgroundColor = new Color (1, 1, 1, 0);
             camera.orthographic = true;
@@ -50,9 +50,9 @@ namespace SurfaceEdit
             camera.cullingMask = LayerMask.GetMask(LayerMask.LayerToName(stationLayerID));
             camera.useOcclusionCulling = false;
 
-            texturePlane = Utils.CreateNewGameObjectAtSpecificScene ("Texture Plane", scene, stationLayerID, rootObject);
+            texturePlane = GameObjectUtility.CreateNewGameObjectAtSpecificScene ("Texture Plane", scene, stationLayerID, rootObject);
             texturePlane.transform.position = new Vector3 (0, 0, .2f);
-            texturePlane.AddComponent<MeshFilter> ().mesh = MeshBuilder.BuildQuad (Vector2.one).ConvertToMesh ();
+            texturePlane.AddComponent<MeshFilter> ().mesh = MeshUtility.BuildQuad (Vector2.one).ConvertToMesh ();
 
             texturePlaneRenderer = texturePlane.AddComponent<MeshRenderer> ();
             texturePlaneRenderer.material.shader = Shader.Find ("Unlit/Transparent");

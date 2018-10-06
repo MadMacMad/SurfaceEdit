@@ -7,11 +7,11 @@ namespace SurfaceEdit
     public sealed class ProviderTexture : IDisposable
     {
         public RenderTexture RenderTexture { get; private set; }
-        public ProgramContext Context { get; private set; }
+        public ApplicationContext Context { get; private set; }
 
         private TextureProvider provider;
 
-        public ProviderTexture (ProgramContext context, TextureProvider provider)
+        public ProviderTexture (ApplicationContext context, TextureProvider provider)
         {
             Assert.ArgumentNotNull (context, nameof (context));
             Assert.ArgumentNotNull (provider, nameof (provider));
@@ -21,13 +21,13 @@ namespace SurfaceEdit
             Context = context;
             this.provider = provider;
 
-            RenderTexture = provider.Provide();
+            RenderTexture = TextureUtility.CreateRenderTexture(context.TextureResolution.AsVector);
 
-            provider.Changed += (s, e) => RenderTexture = provider.Provide ();
+            provider.Changed += (s, e) => RenderTexture = provider.Texture;
         }
 
         public void Reset (Vector2Int origin, Vector2Int size)
-            => provider.Override (RenderTexture, origin, size);
+            => provider.Fill (RenderTexture, origin, size);
 
         public void Dispose ()
         {

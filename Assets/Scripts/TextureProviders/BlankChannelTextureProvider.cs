@@ -6,7 +6,7 @@ namespace SurfaceEdit.TextureProviders
     {
         public readonly Channel textureChannel;
 
-        public BlankChannelTextureProvider(TextureResolution resolution, Channel textureChannel, bool cacheTexture = true) : base (resolution, cacheTexture)
+        public BlankChannelTextureProvider(TextureResolution resolution, Channel textureChannel) : base (resolution)
         {
             this.textureChannel = textureChannel;
         }
@@ -26,7 +26,7 @@ namespace SurfaceEdit.TextureProviders
         }
         private RenderTexture ProvideSolidColorRenderTexture(Color color)
         {
-            var renderTexture = Utils.CreateRenderTexture (resolution.AsVector);
+            var renderTexture = TextureUtility.CreateRenderTexture (resolution.AsVector);
             return new ComputeFillWithColor (renderTexture, color).Execute();
         }
     }

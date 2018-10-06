@@ -7,62 +7,41 @@ namespace SurfaceEdit.TextureProviders
     {
         public readonly TextureResolution resolution;
 
-        private RenderTexture initialTexture;
-        private RenderTexture copiedTexture;
+        public RenderTexture Texture
+        {
+            get
+            {
+                if ( texture == null )
+                    texture = ProvideAdjustScale ();
+                return texture;
+            }
+        }
+        private RenderTexture texture;
 
-        private bool isCacheTexture;
-
-        protected bool isNeedReprovide = false;
-
-        public TextureProvider (TextureResolution resolution, bool isCacheTexture)
+        public TextureProvider (TextureResolution resolution)
         {
             Assert.ArgumentNotNull (resolution, nameof (resolution));
 
             this.resolution = resolution;
-            this.isCacheTexture = isCacheTexture;
-
+            
             resolution.Changed += (s, e) =>
             {
-                isNeedReprovide = true;
+                texture?.Release ();
+                texture = null;
                 NotifyChanged ();
             };
         }
 
-        public void Override (RenderTexture texture, Vector2Int origin, Vector2Int size)
+        public void Fill (RenderTexture texture, Vector2Int origin, Vector2Int size)
         {
             Assert.ArgumentNotNull (texture, nameof (texture));
 
-            if ( !isCacheTexture )
-            {
-                Debug.LogWarning ($"{nameof (TextureProvider)}.isCacheTexture is set to false. New texture will be loaded");
-                initialTexture?.Release ();
-                initialTexture = null;
-            }
-
-            Provide ();
-
-            var compute = new ComputeCopy (initialTexture, texture);
+            var compute = new ComputeCopy (this.Texture, texture);
             compute.Size = size;
             compute.Origin = origin;
             compute.Execute ();
         }
-
-        public RenderTexture Provide ()
-        {
-            if ( isNeedReprovide || initialTexture == null )
-            {
-                initialTexture?.Release ();
-                initialTexture = ProvideAdjustScale ();
-                isNeedReprovide = false;
-                if ( isCacheTexture )
-                {
-                    copiedTexture?.Release ();
-                    copiedTexture = initialTexture.Copy ();
-                }
-            }
-            return isCacheTexture ? copiedTexture : initialTexture;
-        }
-
+        
         private RenderTexture ProvideAdjustScale ()
         {
             var texture = Provide_Internal ();
@@ -79,8 +58,7 @@ namespace SurfaceEdit.TextureProviders
 
         public void Dispose ()
         {
-            initialTexture?.Release ();
-            copiedTexture?.Release ();
+            Texture?.Release ();
             Dispose_Internal ();
         }
         protected virtual void Dispose_Internal () { }

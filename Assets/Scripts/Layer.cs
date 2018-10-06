@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SurfaceEdit.SurfaceAffectors;
+using SurfaceEdit.Affectors;
 
 namespace SurfaceEdit
 {
@@ -13,7 +13,7 @@ namespace SurfaceEdit
      
         public string ID { get; private set; }
 
-        public ProgramContext Context { get; private set; }
+        public ApplicationContext Context { get; private set; }
 
         public LayerBlendType BlendType
         {
@@ -25,10 +25,10 @@ namespace SurfaceEdit
         public IReadOnlyCollection<Channel> Channels => channels.AsReadOnly();
         private List<Channel> channels = new List<Channel>();
 
-        public IReadOnlyCollection<SurfaceAffector> Affectors => affectors.AsReadOnly();
-        private List<SurfaceAffector> affectors = new List<SurfaceAffector> ();
+        public IReadOnlyCollection<Affector> Affectors => affectors.AsReadOnly();
+        private List<Affector> affectors = new List<Affector> ();
         
-        public Layer (ProgramContext context) : base (context?.UndoRedoManager)
+        public Layer (ApplicationContext context) : base (context?.UndoRedoManager)
         {
             Assert.ArgumentNotNull (context, nameof (context));
 
@@ -46,7 +46,7 @@ namespace SurfaceEdit
                 affector.AffectSurface (surface, renderContext);
         }
         
-        public void AddAffector(SurfaceAffector affector)
+        public void AddAffector(Affector affector)
         {
             if (!affectors.Contains(affector))
             {
@@ -55,7 +55,7 @@ namespace SurfaceEdit
                 NotifyNeedRender (new RenderContext(affector.AffectedChannels.ToImmutable(), RenderCovering.Full));
             }
         }
-        public void RemoveAffector (SurfaceAffector affector) 
+        public void RemoveAffector (Affector affector) 
         {
             if ( affectors.Contains (affector) )
             {

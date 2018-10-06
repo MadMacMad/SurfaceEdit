@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using SurfaceEdit.SurfaceAffectors;
+using SurfaceEdit.Affectors;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -89,7 +89,7 @@ namespace SurfaceEdit.Presenters
             if ( layer == null )
                 return;
 
-            layer.AddAffector (new DummySurfaceAffector (stack.Context, stack.Context.Channels.Clone()));
+            layer.AddAffector (new DummyAffector (stack.Context, stack.Context.Channels.Clone()));
         }
     }
 }

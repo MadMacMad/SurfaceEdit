@@ -5,7 +5,7 @@ namespace SurfaceEdit
 {
     public sealed class LayerStack : PropertyChangedRegistrator, IDisposable
     {
-        public ProgramContext Context { get; private set; }
+        public ApplicationContext Context { get; private set; }
 
         public event Action<Layer> OnLayerCreate;
         public event Action<Layer> OnLayerDelete;
@@ -18,7 +18,7 @@ namespace SurfaceEdit
 
         private bool renderRequestedThisFrame = false;
 
-        public LayerStack (ProgramContext context)
+        public LayerStack (ApplicationContext context)
             : base (context?.UndoRedoManager)
         {
             Assert.ArgumentNotNull (context, nameof (context));

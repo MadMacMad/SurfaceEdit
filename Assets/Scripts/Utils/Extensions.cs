@@ -15,7 +15,7 @@ namespace SurfaceEdit
             Graphics.CopyTexture (renderTexture, 0, 0, newTexture, 0, 0);
             return newTexture;
         }
-        public static Texture2D ConvertToTextureAndRelease (this RenderTexture renderTexture)
+        public static Texture2D ConvertToTexture2DAndRelease (this RenderTexture renderTexture)
         {
             var newTexture = renderTexture.ConvertToTexture ();
             renderTexture.Release ();
@@ -24,7 +24,7 @@ namespace SurfaceEdit
 
         public static RenderTexture ConvertToRenderTexture (this Texture2D texture)
         {
-            var renderTexture = Utils.CreateRenderTexture (texture.width, texture.height);
+            var renderTexture = TextureUtility.CreateRenderTexture (texture.width, texture.height);
             new ComputeCopy (texture, renderTexture).Execute ();
             return renderTexture;
         }
@@ -38,7 +38,7 @@ namespace SurfaceEdit
 
         public static RenderTexture Copy (this RenderTexture texture)
         {
-            var renderTexture = Utils.CreateRenderTexture (texture.width, texture.height);
+            var renderTexture = TextureUtility.CreateRenderTexture (texture.width, texture.height);
             new ComputeCopy (texture, renderTexture).Execute();
             return renderTexture;
         }

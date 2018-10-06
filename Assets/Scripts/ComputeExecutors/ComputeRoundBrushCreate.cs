@@ -18,7 +18,7 @@ namespace SurfaceEdit
 
         public override RenderTexture Execute ()
         {
-            var renderTexture = Utils.CreateRenderTexture (resolution);
+            var renderTexture = TextureUtility.CreateRenderTexture (resolution);
 
             shader.SetTexture (ShaderFunctionID, "Result", renderTexture);
 
