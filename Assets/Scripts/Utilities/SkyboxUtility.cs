@@ -8,7 +8,7 @@ namespace SurfaceEdit
         public static event Action OnSkyboxRotate;
 
         public static float SkyboxRotation => skyboxMaterial.GetVector ("_Euler").y;
-        public static float SlyboxBlurriness => skyboxMaterial.GetFloat ("_LodLevel") / 10f;
+        public static float SkyboxBlurriness => skyboxMaterial.GetFloat ("_LodLevel") / 10f;
 
         public static GameObject light;
 

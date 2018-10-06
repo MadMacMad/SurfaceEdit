@@ -272,7 +272,7 @@ namespace SurfaceEdit
                     => skyboxRotationSlider.value = Mathf.Clamp01 (SkyboxUtility.SkyboxRotation / 360f);
                 skyboxRotationSlider.onValueChanged.AddListener (v => SkyboxUtility.RotateSkybox (v * 360));
                 
-                skyboxBlurSlider.value = SkyboxUtility.SlyboxBlurriness;
+                skyboxBlurSlider.value = SkyboxUtility.SkyboxBlurriness;
                 skyboxBlurSlider.onValueChanged.AddListener (v => SkyboxUtility.SetSkyboxBlurAmount (v));
 
             }
