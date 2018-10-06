@@ -9,6 +9,8 @@ namespace SurfaceEdit
 {
     public sealed class SResources : Singleton<SResources>
     {
+        public event Action<SResource> ResourceAdded;
+
         public IReadOnlyCollection<SResource> Resources { get; private set; }
         private List<SResource> resources = new List<SResource> ();
 
@@ -40,7 +42,8 @@ namespace SurfaceEdit
 
             if ( internalResource is SResourceType )
             {
-                resources.Add (resource);
+                resources.Add (internalResource);
+                ResourceAdded?.Invoke (internalResource);
                 resource = internalResource as SResourceType;
             }
             else
@@ -53,7 +56,10 @@ namespace SurfaceEdit
             var result = TryLoad_Internal (pathToFile, out resource);
 
             if ( result.IsSuccessfull )
+            {
                 resources.Add (resource);
+                ResourceAdded?.Invoke (resource);
+            }
 
             return result;
         }
