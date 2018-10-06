@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFB;
+using UnityEngine;
 
 namespace SurfaceEdit
 {
@@ -89,7 +90,32 @@ namespace SurfaceEdit
                 switch ( extension )
                 {
                     case ".png":
-                        resource = new STexture2DResource (name, TextureIOHelper.LoadTexture2DFromDisk (pathToFile));
+                        var texture = TextureIOHelper.LoadTexture2DFromDisk (pathToFile);
+
+                        if ( texture.width != texture.height )
+                        {
+                            var result = new SResourceLoadResult (false, $"Selected texture({pathToFile}) is not square");
+                            GameObject.DestroyImmediate (texture);
+                            return result;
+                        }
+
+                        if ( !Mathf.IsPowerOfTwo (texture.width) )
+                        {
+                            var result = new SResourceLoadResult (false, $"Selected texture({pathToFile}) has not power of 2 size");
+                            GameObject.DestroyImmediate (texture);
+                            return result;
+                        }
+
+                        var textureMinSize = 256;
+
+                        if ( texture.width < textureMinSize )
+                        {
+                            var result = new SResourceLoadResult (false, $"Selected texture({pathToFile}) is too small({texture.width}). Min size is {textureMinSize}");
+                            GameObject.DestroyImmediate (texture);
+                            return result;
+                        }
+
+                        resource = new STexture2DResource (name, texture);
                         break;
                     default:
                         return new SResourceLoadResult (false, "Unsupported extension: " + extension);
