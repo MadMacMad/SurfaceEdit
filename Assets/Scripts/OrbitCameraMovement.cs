@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace SurfaceEdit
 {
@@ -42,6 +43,9 @@ namespace SurfaceEdit
 
         private void Update ()
         {
+            if ( EventSystem.current.IsPointerOverGameObject() )
+                return;
+
             var newMousePosition = Input.mousePosition;
             var mousePositionDifference = cameraComponent.ScreenToViewportPoint (newMousePosition - lastMousePosition);
 
