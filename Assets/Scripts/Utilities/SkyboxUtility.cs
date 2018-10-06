@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SurfaceEdit
 {
-    public class SkyboxUtility
+    public static class SkyboxUtility
     {
         public static event Action OnSkyboxRotate;
 
