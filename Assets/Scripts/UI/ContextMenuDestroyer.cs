@@ -6,7 +6,7 @@ using System;
 
 namespace SurfaceEdit
 {
-    public class ContextMenu : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler
+    public class ContextMenuDestroyer : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler
     {
         public event Action OnDestroy;
 

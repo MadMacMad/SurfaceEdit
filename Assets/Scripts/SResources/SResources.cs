@@ -4,12 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFB;
 
 namespace SurfaceEdit
 {
     public sealed class SResources : Singleton<SResources>
     {
+        public static readonly ExtensionFilter SupportedExtensions = new ExtensionFilter("Supported Extensions", "png");
+
         public event Action<SResource> ResourceAdded;
+        public event Action<SResource> ResourceDeleted;
 
         public IReadOnlyCollection<SResource> Resources { get; private set; }
         private List<SResource> resources = new List<SResource> ();
@@ -28,14 +32,15 @@ namespace SurfaceEdit
                 return;
 
             resources.Remove (resource);
+            ResourceDeleted?.Invoke (resource);
             resource.Dispose ();
         }
 
-        public SResourceLoadResult TryLoad<SResourceType> (string pathToFile, out SResourceType resource) where SResourceType : SResource
+        public SResourceLoadResult TryImport<SResourceType> (string pathToFile, out SResourceType resource) where SResourceType : SResource
         {
             resource = null;
 
-            var result = TryLoad_Internal (pathToFile, out SResource internalResource);
+            var result = TryImport_Internal (pathToFile, out SResource internalResource);
 
             if ( !result.IsSuccessfull )
                 return result;
@@ -51,9 +56,9 @@ namespace SurfaceEdit
 
             return result;
         }
-        public SResourceLoadResult TryLoad (string pathToFile, out SResource resource)
+        public SResourceLoadResult TryImport (string pathToFile, out SResource resource)
         {
-            var result = TryLoad_Internal (pathToFile, out resource);
+            var result = TryImport_Internal (pathToFile, out resource);
 
             if ( result.IsSuccessfull )
             {
@@ -63,7 +68,7 @@ namespace SurfaceEdit
 
             return result;
         }
-        private SResourceLoadResult TryLoad_Internal (string pathToFile, out SResource resource)
+        private SResourceLoadResult TryImport_Internal (string pathToFile, out SResource resource)
         {
             resource = null;
 

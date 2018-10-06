@@ -15,7 +15,8 @@ namespace SurfaceEdit
     public class Bootstrap : MonoBehaviour
     {
         public LayerStackViewData layerStackViewData;
-        public ContextMenuViewData layerContextMenuViewData;
+        public ContextMenuViewData contextMenuViewData;
+        public ResourcesViewData resourcesViewData;
 
         [Header ("Main Settings")]
         public TMP_Dropdown textureResolutionDropdown;
@@ -43,6 +44,7 @@ namespace SurfaceEdit
 
         
         private LayerStackPresenter layerStackPresenter;
+        private ResourcesPresenter resourcesPresenter;
 
         private void Start ()
         {
@@ -191,7 +193,8 @@ namespace SurfaceEdit
             SetupBrushSettings ();
             SetupMainSettings ();
 
-            layerStackPresenter = new LayerStackPresenter (layerStackViewData, layerContextMenuViewData, stack);
+            layerStackPresenter = new LayerStackPresenter (layerStackViewData, contextMenuViewData, stack);
+            resourcesPresenter = new ResourcesPresenter (resourcesViewData, contextMenuViewData);
 
             void SetupBrushSettings ()
             {

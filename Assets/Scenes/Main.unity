@@ -5364,7 +5364,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerStackViewData: {fileID: 1943812059}
-  layerContextMenuViewData: {fileID: 1101721870}
+  contextMenuViewData: {fileID: 1101721870}
+  resourcesViewData: {fileID: 1298201056}
   textureResolutionDropdown: {fileID: 1094909489}
   skyboxRotationSlider: {fileID: 1760204618}
   skyboxBlurSlider: {fileID: 1632050043}
@@ -7139,7 +7140,7 @@ GameObject:
   - component: {fileID: 1101721871}
   - component: {fileID: 1101721870}
   m_Layer: 0
-  m_Name: LayerContextMenuViewData
+  m_Name: ContextMenuViewData
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8427,9 +8428,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd8f71f1e9a67eb42b02897bb646a52b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  importResourceButtons:
-  - {fileID: 1639181193}
-  - {fileID: 2039739826}
+  importResourcesButtons:
+  - {fileID: 2039739828}
+  - {fileID: 1639181197}
   resourcePrefab: {fileID: 4493677873142641454, guid: 009de5d867c22324593f113a878f3c32, type: 3}
   resourcesParent: {fileID: 466494192}
 --- !u!4 &1298201057
@@ -10779,10 +10780,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1594037560}
-    characterCount: 171
+    characterCount: 172
     spriteCount: 0
     spaceCount: 25
-    wordCount: 25
+    wordCount: 26
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -11124,7 +11125,7 @@ GameObject:
   - component: {fileID: 1639181195}
   - component: {fileID: 1639181197}
   m_Layer: 0
-  m_Name: ImportResourceButton
+  m_Name: ImportResourcesButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11168,7 +11169,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: Import Resource
+  m_text: Import Resources
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c04abeda34872164e9734d0cd87c059c, type: 2}
   m_sharedMaterial: {fileID: 21351059316324370, guid: c04abeda34872164e9734d0cd87c059c, type: 2}
@@ -11237,7 +11238,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1639181195}
-    characterCount: 15
+    characterCount: 16
     spriteCount: 0
     spaceCount: 1
     wordCount: 2
@@ -12430,7 +12431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3578292179183987421, guid: f23f57a41bd167f4da552dd3d5fd2e29, type: 3}
       propertyPath: m_Name
-      value: LoadResourcesButton
+      value: ImportResourcesButton
       objectReference: {fileID: 0}
     - target: {fileID: 3578292179183987233, guid: f23f57a41bd167f4da552dd3d5fd2e29, type: 3}
       propertyPath: m_Sprite
@@ -13894,11 +13895,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971577285}
   m_CullTransparentMesh: 0
---- !u!1 &2039739826 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3578292179183987421, guid: f23f57a41bd167f4da552dd3d5fd2e29, type: 3}
+--- !u!114 &2039739828 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3578292179183987235, guid: f23f57a41bd167f4da552dd3d5fd2e29, type: 3}
   m_PrefabInstance: {fileID: 1752387989}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2073089826
 GameObject:
   m_ObjectHideFlags: 0

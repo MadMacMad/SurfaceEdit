@@ -28,7 +28,7 @@ namespace SurfaceEdit.Presenters
 
             menu = GameObject.Instantiate (data.contextMenuPrefab);
 
-            menu.GetComponent<ContextMenu> ().OnDestroy += Dispose;
+            menu.GetComponent<ContextMenuDestroyer> ().OnDestroy += Dispose;
 
             var rectTransform = menu.GetComponent<RectTransform> ();
             rectTransform.SetParent(data.canvas.transform);
@@ -36,7 +36,7 @@ namespace SurfaceEdit.Presenters
         }
         public void AddMenuItem(string text, Action callback)
         {
-            Assert.True (!isDisposed, nameof (ContextMenu) + " is already disposed!");
+            Assert.True (!isDisposed, nameof (ContextMenuDestroyer) + " is already disposed!");
             Assert.ArgumentNotNull (callback, nameof (callback));
             Assert.ArgumentNotNullOrEmptry (text, nameof (text));
 
