@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using SurfaceEdit.Brushes;
 using SurfaceEdit.Affectors;
-using SurfaceEdit.TextureProviders;
 using SurfaceEdit.Presenters;
 using TMPro;
 using UnityEngine;

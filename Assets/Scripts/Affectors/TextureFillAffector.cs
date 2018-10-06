@@ -1,5 +1,4 @@
-﻿using SurfaceEdit.TextureProviders;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SurfaceEdit.Affectors
 {
