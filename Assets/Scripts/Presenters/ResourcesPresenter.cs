@@ -36,7 +36,11 @@ namespace SurfaceEdit.Presenters
                  {
                      var paths = StandaloneFileBrowser.OpenFilePanel ("Import Resources", "", new ExtensionFilter[] { SResources.SupportedExtensions }, true);
                      foreach ( var path in paths )
-                         SResources.Instance.TryImport (path, out _);
+                     {
+                         var result = SResources.Instance.TryImport (path, out _);
+                         if ( !result.IsSuccessfull )
+                             Debug.LogWarning (result.ErrorMessage);
+                     }
                  });
             }
         }
