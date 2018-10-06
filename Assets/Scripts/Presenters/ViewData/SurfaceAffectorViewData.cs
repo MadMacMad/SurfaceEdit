@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SurfaceEdit.Presenters
 {
-    public sealed class SurfaceAffectorViewData : MonoBehaviour
+    public sealed class SurfaceAffectorViewData : ViewData
     {
         public GameObject prefab;
     }

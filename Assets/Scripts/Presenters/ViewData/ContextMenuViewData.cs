@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SurfaceEdit
+namespace SurfaceEdit.Presenters
 {
-    public sealed class ContextMenuViewData : MonoBehaviour
+    public sealed class ContextMenuViewData : ViewData
     {
         public GameObject contextMenuPrefab;
         public GameObject contextMenuButtonPrefab;

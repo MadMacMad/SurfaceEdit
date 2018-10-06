@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SurfaceEdit
+namespace SurfaceEdit.Presenters
 {
-    public sealed class LayerStackViewData : MonoBehaviour
+    public sealed class LayerStackViewData : ViewData
     {
         public GameObject layerPrefab;
         public Transform layersParent;
