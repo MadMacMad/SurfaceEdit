@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
 using SurfaceEdit.Brushes;
 using SurfaceEdit.Affectors;
+using SurfaceEdit.TextureProviders;
 using SurfaceEdit.Presenters;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using System.IO;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace SurfaceEdit
 {
@@ -41,9 +46,7 @@ namespace SurfaceEdit
         private SurfaceVisualizer surfaceVisualizer;
         private LayerStackPresenter layerStackPresenter;
         private ResourceManagerPresenter resourcesPresenter;
-
-        private List<Texture2D> a;
-
+        
         private void Start ()
         {
             UnityMemorizer<Vector3>.Instance.Memorize ("mousePosition", () => Input.mousePosition);
@@ -69,10 +72,13 @@ namespace SurfaceEdit
 
         private void SetupProgramContext ()
         {
+            var appdataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
+
             context = new ApplicationContext (undoRedoManager,
                 new Channels (new List<Channel> () { Channel.Albedo, Channel.Normal, Channel.Height, Channel.Mask }),
-                new TextureResolution (TextureResolutionEnum.x2048),
-                new ImmutableTextureResolution (TextureResolutionEnum.x512));
+                new TextureResolution (TextureResolutionEnum.x4096),
+                new ImmutableTextureResolution (TextureResolutionEnum.x512),
+                Path.Combine(appdataPath, nameof(SurfaceEdit)));
         }
 
         private void SetupSurfaceVisualizer ()
@@ -148,7 +154,7 @@ namespace SurfaceEdit
         {
             var layer1 = stack.CreateLayer ();
 
-            var path = @"C:/Users/obore/Desktop/Work/Unity/SurfaceEdit/Assets/Resources/Textures/Standard/";
+            var path = Application.dataPath + "/Resources/Textures/Standard/";
 
             var diff = new List<string> ()
             {
@@ -161,7 +167,7 @@ namespace SurfaceEdit
             };
             foreach(var d in diff)
             {
-                var result = resourceManager.TryImport (path + d, out _);
+                var result = resourceManager.TryImport (path + d, out Resource res);
                 if (!result.IsSuccessfull)
                     Debug.LogWarning (result.ErrorMessage);
             }
@@ -191,11 +197,11 @@ namespace SurfaceEdit
 
             layer2.AddAffector (paintTextureAffector);
 
-            paintingManager.OnPaintTemporary = e =>
+            paintingManager.OnPaintTemporary += e =>
             {
                 paintTextureAffector.PaintTemporary (e);
             };
-            paintingManager.OnPaintFinal = e =>
+            paintingManager.OnPaintFinal += e =>
             {
                 paintTextureAffector.PaintFinal (e);
             };

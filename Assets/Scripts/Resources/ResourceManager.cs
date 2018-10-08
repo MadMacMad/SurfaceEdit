@@ -116,42 +116,33 @@ namespace SurfaceEdit
             {
                 var extension = Path.GetExtension (pathToFile);
                 var name = Path.GetFileNameWithoutExtension (pathToFile);
-                
-                switch ( extension )
+                                var texture = TextureUtility.LoadTexture2DFromDisk (pathToFile);
+
+                if ( texture.width != texture.height )
                 {
-                    case ".png":
-                    case ".jpg":
-                    case ".jpeg":
-                        var texture = TextureUtility.LoadTexture2DFromDisk (pathToFile);
-
-                        if ( texture.width != texture.height )
-                        {
-                            var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) is not square");
-                            GameObject.DestroyImmediate (texture);
-                            return result;
-                        }
-
-                        if ( !Mathf.IsPowerOfTwo (texture.width) )
-                        {
-                            var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) has not power of 2 size");
-                            GameObject.DestroyImmediate (texture);
-                            return result;
-                        }
-
-                        var textureMinSize = 256;
-
-                        if ( texture.width < textureMinSize )
-                        {
-                            var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) is too small({texture.width}). Min size is {textureMinSize}");
-                            GameObject.DestroyImmediate (texture);
-                            return result;
-                        }
-
-                        resource = new Texture2DResource (name, pathToFile, texture, Context);
-                        break;
-                    default:
-                        return new ResourceImportResult (false, "Unsupported extension: " + extension);
+                    var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) is not square");
+                    GameObject.DestroyImmediate (texture);
+                    return result;
                 }
+
+                if ( !Mathf.IsPowerOfTwo (texture.width) )
+                {
+                    var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) has not power of 2 size");
+                    GameObject.DestroyImmediate (texture);
+                    return result;
+                }
+
+                var textureMinSize = 256;
+
+                if ( texture.width < textureMinSize )
+                {
+                    var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) is too small({texture.width}). Min size is {textureMinSize}");
+                    GameObject.DestroyImmediate (texture);
+                    return result;
+                }
+
+                resource = new Texture2DResource (name, Context.CacheDirectory, texture, Context);
+
 
                 return new ResourceImportResult (true);
             }

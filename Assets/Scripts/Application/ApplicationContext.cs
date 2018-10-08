@@ -10,6 +10,7 @@ namespace SurfaceEdit
         public ImmutableTextureResolution ChunkResolution { get; private set; }
         public Vector2Int ChunksCountVector { get; private set; }
         public int ChunksCountInt { get; private set; }
+        public string CacheDirectory { get; private set; }
 
         private ImmutableTextureResolution initialChunkResolution;
 
@@ -17,16 +18,20 @@ namespace SurfaceEdit
             UndoRedoManager undoRedoManager,
             Channels channels,
             TextureResolution textureResolution,
-            ImmutableTextureResolution chunkResolution)
+            ImmutableTextureResolution chunkResolution,
+            string cacheDirectory)
         {
             Assert.ArgumentNotNull (undoRedoManager, nameof (undoRedoManager));
             Assert.ArgumentNotNull (channels, nameof (channels));
             Assert.ArgumentNotNull (textureResolution, nameof (textureResolution));
             Assert.ArgumentNotNull (chunkResolution, nameof (chunkResolution));
+            Assert.ArgumentNotNullOrEmptry (cacheDirectory, nameof (cacheDirectory));
 
             UndoRedoManager = undoRedoManager;
             Channels = channels;
             TextureResolution = textureResolution;
+
+            CacheDirectory = cacheDirectory;
 
             initialChunkResolution = new ImmutableTextureResolution(chunkResolution.AsEnum);
 

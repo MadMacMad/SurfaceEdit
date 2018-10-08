@@ -9,7 +9,7 @@ namespace SurfaceEdit
 {
     public static class Extensions
     {
-        public static Texture2D ConvertToTexture (this RenderTexture renderTexture)
+        public static Texture2D ConvertToTexture2D (this RenderTexture renderTexture)
         {
             var newTexture = new Texture2D (renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
             Graphics.CopyTexture (renderTexture, 0, 0, newTexture, 0, 0);
@@ -17,7 +17,7 @@ namespace SurfaceEdit
         }
         public static Texture2D ConvertToTexture2DAndRelease (this RenderTexture renderTexture)
         {
-            var newTexture = renderTexture.ConvertToTexture ();
+            var newTexture = renderTexture.ConvertToTexture2D ();
             renderTexture.Release ();
             return newTexture;
         }
@@ -42,13 +42,6 @@ namespace SurfaceEdit
             new ComputeCopy (texture, renderTexture).Execute();
             return renderTexture;
         }
-
-        public static void Save(this Texture2D texture, string path)
-        {
-            var bytes = texture.EncodeToJPG (90);
-            File.WriteAllBytes (path, bytes);
-        }
-
         //private static byte[] m_SaveRenderTextureBuffer = new byte[8192 * 8192 * 4];
 
         //public static void SaveAsync (this RenderTexture texture, string directory, string name, Action callback)
@@ -157,6 +150,11 @@ namespace SurfaceEdit
             entry.eventID = eventType;
             entry.callback.AddListener (data => listener.Invoke ((PointerEventData)data));
             trigger.triggers.Add (entry);
+        }
+
+        public static bool IsDirectory (this string path)
+        {
+            return Path.GetExtension (path) == "";
         }
     }
 }

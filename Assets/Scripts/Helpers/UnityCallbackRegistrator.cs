@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SurfaceEdit
 {
@@ -7,12 +8,11 @@ namespace SurfaceEdit
     {
         public event Action OnUpdate;
         public event Action OnLateUpdate;
-
+        
         private List<Action> oneTimeActions = new List<Action> ();
 
-        public void RegisterOneTimeActionOnUpdate(Action action)
+        public void RegisterOneTimeUpdateAction(Action action)
             => oneTimeActions.Add (action);
-        
         private void Update ()
         {
             OnUpdate?.Invoke ();

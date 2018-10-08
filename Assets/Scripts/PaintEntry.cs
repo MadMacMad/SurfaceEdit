@@ -49,14 +49,40 @@ namespace SurfaceEdit
         private Mesh ConstructMesh()
         {
             var mesh = new Mesh ();
+            
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var maxX = float.MinValue;
+            var maxY = float.MinValue;
 
             var indices = new int[brushPositions.Count];
+            var brushSize = brushSnapshot.percentageSize;
             for ( int i = 0; i < indices.Length; i++ )
+            {
                 indices[i] = i;
+                var brushPos = brushPositions[i];
+
+                var minBrushX = brushPos.x;
+                var maxBrushX = minBrushX + brushSize.x;
+
+                var minBrushY = brushPos.y;
+                var maxBrushY = minBrushY + brushSize.y;
+
+                if ( minX > minBrushX )
+                    minX = minBrushX;
+                if ( minY > minBrushY )
+                    minY = minBrushY;
+
+                if ( maxX < maxBrushX )
+                    maxX = maxBrushX;
+                if ( maxY < maxBrushY )
+                    maxY= maxBrushY;
+            }
 
             mesh.SetVertices (brushPositions);
-            mesh.bounds = new Bounds (Vector3.zero, new Vector3 (10000, 10000)); // To disable camera frustrum culling
             mesh.SetIndices (indices, MeshTopology.Points, 0, false);
+            var size = new Vector2 (maxX - minX, maxY - minY);
+            mesh.bounds = new Bounds(new Vector3(minX + size.x / 2f, minY + size.y /2f), size);
 
             return mesh;
         }

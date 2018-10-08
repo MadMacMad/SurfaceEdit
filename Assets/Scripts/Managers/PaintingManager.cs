@@ -28,8 +28,8 @@ namespace SurfaceEdit
         }
         private Brush brush;
         
-        public Action<PaintEntry> OnPaintFinal;
-        public Action<PaintEntry> OnPaintTemporary;
+        public event Action<PaintEntry> OnPaintFinal;
+        public event Action<PaintEntry> OnPaintTemporary;
         
         private bool isTriggeredLastFrame;
         private Vector2 lastPosition;
@@ -66,7 +66,7 @@ namespace SurfaceEdit
                 brushSnapshot = brush.AsSnapshot ();
 
                 temporaryPaintEntry = new PaintEntry (brushSnapshot, new List<Vector3> () { newPosition });
-                OnPaintTemporary (temporaryPaintEntry);
+                OnPaintTemporary?.Invoke (temporaryPaintEntry);
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace SurfaceEdit
         public void PaintNotTriggered()
         {
             if ( isTriggeredLastFrame )
-                OnPaintFinal (temporaryPaintEntry);
+                OnPaintFinal?.Invoke(temporaryPaintEntry);
 
             isTriggeredLastFrame = false;
         }

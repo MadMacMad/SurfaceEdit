@@ -10,11 +10,7 @@ namespace SurfaceEdit.Affectors
             set
             {
                 Assert.ArgumentNotNull (value, nameof (value));
-
-                if (textureResource != null)
-                    textureResource.Destroyed -= OnTextureDestroyed;
-
-                value.Destroyed += OnTextureDestroyed;
+                
                 textureResource = value;
                 NotifyNeedRender (new RenderContext (AffectedChannels.ToImmutable ()));
             }
@@ -27,14 +23,12 @@ namespace SurfaceEdit.Affectors
             Assert.ArgumentNotNull (textureResource, nameof (textureResource));
 
             this.textureResource = textureResource;
-            textureResource.Destroyed += OnTextureDestroyed;
             context.Changed += (s, e) => NotifyNeedRender (new RenderContext(AffectedChannels.ToImmutable()));
         }
         private PartTextureComputeExecutor compute;
 
         private void OnTextureDestroyed()
         {
-            textureResource.Destroyed -= OnTextureDestroyed;
             textureResource = null;
             NotifyNeedRender (new RenderContext (AffectedChannels.ToImmutable ()));
         }
