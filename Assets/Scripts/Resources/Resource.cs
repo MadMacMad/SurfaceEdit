@@ -53,7 +53,7 @@ namespace SurfaceEdit
 
                 File.WriteAllText (jsonPath, json);
 
-                var previewTexturePath = Path.Combine (cacheDirectory, "previewTexture.ppm");
+                var previewTexturePath = Path.Combine (cacheDirectory, "previewTexture.tga");
                 TextureUtility.SaveTexture2DToDisk (previewTexturePath, PreviewTexture);
 
                 Cache_Child (cacheDirectory);

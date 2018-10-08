@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageMagick;
 using LZ4;
 using Unity.Collections;
 using UnityEngine;
@@ -14,15 +13,6 @@ namespace SurfaceEdit
 {
     public static class TextureUtility
     {
-        private static List<string> magickSupportedFormats = new List<string> ();
-
-        static TextureUtility()
-        {
-            magickSupportedFormats = Enum.GetNames (typeof (MagickFormat))
-                .Select (s => s.ToLowerInvariant())
-                .ToList();
-        }
-
         public static RenderTexture CreateRenderTexture (int width, int height, RenderTextureFormat format = RenderTextureFormat.ARGB32)
         {
             RenderTexture renderTexture = new RenderTexture (width, height, 0, format)
@@ -49,8 +39,8 @@ namespace SurfaceEdit
 
             var extension = Path.GetExtension (path);
 
-            Assert.ArgumentTrue (extension == ".png" || extension == ".jpg" || extension == ".jpeg",
-                                 $"Unsupported extension: {extension}. Full path: {path}\nSupported Extensions: .png, .jpg, .jpeg");
+            Assert.ArgumentTrue (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == "tga",
+                                 $"Unsupported extension: {extension}. Full path: {path}\nSupported Extensions: .png, .jpg, .jpeg, .tga");
 
             Assert.ArgumentTrue (File.Exists (path), $"File ({path}) does not exists.");
 
@@ -69,7 +59,8 @@ namespace SurfaceEdit
 
             var extension = Path.GetExtension (path);
 
-            Assert.ArgumentTrue (magickSupportedFormats.Contains (extension.Substring (1).ToLowerInvariant ()), "Unsupported extension! " + path);
+            Assert.ArgumentTrue (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == "tga",
+                                 $"Unsupported extension: {extension}. Full path: {path}\nSupported Extensions: .png, .jpg, .jpeg, .tga");
 
             var request = AsyncGPUReadback.Request (texture);
             var width = texture.width;
@@ -83,11 +74,14 @@ namespace SurfaceEdit
                 {
                     UnityCallbackRegistrator.Instance.OnUpdate -= CheckRequest;
 
-                    var buffer = request.GetData<byte> ().ToArray();
+                    var buffer = request.GetData<byte> ();
 
-                    using ( var image = new MagickImage (buffer, new PixelStorageSettings (width, height, StorageType.Char, "ARGB")) )
-                        image.Write (path);
-                    
+                    var newTexture = new Texture2D (width, height, TextureFormat.ARGB32, false);
+                    newTexture.LoadRawTextureData (buffer);
+                    var data = newTexture.EncodeToTGA ();
+
+                    File.WriteAllBytes (path, data);
+
                     callback?.Invoke ();
                 }
             }

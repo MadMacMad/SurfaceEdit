@@ -42,7 +42,7 @@ namespace SurfaceEdit
 
         protected override void Cache_Child (string cacheDirectory)
         {
-            var texturePath = Path.Combine (cacheDirectory, "texture.ppm");
+            var texturePath = Path.Combine (cacheDirectory, "texture.tga");
             TextureUtility.SaveTexture2DToDisk (texturePath, Texture);
         }
     }
