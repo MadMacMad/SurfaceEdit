@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace SurfaceEdit.Presenters
 {
-    public sealed class ResourceManagerViewData : ViewData
+    public sealed class ResourcesViewData : ViewData
     {
         public Button[] importResourcesButtons;
         public GameObject resourcePrefab;

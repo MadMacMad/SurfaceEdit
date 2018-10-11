@@ -17,7 +17,7 @@ namespace SurfaceEdit
     {
         public LayerStackViewData layerStackViewData;
         public ContextMenuViewData contextMenuViewData;
-        public ResourceManagerViewData resourcesViewData;
+        public ResourcesViewData resourcesViewData;
 
         [Header ("Main Settings")]
         public TMP_Dropdown textureResolutionDropdown;
@@ -35,6 +35,7 @@ namespace SurfaceEdit
 
         private UndoRedoManager undoRedoManager;
         private PaintingManager paintingManager;
+        
         private ResourceManager resourceManager;
 
         private LayerStack stack;
@@ -45,7 +46,7 @@ namespace SurfaceEdit
 
         private SurfaceVisualizer surfaceVisualizer;
         private LayerStackPresenter layerStackPresenter;
-        private ResourceManagerPresenter resourcesPresenter;
+        private ResourcesPresenter resourcesPresenter;
         
         private void Start ()
         {
@@ -55,7 +56,7 @@ namespace SurfaceEdit
             paintingManager = new PaintingManager ();
 
             SetupProgramContext ();
-
+            
             resourceManager = new ResourceManager (context);
 
             stack = new LayerStack (context);
@@ -76,9 +77,10 @@ namespace SurfaceEdit
 
             context = new ApplicationContext (undoRedoManager,
                 new Channels (new List<Channel> () { Channel.Albedo, Channel.Normal, Channel.Height, Channel.Mask }),
-                new TextureResolution (TextureResolutionEnum.x4096),
+                new TextureResolution (TextureResolutionEnum.x1024),
                 new ImmutableTextureResolution (TextureResolutionEnum.x512),
-                Path.Combine(appdataPath, nameof(SurfaceEdit)));
+                Path.Combine(appdataPath, nameof(SurfaceEdit)),
+                TextureExtension.jpg);
         }
 
         private void SetupSurfaceVisualizer ()
@@ -154,43 +156,47 @@ namespace SurfaceEdit
         {
             var layer1 = stack.CreateLayer ();
 
-            var path = Application.dataPath + "/Resources/Textures/Standard/";
+            if ( resourceManager.Resources.Count == 0 )
+            {
+                Debug.Log ("No resources found!");
+                var path = Application.dataPath + "/Resources/Textures/Standard/";
 
-            var diff = new List<string> ()
-            {
-                "Mud/Albedo.jpg",
-                "Mud/Normal.jpg",
-                "Mud/Height.jpg",
-                "Bricks/Albedo.jpg",
-                "Bricks/Normal.jpg",
-                "Bricks/Height.jpg"
-            };
-            foreach(var d in diff)
-            {
-                var result = resourceManager.TryImport (path + d, out Resource res);
-                if (!result.IsSuccessfull)
-                    Debug.LogWarning (result.ErrorMessage);
+                var diff = new List<string> ()
+                {
+                    "Mud/Mud_Albedo.jpg",
+                    "Mud/Mud_Normal.jpg",
+                    "Mud/Mud_Height.jpg",
+                    "Bricks/Bricks_Albedo.jpg",
+                    "Bricks/Bricks_Normal.jpg",
+                    "Bricks/Bricks_Height.jpg"
+                };
+                foreach ( var d in diff )
+                {
+                    var result = resourceManager.ImportResource (path + d);
+                    if ( !result.IsSuccessfull )
+                        Debug.LogError (result.ErrorMessage);
+                }
             }
 
-            var albedoFill1 = new TextureFillAffector (context, Channel.Albedo, resourceManager.GetResources<Texture2DResource> ("Albedo")[0]);
+            var albedoFill1 = new TextureFillAffector (context, Channel.Albedo, resourceManager.GetResources<Texture2DResource> ("Mud_Albedo")[0]);
             layer1.AddAffector (albedoFill1);
 
-            var normalFill1 = new TextureFillAffector (context, Channel.Normal, resourceManager.GetResources<Texture2DResource> ("Normal")[0]);
+            var normalFill1 = new TextureFillAffector (context, Channel.Normal, resourceManager.GetResources<Texture2DResource> ("Mud_Normal")[0]);
             layer1.AddAffector (normalFill1);
 
-            var heightFill1 = new TextureFillAffector (context, Channel.Height, resourceManager.GetResources<Texture2DResource> ("Height")[0]);
+            var heightFill1 = new TextureFillAffector (context, Channel.Height, resourceManager.GetResources<Texture2DResource> ("Mud_Height")[0]);
             layer1.AddAffector (heightFill1);
 
             var layer2 = stack.CreateLayer ();
             layer2.BlendType = LayerBlendType.AlphaBlend;
 
-            var albedoFill2 = new TextureFillAffector (context, Channel.Albedo, resourceManager.GetResources<Texture2DResource> ("Albedo")[1]);
+            var albedoFill2 = new TextureFillAffector (context, Channel.Albedo, resourceManager.GetResources<Texture2DResource> ("Bricks_Albedo")[0]);
             layer2.AddAffector (albedoFill2);
 
-            var normalFill2 = new TextureFillAffector (context, Channel.Normal, resourceManager.GetResources<Texture2DResource> ("Normal")[1]);
+            var normalFill2 = new TextureFillAffector (context, Channel.Normal, resourceManager.GetResources<Texture2DResource> ("Bricks_Normal")[0]);
             layer2.AddAffector (normalFill2);
 
-            var heightFill2 = new TextureFillAffector (context, Channel.Height, resourceManager.GetResources<Texture2DResource> ("Height")[1]);
+            var heightFill2 = new TextureFillAffector (context, Channel.Height, resourceManager.GetResources<Texture2DResource> ("Bricks_Height")[0]);
             layer2.AddAffector (heightFill2);
 
             var paintTextureAffector = new PaintAffector (context, Channel.Mask, LayerMask.NameToLayer("RendererStation"));
@@ -218,7 +224,7 @@ namespace SurfaceEdit
             SetupMainSettings ();
 
             layerStackPresenter = new LayerStackPresenter (layerStackViewData, contextMenuViewData, stack);
-            resourcesPresenter = new ResourceManagerPresenter (resourcesViewData, contextMenuViewData, resourceManager);
+            resourcesPresenter = new ResourcesPresenter (resourcesViewData, contextMenuViewData, resourceManager);
 
             void SetupBrushSettings ()
             {

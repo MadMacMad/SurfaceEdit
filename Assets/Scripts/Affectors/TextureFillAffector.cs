@@ -10,12 +10,16 @@ namespace SurfaceEdit.Affectors
             set
             {
                 Assert.ArgumentNotNull (value, nameof (value));
-                
+
+                textureResource.UnChain (this);
                 textureResource = value;
+                textureResource.Chain (this);
                 NotifyNeedRender (new RenderContext (AffectedChannels.ToImmutable ()));
             }
         }
         private Texture2DResource textureResource;
+
+        private PartTextureComputeExecutor compute;
 
         public TextureFillAffector (ApplicationContext context, Channels affectedChannels, Texture2DResource textureResource)
             : base (context, affectedChannels)
@@ -24,8 +28,15 @@ namespace SurfaceEdit.Affectors
 
             this.textureResource = textureResource;
             context.Changed += (s, e) => NotifyNeedRender (new RenderContext(AffectedChannels.ToImmutable()));
+
+            textureResource.Chain (this);
         }
-        private PartTextureComputeExecutor compute;
+
+        public override void Dispose()
+        {
+            base.Dispose ();
+            textureResource.UnChain (this);
+        }
 
         private void OnTextureDestroyed()
         {
@@ -35,16 +46,11 @@ namespace SurfaceEdit.Affectors
 
         protected override void PreAffect (ProviderTexture textureToAffect)
         {
-            if ( textureResource != null )
-                compute = new ComputeCopy (textureResource.Texture, textureToAffect.RenderTexture);
-            else
-                compute = new ComputeFillWithColor (textureToAffect.RenderTexture, Color.magenta);
+            compute = new ComputeCopy (textureResource.Texture, textureToAffect.RenderTexture);
             compute.Size = Context.ChunkResolution.AsVector;
         }
-
         protected override void PostAffect ()
             => compute = null;
-
         protected override void Affect (ProviderTexture texture, Vector2Int pixelPosition, Vector2Int pixelSize)
         {
             compute.Origin = pixelPosition;

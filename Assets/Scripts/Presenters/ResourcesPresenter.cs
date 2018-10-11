@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SFB;
 using UnityEngine;
@@ -6,15 +7,15 @@ using UnityEngine.UI;
 
 namespace SurfaceEdit.Presenters
 {
-    public sealed class ResourceManagerPresenter
+    public sealed class ResourcesPresenter
     {
-        private ResourceManagerViewData viewData;
+        private ResourcesViewData viewData;
         private ContextMenuViewData contextMenuViewData;
         private ResourceManager resourceManager;
 
         private List<(GameObject baseGO, GameObject imageGO, Resource resource)> gos = new List<(GameObject baseGO, GameObject imageGO, Resource resource)> ();
 
-        public ResourceManagerPresenter(ResourceManagerViewData viewData, ContextMenuViewData contextMenuViewData, ResourceManager resourceManager)
+        public ResourcesPresenter(ResourcesViewData viewData, ContextMenuViewData contextMenuViewData, ResourceManager resourceManager)
         {
             Assert.ArgumentNotNull (viewData, nameof (viewData));
             Assert.ArgumentNotNull (contextMenuViewData, nameof (contextMenuViewData));
@@ -34,12 +35,16 @@ namespace SurfaceEdit.Presenters
             {
                 button.onClick.AddListener (() =>
                  {
-                     var paths = StandaloneFileBrowser.OpenFilePanel ("Import Resources", "", new ExtensionFilter[] { ResourceManager.SupportedExtensions }, true);
+                     var paths = StandaloneFileBrowser.OpenFilePanel (
+                         "Import Resources", "",
+                         new ExtensionFilter[] { new ExtensionFilter ("Supported Extensions", Enum.GetNames (typeof (TextureExtension))) },
+                         true);
+
                      foreach ( var path in paths )
                      {
-                         var result = resourceManager.TryImport (path, out _);
+                         var result = resourceManager.ImportResource (path);
                          if ( !result.IsSuccessfull )
-                             Debug.LogWarning (result.ErrorMessage);
+                             Debug.LogError (result.ErrorMessage);
                      }
                  });
             }
@@ -55,9 +60,9 @@ namespace SurfaceEdit.Presenters
               {
                   var menu = new ContextMenuPresenter (contextMenuViewData, Input.mousePosition);
                   menu.AddMenuItem ("Rename", () => Debug.Log ("TODO: Implement"));
-                  menu.AddMenuItem ("Delete", () => resourceManager.DeleteResource (resource));
+                  menu.AddMenuItem ("Delete", () => resource.DeleteResource());
               });
-            image.sprite = Sprite.Create (resource.PreviewTexture, new Rect (0, 0, resource.PreviewTexture.width, resource.PreviewTexture.height), Vector2.zero);
+            image.sprite = Sprite.Create (resource.Thumbnail, new Rect (0, 0, resource.Thumbnail.width, resource.Thumbnail.height), Vector2.zero);
 
             gos.Add ((baseGO, imageGO, resource));
         }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 
 namespace SurfaceEdit
 {
@@ -10,7 +11,11 @@ namespace SurfaceEdit
         public ImmutableTextureResolution ChunkResolution { get; private set; }
         public Vector2Int ChunksCountVector { get; private set; }
         public int ChunksCountInt { get; private set; }
+
         public string CacheDirectory { get; private set; }
+        public string ResourcesCacheDirectory { get; private set; }
+        public TextureExtension CacheTextureResolution { get; private set; }
+        public string CacheTextureResolutionString { get; private set; }
 
         private ImmutableTextureResolution initialChunkResolution;
 
@@ -19,7 +24,8 @@ namespace SurfaceEdit
             Channels channels,
             TextureResolution textureResolution,
             ImmutableTextureResolution chunkResolution,
-            string cacheDirectory)
+            string cacheDirectory,
+            TextureExtension cacheTextureExtension)
         {
             Assert.ArgumentNotNull (undoRedoManager, nameof (undoRedoManager));
             Assert.ArgumentNotNull (channels, nameof (channels));
@@ -32,6 +38,9 @@ namespace SurfaceEdit
             TextureResolution = textureResolution;
 
             CacheDirectory = cacheDirectory;
+            ResourcesCacheDirectory = Path.Combine (CacheDirectory, "Resources");
+            CacheTextureResolution = cacheTextureExtension;
+            CacheTextureResolutionString = CacheTextureResolution.ToString ();
 
             initialChunkResolution = new ImmutableTextureResolution(chunkResolution.AsEnum);
 

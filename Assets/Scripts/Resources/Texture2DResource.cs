@@ -1,49 +1,114 @@
 ﻿using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
+using System;
 
 namespace SurfaceEdit
 {
     public sealed class Texture2DResource : Resource
     {
-        [JsonIgnore]
-        public Texture2D Texture { get; private set; }
-        [JsonIgnore]
-        public override Texture2D PreviewTexture { get; protected set; }
-
-        public Texture2DResource (string name, string cacheDirectory, Texture2D texture, ApplicationContext context) : base (name, cacheDirectory, context)
+        public Texture2D Texture
         {
+            get
+            {
+                Assert.ArgumentTrue (IsLoaded, "Resource is not loaded! Chain it with Chain(object key) method and after that access this property!");
+                return texture;
+            }
+        }
+        private Texture2D texture;
+
+        public static Texture2DResource New (ResourceMetadata metadata, Texture2D texture)
+        {
+            Assert.ArgumentNotNull (metadata, nameof (metadata));
             Assert.ArgumentNotNull (texture, nameof (texture));
 
-            Texture = texture;
-            PreviewTexture = new ComputeRescaleStupid (Texture, new Vector2Int (128, 128)).Execute ().ConvertToTexture2DAndRelease ();
-            AdjustScale ();
+            var resource = new Texture2DResource (metadata);
+            resource.texture = texture;
+            resource.Cache ();
+            resource.UnloadResource ();
 
-            context.TextureResolution.Changed += (s, e) => AdjustScale();
+            return resource;
+        }
+        public static Texture2DResource Existing (ResourceMetadata metadata)
+        {
+            Assert.ArgumentNotNull (metadata, nameof (metadata));
 
-            Cache ();
+            return new Texture2DResource (metadata);
         }
 
-        private void AdjustScale()
+        private Texture2DResource (ResourceMetadata metadata) : base (metadata)
         {
-            if ( Texture.width != Context.TextureResolution.AsInt || Texture.height != Context.TextureResolution.AsInt )
+            metadata.Context.TextureResolution.Changed += (s, e) =>
             {
-                var result = new ComputeRescaleStupid (Texture, Context.TextureResolution.AsVector).Execute ();
-                GameObject.DestroyImmediate (Texture);
-                Texture = result.ConvertToTexture2DAndRelease ();
+                if ( texture != null )
+                    AdjustScale (ref texture);
+            };
+        }
+
+        private Texture2D LoadTextureFromCache ()
+        {
+            var texturePath = Path.Combine (Metadata.ResourceCacheDirectory, "texture." + Metadata.TextureExtensionString);
+            TextureUtility.TryLoadTexture2DFromDisk (texturePath, out var texture);
+            if ( texture == null )
+                NotifyFatalError ();
+            return texture;
+        }
+        private void AdjustScale (ref Texture2D texture)
+        {
+            if ( texture.width > Metadata.Context.TextureResolution.AsInt || texture.height > Metadata.Context.TextureResolution.AsInt )
+            {
+                var result = new ComputeRescaleStupid (texture, Metadata.Context.TextureResolution.AsVector).Execute ();
+                GameObject.DestroyImmediate (texture);
+                texture = result.ConvertToTexture2DAndRelease ();
+            }
+            if  (texture.width < Metadata.Context.TextureResolution.AsInt || texture.height < Metadata.Context.TextureResolution.AsInt )
+            {
+                ReloadResource ();
             }
         }
 
-        public override void Dispose ()
+        protected override Texture2D GenerateThumbnail ()
         {
-            base.Dispose ();
-            GameObject.DestroyImmediate (Texture);
+            if ( texture != null )
+                return new ComputeRescaleStupid (texture, ThumbnailSize).Execute ().ConvertToTexture2DAndRelease ();
+            else
+            {
+                var texture = LoadTextureFromCache ();
+
+                if ( texture == null )
+                    return null;
+
+                var thumbnail = new ComputeRescaleStupid (texture, ThumbnailSize).Execute ().ConvertToTexture2DAndRelease ();
+                GameObject.DestroyImmediate (texture);
+                return thumbnail;
+            }
+        }
+        protected override void CacheResourceSpecific ()
+        {
+            var texturePath = Path.Combine (Metadata.ResourceCacheDirectory, "texture." + Metadata.TextureExtension);
+            TextureUtility.SaveTexture2DToDisk (texturePath, texture);
         }
 
-        protected override void Cache_Child (string cacheDirectory)
+        protected override void LoadResource ()
         {
-            var texturePath = Path.Combine (cacheDirectory, "texture.tga");
-            TextureUtility.SaveTexture2DToDisk (texturePath, Texture);
+            if (texture == null)
+            {
+                texture = LoadTextureFromCache ();
+                if ( texture == null )
+                    return;
+            }
+            AdjustScale (ref texture);
+        }
+        protected override void UnloadResource ()
+        {
+            if ( texture != null )
+                GameObject.DestroyImmediate (texture);
+        }
+
+        private void ReloadResource()
+        {
+            UnloadResource ();
+            LoadResource ();
         }
     }
 }

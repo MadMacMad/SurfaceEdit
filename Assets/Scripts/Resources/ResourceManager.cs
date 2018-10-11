@@ -2,165 +2,202 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SFB;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace SurfaceEdit
 {
     public sealed class ResourceManager
     {
-        public static readonly ExtensionFilter SupportedExtensions = new ExtensionFilter("Supported Extensions", "png");
-
         public ApplicationContext Context { get; private set; }
 
         public event Action<Resource> ResourceAdded;
         public event Action<Resource> ResourceDeleted;
 
         public IReadOnlyCollection<Resource> Resources { get; private set; }
-        private List<Resource> resources = new List<Resource> ();
+        private List<Resource> resources = new List<Resource>();
 
         public ResourceManager(ApplicationContext context)
         {
-            Assert.ArgumentNotNull (context, nameof(context));
+            Assert.ArgumentNotNull (context, nameof (context));
 
             Context = context;
             Resources = resources.AsReadOnly ();
-        }
 
-        public void DeleteResource (Resource resource)
-        {
-            if ( resource == null )
-                return;
-
-            if ( !resources.Contains (resource) )
-                return;
-
-            resources.Remove (resource);
-            ResourceDeleted?.Invoke (resource);
-            resource.Dispose ();
+            Setup ();
         }
         
-        public void Register(Resource resource)
-        {
-            Assert.ArgumentNotNull (resource, nameof (resource));
-
-            if ( resources.Contains (resource) )
-            {
-                Debug.LogWarning ($"{nameof (ResourceManager)} already contains this {nameof (resource)}");
-                return;
-            }
-
-            Assert.ArgumentTrue (ReferenceEquals (resource.Context, Context),
-                                 $"{nameof (resource)}.{nameof (resource.Context)} is not {nameof (ResourceManager)}.{nameof (Context)}");
-
-            resources.Add (resource);
-            ResourceAdded?.Invoke (resource);
-        }
-
-        public List<SResourceType> GetResources<SResourceType> (string name) where SResourceType : Resource
+        public List<T> GetResources<T> (string name) where T : Resource
         {
             Assert.ArgumentNotNullOrEmptry (name, nameof (name));
 
-            return resources.Where (s => s.Name == name).OfType<SResourceType>().ToList();
+            return resources.Where (r => r.Metadata.Name == name && r.GetType() == typeof(T)).Cast<T>().ToList ();
         }
-
-        public ResourceImportResult TryImport<SResourceType> (string pathToFile, out SResourceType resource) where SResourceType : Resource
+        public ResourceImportResult ImportResource(string path)
         {
-            resource = null;
-
-            var result = TryImport_Internal (pathToFile, out Resource internalResource);
-
-            if ( !result.IsSuccessfull )
-                return result;
-
-            if ( internalResource is SResourceType )
-            {
-                resources.Add (internalResource);
-                ResourceAdded?.Invoke (internalResource);
-                resource = internalResource as SResourceType;
-                return result;
-            }
-            else
-            {
-                result = new ResourceImportResult (false, $"Resource successfully loaded, but the type of the loaded resource ({internalResource.GetType().Name})  does not match the specified type ({typeof(SResourceType).Name})");
-                internalResource?.Dispose ();
-                return result;
-            }
-        }
-        public ResourceImportResult TryImport (string pathToFile, out Resource resource)
-        {
-            var result = TryImport_Internal (pathToFile, out resource);
-
-            if ( result.IsSuccessfull )
-            {
-                resources.Add (resource);
-                ResourceAdded?.Invoke (resource);
-            }
-
+            var result = ImportResource_Internal (path);
+            if (result.IsSuccessfull)
+                Register (result.Resource);
             return result;
         }
-        private ResourceImportResult TryImport_Internal (string pathToFile, out Resource resource)
+        
+        private void Setup ()
         {
-            resource = null;
+            if ( !Directory.Exists (Context.ResourcesCacheDirectory) )
+                return;
 
-            if ( string.IsNullOrEmpty (pathToFile) )
-                return new ResourceImportResult(false, "Given path is null or emptry");
+            foreach ( var directory in Directory.GetDirectories (Context.ResourcesCacheDirectory) )
+            {
+                if ( TryLoadResourceMetadata (directory, out var metadata) )
+                {
+                    if ( metadata.ResourceType == ResourceType.Texture2D )
+                        Register (Texture2DResource.Existing (metadata));
+                }
+                else
+                {
+                    Directory.Delete (directory, true);
+                }
+            }
+        }
+        private void Register(Resource resource)
+        {
+            resources.Add (resource);
+            ResourceAdded?.Invoke (resource);
+            resource.Deleted += OnResourceDeleted;
+        }
+        private void OnResourceDeleted(Resource resource)
+        {
+            resource.Deleted -= OnResourceDeleted;
+            resources.Remove (resource);
+            ResourceDeleted?.Invoke (resource);
+        }
+        private ResourceImportResult ImportResource_Internal(string path)
+        {
+            if ( string.IsNullOrEmpty (path) )
+                return new ResourceImportResult (false, "Path is null or emptry");
 
-            if ( !Path.HasExtension (pathToFile) )
-                return new ResourceImportResult (false, $"Given path({pathToFile}) does not has any extension");
+            if ( !Path.HasExtension (path) )
+                return new ResourceImportResult (false, $"Path({path}) does not has any extension");
 
-            if ( !File.Exists (pathToFile) )
-                return new ResourceImportResult (false, $"File with given path({pathToFile}) does not exists");
+            if ( !File.Exists (path) )
+                return new ResourceImportResult (false, $"File at ({path}) does not exists");
 
             try
             {
-                var extension = Path.GetExtension (pathToFile);
-                var name = Path.GetFileNameWithoutExtension (pathToFile);
-                                var texture = TextureUtility.LoadTexture2DFromDisk (pathToFile);
+                var extension = Path.GetExtension (path);
+                var name = Path.GetFileNameWithoutExtension (path);
 
-                if ( texture.width != texture.height )
+                if ( extension == ".png" || extension == ".jpeg" || extension == ".jpg" || extension == ".tga" )
                 {
-                    var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) is not square");
-                    GameObject.DestroyImmediate (texture);
-                    return result;
-                }
+                    var texture = TextureUtility.LoadTexture2DFromDisk (path);
 
-                if ( !Mathf.IsPowerOfTwo (texture.width) )
+                    if ( texture.width != texture.height )
+                    {
+                        var result = new ResourceImportResult (false, $"Texture({path}) is not square ({texture.width}, {texture.height})");
+                        GameObject.DestroyImmediate (texture);
+                        return result;
+                    }
+
+                    if ( !Mathf.IsPowerOfTwo (texture.width) )
+                    {
+                        var result = new ResourceImportResult (false, $"Texture({path}) has not power of 2 size ({texture.width}, {texture.height})");
+                        GameObject.DestroyImmediate (texture);
+                        return result;
+                    }
+
+                    var textureMinSize = 256;
+
+                    if ( texture.width < textureMinSize )
+                    {
+                        var result = new ResourceImportResult (false, $"Texture({path}) is too small({texture.width}, {texture.height})). Min size is {textureMinSize}");
+                        GameObject.DestroyImmediate (texture);
+                        return result;
+                    }
+
+                    var metadata = new ResourceMetadata (Context, name, Context.CacheTextureResolution, ResourceType.Texture2D);
+
+                    var resource = Texture2DResource.New (metadata, texture);
+                    return new ResourceImportResult (true, "", resource);
+                }
+                else
                 {
-                    var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) has not power of 2 size");
-                    GameObject.DestroyImmediate (texture);
-                    return result;
+                    return new ResourceImportResult (false, $"Extension {extension} is not supported.");
                 }
-
-                var textureMinSize = 256;
-
-                if ( texture.width < textureMinSize )
-                {
-                    var result = new ResourceImportResult (false, $"Selected texture({pathToFile}) is too small({texture.width}). Min size is {textureMinSize}");
-                    GameObject.DestroyImmediate (texture);
-                    return result;
-                }
-
-                resource = new Texture2DResource (name, Context.CacheDirectory, texture, Context);
-
-
-                return new ResourceImportResult (true);
             }
             catch ( Exception e )
             {
-                return new ResourceImportResult (false, "An exception was thrown when loading a resource! " + e.Message);
+                return new ResourceImportResult (false, "An exception was thrown when importing a resource! " + e.Message);
             }
         }
-    }
+        private bool TryLoadResourceMetadata (string directory, out ResourceMetadata resourceMetadata)
+        {
+            resourceMetadata = null;
 
+            if ( Directory.GetFiles (directory).Length == 0 )
+                return false;
+
+            var metadataPath = Path.Combine (directory, "metadata.json");
+
+            if ( !File.Exists (metadataPath) )
+                return false;
+
+            var resourceTypeString = "";
+            var guidString = "";
+            var name = "";
+            var textureExtensionString = "";
+
+            try
+            {
+                var json = File.ReadAllText (metadataPath);
+
+                var jsonMetadata = JObject.Parse (json);
+
+                resourceTypeString = jsonMetadata["ResourceType"].ToString();
+                name = jsonMetadata["Name"].ToString ();
+                guidString = jsonMetadata["Guid"].ToString();
+                textureExtensionString = jsonMetadata["TextureExtension"].ToString();
+            }
+            catch(Exception e)
+            {
+                var a = e;
+                return false; }
+
+            if ( string.IsNullOrEmpty (resourceTypeString) ||
+                 string.IsNullOrEmpty (guidString) ||
+                 string.IsNullOrEmpty (name) ||
+                 string.IsNullOrEmpty (textureExtensionString) )
+                return false;
+
+            if ( !Enum.TryParse<ResourceType> (resourceTypeString, out var resourceType) )
+                return false;
+
+            if ( !Guid.TryParse (guidString, out var guid) )
+                return false;
+
+            if ( !Enum.TryParse<TextureExtension> (textureExtensionString, out var textureExtension) )
+                return false;
+
+            if ( new DirectoryInfo (directory).Name != name + "_" + guidString )
+                return false;
+
+            resourceMetadata = new ResourceMetadata (Context, name, guid, textureExtension, resourceType);
+
+            return true;
+        }
+    }
     public sealed class ResourceImportResult
     {
+        public readonly Resource Resource;
         public readonly bool IsSuccessfull;
         public readonly string ErrorMessage;
 
-        public ResourceImportResult (bool isSuccessfull, string errorMessage = "")
+        public ResourceImportResult (bool isSuccessfull, string errorMessage, Resource resource = null)
         {
             IsSuccessfull = isSuccessfull;
+            Resource = resource;
             ErrorMessage = errorMessage;
         }
     }
